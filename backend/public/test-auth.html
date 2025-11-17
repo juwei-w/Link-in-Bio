@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Auth Test</title>
+    <style>body{font-family:system-ui,Segoe UI,Roboto,sans-serif;padding:20px;max-width:700px}label{display:block;margin-top:8px}</style>
+  </head>
+  <body>
+    <h1>Auth Test</h1>
+    <p>Use these forms to quickly test signup and login endpoints.</p>
+
+    <section>
+      <h2>Signup</h2>
+      <label>Username <input id="s-username" /></label>
+      <label>Email <input id="s-email" /></label>
+      <label>Password <input id="s-password" type="password" /></label>
+      <button id="btn-signup">Sign up</button>
+      <pre id="signup-result"></pre>
+    </section>
+
+    <section>
+      <h2>Login</h2>
+      <label>Email <input id="l-email" /></label>
+      <label>Password <input id="l-password" type="password" /></label>
+      <button id="btn-login">Log in</button>
+      <pre id="login-result"></pre>
+    </section>
+
+    <script>
+      async function postJson(url, body){
+        const res = await fetch(url, {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(body)});
+        const text = await res.text();
+        try { return { status: res.status, body: JSON.parse(text) } } catch(e){ return { status: res.status, body: text } }
+      }
+
+      document.getElementById('btn-signup').addEventListener('click', async ()=>{
+        const username = document.getElementById('s-username').value;
+        const email = document.getElementById('s-email').value;
+        const password = document.getElementById('s-password').value;
+        const out = await postJson('/api/auth/signup', { username, email, password });
+        document.getElementById('signup-result').textContent = JSON.stringify(out, null, 2);
+      });
+
+      document.getElementById('btn-login').addEventListener('click', async ()=>{
+        const email = document.getElementById('l-email').value;
+        const password = document.getElementById('l-password').value;
+        const out = await postJson('/api/auth/login', { email, password });
+        document.getElementById('login-result').textContent = JSON.stringify(out, null, 2);
+      });
+    </script>
+  </body>
+</html>

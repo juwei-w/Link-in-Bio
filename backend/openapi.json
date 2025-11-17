@@ -1,0 +1,50 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Link-Bio API",
+    "version": "0.1.0",
+    "description": "Minimal OpenAPI spec for the Link-Sharing / Profile Platform backend (MVP endpoints)."
+  },
+  "servers": [
+    { "url": "/" }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health check",
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/auth/signup": {
+      "post": {
+        "summary": "Create account",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object", "properties": { "username": {"type":"string"}, "email": {"type":"string"}, "password": {"type":"string"} }, "required": ["username","email","password"] }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Token + user" }, "400": { "description": "Bad request" } }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Login (email/password)",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object", "properties": { "email": {"type":"string"}, "password": {"type":"string"} }, "required": ["email","password"] } } }
+        },
+        "responses": { "200": { "description": "Token + user" }, "401": { "description": "Unauthorized" } }
+      }
+    },
+    "/api/links/{id}/click": {
+      "post": {
+        "summary": "Increment click counter",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Click incremented" }, "404": { "description": "Not found" } }
+      }
+    }
+  }
+}

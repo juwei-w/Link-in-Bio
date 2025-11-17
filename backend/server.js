@@ -1,7 +1,10 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const { connect } = require('./config/db');
+const swaggerUi = require('swagger-ui-express');
+const openapi = require('./openapi.json');
 
 const authRoutes = require('./routes/auth');
 const linksRoutes = require('./routes/links');
@@ -9,6 +12,12 @@ const linksRoutes = require('./routes/links');
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from backend/public (test pages / future static hosting)
+app.use(express.static(path.join(__dirname, 'public')));
+
+// API docs (OpenAPI / Swagger UI)
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapi));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/links', linksRoutes);

@@ -23,6 +23,12 @@ npm run dev
 - POST /api/links — Authorization: Bearer <token> (create link)
 - POST /api/links/:id/click — increments click count for link
 
+Additional tools:
+
+- API docs (Swagger UI) available at `/docs` when server is running.
+- A simple auth test page is served at `/test-auth.html` so you can try signup/login from the browser.
+
 Notes:
 - This is a minimal scaffold for the MVP. OAuth routes and frontend integration instructions will be added next.
 - For email verification / password reset we will integrate Firebase Authentication (recommended for free tier and quick setup).
+
