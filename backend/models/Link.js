@@ -6,8 +6,10 @@ const LinkSchema = new Schema({
   title: { type: String, required: true },
   url: { type: String, required: true },
   iconUrl: { type: String },
-  position: { type: Number, default: 0 },
+  order: { type: Number, default: 0 },
+  position: { type: Number, default: 0 }, // Keep for backwards compatibility
   clicks: { type: Number, default: 0 },
+  isActive: { type: Boolean, default: true },
   createdAt: { type: Date, default: Date.now }
 });
 

@@ -1,0 +1,61 @@
+<div class="home-container">
+  <nav class="navbar">
+    <div class="container nav-content">
+      <h1 class="logo">LinkShare</h1>
+      <div class="nav-links">
+        <a *ngIf="!(authService.currentUser$ | async)" routerLink="/login">Login</a>
+        <a *ngIf="!(authService.currentUser$ | async)" routerLink="/signup" class="btn">Sign Up</a>
+        <a *ngIf="authService.currentUser$ | async" routerLink="/dashboard" class="btn">Dashboard</a>
+        <button *ngIf="authService.currentUser$ | async" (click)="logout()" class="btn btn-secondary">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="container hero-content">
+      <h1 class="hero-title">Share Your Links, Your Way</h1>
+      <p class="hero-subtitle">Create a beautiful landing page for all your important links. Perfect for creators, influencers, and professionals.</p>
+      <div class="hero-cta">
+        <a routerLink="/signup" class="btn btn-large">Get Started Free</a>
+        <a routerLink="/demo" class="btn-link">View Demo</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="features container">
+    <h2>Why LinkShare?</h2>
+    <p class="features-subtitle">Everything you need to share your links and grow your audience in one place.</p>
+    <div class="features-grid">
+      <div class="feature-card card">
+        <div class="feature-icon">🎨</div>
+        <h3>Customizable</h3>
+        <p>Design your profile with themes and colors that match your brand.</p>
+      </div>
+      <div class="feature-card card">
+        <div class="feature-icon">📊</div>
+        <h3>Analytics</h3>
+        <p>Track clicks and engagement on all your links.</p>
+      </div>
+      <div class="feature-card card">
+        <div class="feature-icon">⚡</div>
+        <h3>Fast & Reliable</h3>
+        <p>Built on modern infrastructure for speed and uptime.</p>
+      </div>
+      <div class="feature-card card">
+        <div class="feature-icon">🔒</div>
+        <h3>Secure</h3>
+        <p>Your data is protected with industry-standard security.</p>
+      </div>
+      <div class="feature-card card">
+        <div class="feature-icon">🔗</div>
+        <h3>Unlimited Links</h3>
+        <p>Add as many links as you want without any restrictions.</p>
+      </div>
+      <div class="feature-card card">
+        <div class="feature-icon">🌐</div>
+        <h3>Custom Domain</h3>
+        <p>Use your own domain for a professional branded experience.</p>
+      </div>
+    </div>
+  </section>
+</div>

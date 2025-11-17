@@ -2,7 +2,51 @@ const express = require('express');
 const router = express.Router();
 const rateLimit = require('express-rate-limit');
 const Link = require('../models/Link');
+const User = require('../models/User');
 const auth = require('../middleware/auth');
+
+// Get current user's links (private)
+router.get('/', auth, async (req, res) => {
+  try {
+    const links = await Link.find({ userId: req.user.id }).sort({ order: 1, createdAt: 1 });
+    res.json(links);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Get user's public links by userId
+router.get('/users/:userId/links', async (req, res) => {
+  try {
+    const links = await Link.find({ userId: req.params.userId, isActive: true }).sort({ order: 1, createdAt: 1 });
+    res.json(links);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Get public profile by username
+router.get('/profile/:username', async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.params.username.toLowerCase() });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    
+    const links = await Link.find({ userId: user._id, isActive: true }).sort({ order: 1, createdAt: 1 });
+    
+    res.json({
+      username: user.username,
+      email: user.email,
+      bio: user.bio,
+      avatar: user.avatarUrl,
+      links
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 // Create link (private)
 router.post('/', auth, async (req, res) => {

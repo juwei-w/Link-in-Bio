@@ -1,0 +1,39 @@
+<div class="profile-container">
+  <div *ngIf="loading" class="loading">Loading...</div>
+  
+  <div *ngIf="!loading && !error" class="profile-content">
+    <div class="profile-header">
+      <div class="avatar">{{ (profile?.username || 'U').charAt(0).toUpperCase() }}</div>
+      <h1>{{ '@' + (profile?.username || '') }}</h1>
+      <p *ngIf="profile?.bio" class="bio">{{ profile?.bio }}</p>
+    </div>
+
+    <div class="links-container">
+      <a 
+        *ngFor="let link of profile?.links" 
+        [href]="link.url" 
+        target="_blank"
+        rel="noopener noreferrer"
+        class="profile-link card"
+        (click)="trackClick(link._id!)"
+      >
+        <span class="link-title">{{ link.title }}</span>
+        <span class="link-arrow">→</span>
+      </a>
+
+      <div *ngIf="profile?.links?.length === 0" class="empty-state">
+        <p>No links available yet.</p>
+      </div>
+    </div>
+
+    <footer class="profile-footer">
+      <p>Powered by <strong>LinkShare</strong></p>
+    </footer>
+  </div>
+
+  <div *ngIf="error" class="error-container">
+    <h2>Profile Not Found</h2>
+    <p>{{ error }}</p>
+    <a href="/" class="btn">Go Home</a>
+  </div>
+</div>

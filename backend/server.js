@@ -21,6 +21,8 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapi));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/links', linksRoutes);
+// Profile and users routes are also in linksRoutes but exposed at /api level
+app.use('/api', linksRoutes);
 
 // ===========================================
 // 1. Home Route
