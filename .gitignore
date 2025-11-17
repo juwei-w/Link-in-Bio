@@ -1,3 +1,13 @@
+# Node
+node_modules/
+npm-debug.log
+.env
+
+# Backend logs
+backend/logs
+
+# Frontend build
+frontend/dist/
 Project-Idea.md
 Readme-Guidelines.md
 
