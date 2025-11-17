@@ -18,7 +18,7 @@ const UserSchema = new Schema({
   avatarUrl: { type: String },
   bio: { type: String },
   theme: { type: String, enum: ['light', 'dark'], default: 'light' },
-  provider: { type: String, enum: ['local', 'google', 'github'], default: 'local' },
+  provider: { type: String, enum: ['local', 'google', 'github', 'firebase'], default: 'local' },
   providerId: { type: String },
   createdAt: { type: Date, default: Date.now }
 });

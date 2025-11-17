@@ -3,8 +3,9 @@ node_modules/
 npm-debug.log
 .env
 
-# Backend logs
+# Backend build
 backend/logs
+serviceAccountKey.json
 
 # Frontend build
 frontend/dist/

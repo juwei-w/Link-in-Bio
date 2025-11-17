@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Firebase Auth → Backend Exchange Test</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      body{font-family:system-ui,Segoe UI,Roboto,sans-serif;padding:20px;max-width:900px;margin:auto}
+      textarea,input{width:100%;box-sizing:border-box;padding:8px}
+      label{display:block;margin-top:12px;font-weight:600}
+      .row{display:flex;gap:8px}
+      .col{flex:1}
+      button{margin-top:8px;padding:8px 12px}
+      pre{background:#f7f7f7;border:1px solid #eee;padding:12px;overflow:auto}
+    </style>
+  </head>
+  <body>
+    <h1>Firebase → Backend Token Exchange Test</h1>
+    <p>This page helps you sign up / sign in with Firebase (email/password) and POST the Firebase ID token to <code>/api/auth/firebase</code> to exchange it for your app's local JWT.</p>
+
+    <label>Firebase config (paste the web app config JSON from Firebase console)</label>
+    <textarea id="fb-config" rows="6" placeholder='{"apiKey":"...","authDomain":"...","projectId":"...","storageBucket":"...","messagingSenderId":"...","appId":"..."}'></textarea>
+
+    <div class="row">
+      <div class="col">
+        <label>Email</label>
+        <input id="email" placeholder="test-user@example.com" />
+      </div>
+      <div class="col">
+        <label>Password</label>
+        <input id="password" type="password" placeholder="P@ssword123" />
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <button id="btn-init">Init Firebase</button>
+      <button id="btn-signup">Sign up with Firebase</button>
+      <button id="btn-signin">Sign in with Firebase</button>
+      <button id="btn-exchange">Exchange ID Token with Backend</button>
+    </div>
+
+    <h3>Outputs</h3>
+    <label>Firebase user / idToken</label>
+    <pre id="fb-output">(none)</pre>
+
+    <label>Backend response</label>
+    <pre id="backend-output">(none)</pre>
+
+    <!-- Firebase compat SDK (easy to demo) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+
+    <script>
+      let firebaseApp = null;
+      let currentUser = null;
+
+      function log(id, obj){
+        document.getElementById(id).textContent = JSON.stringify(obj, null, 2);
+      }
+
+      document.getElementById('btn-init').addEventListener('click', ()=>{
+        const raw = document.getElementById('fb-config').value.trim();
+        if (!raw) return alert('Paste Firebase web config JSON first');
+        try{
+          const cfg = JSON.parse(raw);
+          if (firebaseApp) firebaseApp.delete().catch(()=>{});
+          firebaseApp = firebase.initializeApp(cfg);
+          log('fb-output', { status: 'initialized', projectId: cfg.projectId || cfg.appId });
+        }catch(e){
+          alert('Invalid JSON: ' + e.message);
+        }
+      });
+
+      document.getElementById('btn-signup').addEventListener('click', async ()=>{
+        if (!firebaseApp) return alert('Init Firebase first');
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        try{
+          const userCred = await firebase.auth().createUserWithEmailAndPassword(email, password);
+          currentUser = userCred.user;
+          const idToken = await currentUser.getIdToken();
+          log('fb-output', { uid: currentUser.uid, email: currentUser.email, idToken });
+        }catch(e){ log('fb-output', { error: e.code || e.message }); }
+      });
+
+      document.getElementById('btn-signin').addEventListener('click', async ()=>{
+        if (!firebaseApp) return alert('Init Firebase first');
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        try{
+          const userCred = await firebase.auth().signInWithEmailAndPassword(email, password);
+          currentUser = userCred.user;
+          const idToken = await currentUser.getIdToken();
+          log('fb-output', { uid: currentUser.uid, email: currentUser.email, idToken });
+        }catch(e){ log('fb-output', { error: e.code || e.message }); }
+      });
+
+      document.getElementById('btn-exchange').addEventListener('click', async ()=>{
+        if (!currentUser) return alert('Sign in first to obtain an ID token');
+        try{
+          const idToken = await currentUser.getIdToken();
+          const res = await fetch('/api/auth/firebase', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ idToken }) });
+          const body = await res.json().catch(()=>null);
+          log('backend-output', { status: res.status, body });
+        }catch(e){ log('backend-output', { error: e.message }); }
+      });
+    </script>
+  </body>
+</html>
