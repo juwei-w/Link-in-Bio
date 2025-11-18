@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, User, signInWithPopup, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, User, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, fetchSignInMethodsForEmail, signInWithCredential, GoogleAuthProvider as GAP, GithubAuthProvider as GHAP, OAuthProvider } from 'firebase/auth';
 
 export interface AuthResponse {
   token: string;
@@ -62,16 +62,89 @@ export class AuthService {
 
   // OAuth login (Google)
   async googleLogin(): Promise<void> {
-    const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(this.firebaseAuth, provider);
-    await this.exchangeFirebaseToken(result.user);
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(this.firebaseAuth, provider);
+      await this.exchangeFirebaseToken(result.user);
+    } catch (error: any) {
+      console.error('Google login error:', error);
+      throw error;
+    }
   }
 
   // OAuth login (GitHub)
   async githubLogin(): Promise<void> {
-    const provider = new GithubAuthProvider();
-    const result = await signInWithPopup(this.firebaseAuth, provider);
-    await this.exchangeFirebaseToken(result.user);
+    try {
+      const provider = new GithubAuthProvider();
+      const result = await signInWithPopup(this.firebaseAuth, provider);
+      await this.exchangeFirebaseToken(result.user);
+    } catch (error: any) {
+      // Handle account-exists-with-different-credential error
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        await this.handleAccountLinking(error);
+        return;
+      }
+      console.error('GitHub login error:', error);
+      alert('GitHub login failed. Please try again or use a different sign-in method.');
+      throw error;
+    }
+  }
+
+  // Handle account linking when same email exists with different provider
+  private async handleAccountLinking(error: any): Promise<void> {
+    try {
+      const email = error.customData.email;
+      const pendingCred = GithubAuthProvider.credentialFromError(error);
+      
+      if (!pendingCred) {
+        throw new Error('Could not get credential from error');
+      }
+
+      // Fetch sign-in methods for the email
+      const methods = await fetchSignInMethodsForEmail(this.firebaseAuth, email);
+      
+      if (methods.length === 0) {
+        throw new Error('No existing sign-in methods found for this email');
+      }
+
+      // Ask user if they want to sign in with existing provider and link accounts
+      const confirmLink = confirm(
+        `An account already exists with ${email}.\n\n` +
+        `Existing sign-in method: ${methods[0]}\n\n` +
+        `Would you like to sign in with ${methods[0]} and link your GitHub account?`
+      );
+
+      if (!confirmLink) {
+        throw new Error('User cancelled account linking');
+      }
+
+      // Sign in with the existing provider (Google)
+      let userCredential;
+      if (methods[0] === 'google.com') {
+        const googleProvider = new GoogleAuthProvider();
+        userCredential = await signInWithPopup(this.firebaseAuth, googleProvider);
+      } else {
+        throw new Error(`Unsupported provider: ${methods[0]}`);
+      }
+
+      // Link the pending credential (GitHub)
+      // Note: Account linking is disabled by default in Firebase
+      // User needs to enable it in Firebase Console
+      alert(
+        'To link multiple sign-in methods, please enable account linking:\n\n' +
+        '1. Go to Firebase Console → Authentication → Settings\n' +
+        '2. Enable "Allow creation of multiple accounts with the same email address"\n\n' +
+        'For now, you have been signed in with Google. You can use Google to sign in anytime.'
+      );
+
+      // Exchange token with backend
+      await this.exchangeFirebaseToken(userCredential.user);
+      
+    } catch (linkError: any) {
+      console.error('Account linking error:', linkError);
+      alert('Failed to link accounts. Please try signing in with your original provider (Google).');
+      throw linkError;
+    }
   }
 
   // Exchange Firebase ID token for backend JWT
