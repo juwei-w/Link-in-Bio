@@ -11,6 +11,7 @@ serviceAccountKey.json
 frontend/dist/
 Project-Idea.md
 Readme-Guidelines.md
+frontend/src/environments/
 
 prompts/
 # docs/dev/
