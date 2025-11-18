@@ -16,8 +16,11 @@ export interface Link {
 export interface UserProfile {
   username: string;
   email?: string;
+  displayName?: string;
   bio?: string;
   avatar?: string;
+  avatarUrl?: string;
+  theme?: 'light' | 'dark';
   links: Link[];
 }
 
@@ -28,6 +31,16 @@ export class LinksService {
   private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
+
+  // Get current user profile
+  getMyProfile(): Observable<UserProfile> {
+    return this.http.get<UserProfile>(`${this.apiUrl}/users/me`);
+  }
+
+  // Update current user profile
+  updateMyProfile(data: Partial<UserProfile>): Observable<UserProfile> {
+    return this.http.put<UserProfile>(`${this.apiUrl}/users/me`, data);
+  }
 
   // Get user's own links (authenticated)
   getMyLinks(): Observable<Link[]> {
@@ -68,7 +81,7 @@ export class LinksService {
   reorderLinks(links: Link[]): Observable<void> {
     // Update order for each link
     const updates = links.map((link, index) => 
-      this.updateLink(link._id!, { order: index })
+      this.updateLink(link._id!, { order: index }).toPromise()
     );
     return new Observable(observer => {
       Promise.all(updates).then(() => {

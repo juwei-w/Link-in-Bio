@@ -62,18 +62,37 @@ router.post('/firebase', async (req, res) => {
     if (!admin) return res.status(501).json({ message: 'Firebase Admin not configured on server' });
 
     // verify token
-    const decoded = await admin.auth().verifyIdToken(idToken);
-    // decoded contains uid, email, name, picture, etc.
+    let decoded;
+    try {
+      decoded = await admin.auth().verifyIdToken(idToken);
+      console.log('Firebase token decoded:', { uid: decoded.uid, email: decoded.email, name: decoded.name });
+    } catch (verifyError) {
+      console.error('Token verification failed:', verifyError.code, verifyError.message);
+      return res.status(401).json({ 
+        message: 'Invalid Firebase token', 
+        error: verifyError.message,
+        code: verifyError.code 
+      });
+    }
 
     const providerId = decoded.uid;
     const email = decoded.email;
-    const usernameBase = (decoded.name || email || 'user').split(/[\s@]/)[0].toLowerCase();
+    // Replace spaces with hyphens and clean username
+    const usernameBase = (decoded.name || email || 'user')
+      .toLowerCase()
+      .replace(/\s+/g, '-')  // Replace spaces with hyphens
+      .split('@')[0]         // Take part before @ if email
+      .replace(/[^a-z0-9_-]/gi, '');  // Remove invalid characters
 
     // find or create local user
     let user = await User.findOne({ $or: [{ providerId }, { email }] });
     if (!user) {
       // create a unique username by appending random suffix if needed
-      let username = usernameBase.replace(/[^a-z0-9_-]/gi, '').slice(0, 12) || 'user';
+      let username = usernameBase.slice(0, 12) || 'user';
+      // Ensure username is at least 3 characters (mongoose validation requirement)
+      if (username.length < 3) {
+        username = username + Math.floor(Math.random() * 1000);
+      }
       let attempt = username;
       let i = 0;
       while (await User.findOne({ username: attempt })) {
@@ -82,12 +101,16 @@ router.post('/firebase', async (req, res) => {
       }
       user = new User({ username: attempt, email, provider: 'firebase', providerId });
       await user.save();
+      console.log('Created new user:', { username: user.username, email: user.email, providerId: user.providerId });
     } else {
       // if found by email but no providerId, set it
       if (!user.providerId) {
         user.provider = 'firebase';
         user.providerId = providerId;
         await user.save();
+        console.log('Updated existing user with providerId:', { username: user.username, email: user.email, providerId: user.providerId });
+      } else {
+        console.log('Found existing user:', { username: user.username, email: user.email, providerId: user.providerId });
       }
     }
 
@@ -95,7 +118,7 @@ router.post('/firebase', async (req, res) => {
     res.json({ token, user: { id: user._id, username: user.username, email: user.email } });
   } catch (err) {
     console.error('Firebase auth exchange error:', err);
-    res.status(401).json({ message: 'Invalid Firebase token' });
+    res.status(500).json({ message: 'Server error during authentication' });
   }
 });
 
