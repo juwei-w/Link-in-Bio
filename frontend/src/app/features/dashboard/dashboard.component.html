@@ -3,6 +3,7 @@
     <div class="container nav-content">
       <h1 class="logo">LinkShare</h1>
       <div class="nav-links">
+        <a routerLink="/dashboard/settings" class="btn-link">⚙️ Settings</a>
         <span class="username">{{ currentUser?.username }}</span>
         <a [href]="'/' + currentUser?.username" target="_blank" class="btn">View Profile</a>
         <button (click)="logout()" class="btn btn-secondary">Logout</button>
