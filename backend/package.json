@@ -9,15 +9,17 @@
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
+    "cloudinary": "^2.8.0",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^4.18.2",
     "express-rate-limit": "^6.7.0",
-    "nodemailer": "^6.9.3",
     "firebase": "^12.6.0",
     "firebase-admin": "^13.6.0",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.3.1",
+    "multer": "^2.0.2",
+    "nodemailer": "^6.9.3",
     "swagger-ui-express": "^4.6.3"
   },
   "devDependencies": {

@@ -154,4 +154,17 @@ export class AuthService {
   getCurrentUser(): any {
     return this.currentUserSubject.value;
   }
+
+  // Update user profile
+  updateProfile(profileData: { displayName?: string; bio?: string; avatarUrl?: string }): Observable<any> {
+    return this.http.put(`${this.apiUrl}/users/me`, profileData).pipe(
+      tap((user) => {
+        // Update stored user data
+        const currentUser = this.getCurrentUser();
+        const updatedUser = { ...currentUser, ...user };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        this.currentUserSubject.next(updatedUser);
+      })
+    );
+  }
 }

@@ -1,89 +1,250 @@
 <div class="dashboard-container">
   <nav class="navbar">
-    <div class="container nav-content">
-      <h1 class="logo">LinkShare</h1>
+    <div class="nav-content">
+      <div class="logo-container">
+        <div class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+        </div>
+        <span class="logo">Link-in-Bio</span>
+      </div>
       <div class="nav-links">
-        <a routerLink="/dashboard/settings" class="btn-link">⚙️ Settings</a>
-        <span class="username">{{ currentUser?.username }}</span>
-        <a [href]="'/' + currentUser?.username" target="_blank" class="btn">View Profile</a>
-        <button (click)="logout()" class="btn btn-secondary">Logout</button>
+        <a [href]="'/' + currentUser?.username" target="_blank" class="btn-gradient">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+          View Profile
+        </a>
+        <button (click)="logout()" class="btn-ghost">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          Sign Out
+        </button>
       </div>
     </div>
   </nav>
 
-  <div class="container dashboard-content">
-    <div class="dashboard-header">
-      <h2>Your Links</h2>
-      <button (click)="showAddForm = !showAddForm" class="btn">
-        {{ showAddForm ? 'Cancel' : '+ Add Link' }}
-      </button>
-    </div>
-
-    <!-- Add/Edit Form -->
-    <div *ngIf="showAddForm || editingLink" class="link-form card">
-      <h3>{{ editingLink ? 'Edit Link' : 'Add New Link' }}</h3>
-      <form (ngSubmit)="saveLink()">
-        <div class="form-group">
-          <label for="title">Title</label>
-          <input 
-            type="text" 
-            id="title" 
-            [(ngModel)]="formData.title" 
-            name="title" 
-            required 
-            class="form-input"
-            placeholder="My Portfolio"
-          />
+  <main class="dashboard-content">
+    <div class="content-wrapper">
+      <!-- Profile Card -->
+      <div class="card profile-card">
+        <div class="card-header">
+          <h2 class="card-title">Profile Settings</h2>
+          <p class="card-description">Customize your public profile</p>
         </div>
+        <div class="card-content">
+          <div class="profile-info">
 
-        <div class="form-group">
-          <label for="url">URL</label>
-          <input 
-            type="url" 
-            id="url" 
-            [(ngModel)]="formData.url" 
-            name="url" 
-            required 
-            class="form-input"
-            placeholder="https://example.com"
-          />
-        </div>
+            <!-- Profile Picture Upload -->
+            <div class="info-group">
+              <label class="form-label">Profile Picture</label>
+              <div class="avatar-upload-wrapper">
+                <div class="avatar-preview" 
+                     [style.background-image]="avatarPreview ? 'url(' + avatarPreview + ')' : 'none'"
+                     [class.has-image]="avatarPreview"
+                     (click)="triggerImageSelect(fileInput)"
+                     title="Click to upload/crop">
+                  <span *ngIf="!avatarPreview">{{ (displayName || currentUser?.username || 'U').charAt(0).toUpperCase() }}</span>
+                </div>
+                <div class="avatar-upload-controls">
+                  <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden />
+                  <div class="upload-buttons">
+                    <button type="button" class="btn btn-secondary btn-sm" (click)="fileInput.click()">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                      </svg>
+                      Choose Image
+                    </button>
+                    <button type="button" *ngIf="avatarPreview || croppedImage" class="btn btn-ghost btn-sm" (click)="removeAvatar()">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                      Remove
+                    </button>
+                  </div>
+                  <p class="upload-hint">JPG, PNG or GIF. Max 5MB.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="info-group">
+              <label class="info-label">Username</label>
+              <div class="username-display">{{ currentUser?.username }}</div>
+              <p class="info-hint">Your profile URL: {{ getProfileUrl() }}</p>
+            </div>
 
-        <div class="form-actions">
-          <button type="submit" class="btn" [disabled]="loading">
-            {{ loading ? 'Saving...' : 'Save Link' }}
-          </button>
-          <button type="button" (click)="cancelEdit()" class="btn btn-secondary">Cancel</button>
-        </div>
-      </form>
-    </div>
-
-    <!-- Links List -->
-    <div class="links-list">
-      <div *ngIf="links.length === 0" class="empty-state">
-        <p>No links yet. Add your first link to get started!</p>
-      </div>
-
-      <div 
-        *ngFor="let link of links; let i = index" 
-        class="link-item card"
-        draggable="true"
-        (dragstart)="onDragStart($event, i)"
-        (dragover)="onDragOver($event)"
-        (drop)="onDrop($event, i)"
-      >
-        <div class="link-content">
-          <div class="drag-handle">⋮⋮</div>
-          <div class="link-info">
-            <h4>{{ link.title }}</h4>
-            <a [href]="link.url" target="_blank" class="link-url">{{ link.url }}</a>
-            <p class="link-stats">{{ link.clicks || 0 }} clicks</p>
+            <div class="info-group">
+              <label for="displayName" class="form-label">Display Name</label>
+              <input 
+                type="text" 
+                id="displayName" 
+                [(ngModel)]="displayName" 
+                name="displayName"
+                class="form-input"
+                placeholder="Your Name"
+              />
+            </div>
+            
+            <div class="info-group">
+              <label for="bio" class="form-label">Bio</label>
+              <textarea 
+                id="bio" 
+                [(ngModel)]="bio" 
+                name="bio"
+                class="form-textarea"
+                placeholder="Tell visitors about yourself..."
+                rows="3"
+              ></textarea>
+            </div>
+            
+            <button (click)="updateProfile()" class="btn btn-primary" [disabled]="profileLoading">
+              {{ profileLoading ? 'Saving...' : 'Save Profile' }}
+            </button>
           </div>
         </div>
-        <div class="link-actions">
-          <button (click)="editLink(link)" class="btn-icon">✏️</button>
-          <button (click)="deleteLink(link._id!)" class="btn-icon">🗑️</button>
+      </div>
+
+      <!-- Add New Link Card -->
+      <div class="card" id="link-form-card">
+        <div class="card-header">
+          <h2 class="card-title">{{ editingLink ? 'Edit Link' : 'Add New Link' }}</h2>
+          <p class="card-description">{{ editingLink ? 'Update your link details' : 'Create a new link to share' }}</p>
         </div>
+        <div class="card-content">
+          <form (ngSubmit)="saveLink()">
+            <div class="form-group">
+              <label for="title" class="form-label">Link Title</label>
+              <input 
+                type="text" 
+                id="title" 
+                [(ngModel)]="formData.title" 
+                name="title" 
+                required 
+                class="form-input"
+                placeholder="My Website"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="url" class="form-label">Link URL</label>
+              <input 
+                type="url" 
+                id="url" 
+                [(ngModel)]="formData.url" 
+                name="url" 
+                required 
+                class="form-input"
+                placeholder="https://example.com"
+              />
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full" [disabled]="loading">
+              <svg *ngIf="!editingLink" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              {{ loading ? 'Saving...' : (editingLink ? 'Update Link' : 'Add Link') }}
+            </button>
+            <button *ngIf="editingLink" type="button" (click)="cancelEdit()" class="btn btn-secondary btn-full" style="margin-top: 0.5rem;">Cancel</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Links List Card -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Your Links</h2>
+          <p class="card-description">{{ links.length }} link{{ links.length !== 1 ? 's' : '' }} total</p>
+        </div>
+        <div class="card-content">
+          <div *ngIf="links.length === 0" class="empty-state">
+            <p>No links yet. Add your first link above!</p>
+          </div>
+
+          <div class="links-list" *ngIf="links.length > 0">
+            <div 
+              *ngFor="let link of links; let i = index" 
+              class="link-item"
+              draggable="true"
+              (dragstart)="onDragStart($event, i)"
+              (dragover)="onDragOver($event)"
+              (drop)="onDrop($event, i)"
+            >
+              <div class="link-content">
+                <svg class="drag-handle" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="9" cy="5" r="1"></circle>
+                  <circle cx="9" cy="12" r="1"></circle>
+                  <circle cx="9" cy="19" r="1"></circle>
+                  <circle cx="15" cy="5" r="1"></circle>
+                  <circle cx="15" cy="12" r="1"></circle>
+                  <circle cx="15" cy="19" r="1"></circle>
+                </svg>
+                <div class="link-info">
+                  <h4 class="link-title">{{ link.title }}</h4>
+                  <a [href]="link.url" target="_blank" class="link-url">{{ link.url }}</a>
+                  <p class="link-stats">{{ link.clicks || 0 }} clicks</p>
+                </div>
+              </div>
+              <div class="link-actions">
+                <button (click)="editLink(link)" class="btn-icon" title="Edit">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </button>
+                <button (click)="deleteLink(link._id!)" class="btn-icon btn-icon-danger" title="Delete">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Image Cropper Modal -->
+  <div class="modal-overlay" *ngIf="showCropperModal" (click)="cancelCrop()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Crop Your Image</h3>
+        <button class="btn-close" (click)="cancelCrop()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <image-cropper
+          [imageChangedEvent]="imageChangedEvent"
+          [maintainAspectRatio]="true"
+          [aspectRatio]="1"
+          [roundCropper]="true"
+          [resizeToWidth]="300"
+          format="png"
+          (imageCropped)="imageCropped($event)"
+          (imageLoaded)="imageLoaded()"
+          (cropperReady)="cropperReady()"
+          (loadImageFailed)="loadImageFailed()"
+        ></image-cropper>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" (click)="cancelCrop()">Cancel</button>
+        <button class="btn btn-primary" (click)="applyCrop()">Apply</button>
       </div>
     </div>
   </div>

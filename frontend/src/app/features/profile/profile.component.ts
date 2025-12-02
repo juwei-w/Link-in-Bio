@@ -56,7 +56,7 @@ export class ProfileComponent implements OnInit {
   }
 
   goEdit() {
-    // navigate to settings editor for the logged-in user
-    this.router.navigate(["/dashboard/settings"]);
+    // navigate to dashboard (where profile settings are)
+    this.router.navigate(['/dashboard']);
   }
 }

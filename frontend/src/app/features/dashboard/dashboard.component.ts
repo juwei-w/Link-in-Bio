@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { LinksService, Link } from '../../core/services/links.service';
+import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ImageCropperComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -18,8 +19,24 @@ export class DashboardComponent implements OnInit {
   editingLink: Link | null = null;
   formData: Partial<Link> = { title: '', url: '' };
   loading = false;
+  profileLoading = false;
   currentUser: any;
   draggedIndex = -1;
+  
+  // Profile data
+  displayName: string = '';
+  bio: string = '';
+  avatarPreview: string | null = null;
+  
+  // Image cropper data
+  showCropperModal = false;
+  imageChangedEvent: any = '';
+  croppedImage: string = '';
+  
+  // Ref-trigger helper
+  triggerImageSelect(input: HTMLInputElement) {
+    input.click();
+  }
 
   constructor(
     private authService: AuthService,
@@ -31,6 +48,17 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.loadLinks();
+    this.loadUserProfile();
+  }
+
+  loadUserProfile() {
+    this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.displayName = user.displayName || '';
+        this.bio = user.bio || '';
+        this.avatarPreview = user.avatarUrl || null;
+      }
+    });
   }
 
   loadLinks() {
@@ -43,6 +71,18 @@ export class DashboardComponent implements OnInit {
   }
 
   saveLink() {
+    // Validate required fields
+    if (!this.formData.title || !this.formData.url) {
+      alert('Please fill in both title and URL fields');
+      return;
+    }
+    
+    // Basic URL validation
+    if (!this.formData.url.startsWith('http://') && !this.formData.url.startsWith('https://')) {
+      alert('URL must start with http:// or https://');
+      return;
+    }
+    
     this.loading = true;
     
     if (this.editingLink) {
@@ -56,6 +96,7 @@ export class DashboardComponent implements OnInit {
         error: (err) => {
           console.error('Failed to update link', err);
           this.loading = false;
+          alert('Failed to update link. Please try again.');
         }
       });
     } else {
@@ -70,6 +111,7 @@ export class DashboardComponent implements OnInit {
         error: (err) => {
           console.error('Failed to create link', err);
           this.loading = false;
+          alert('Failed to create link. Please try again.');
         }
       });
     }
@@ -79,6 +121,131 @@ export class DashboardComponent implements OnInit {
     this.editingLink = link;
     this.formData = { title: link.title, url: link.url };
     this.showAddForm = false;
+    
+    // Scroll to edit section smoothly
+    setTimeout(() => {
+      const editSection = document.getElementById('link-form-card');
+      if (editSection) {
+        editSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  }
+  
+  updateProfile() {
+    this.profileLoading = true;
+    
+    const profileData: any = {
+      displayName: this.displayName,
+      bio: this.bio
+    };
+    
+    // If avatar preview exists, save it as avatarUrl
+    if (this.avatarPreview) {
+      profileData.avatarUrl = this.avatarPreview;
+    }
+    
+    this.authService.updateProfile(profileData).subscribe({
+      next: (user) => {
+        this.profileLoading = false;
+        alert('Profile updated successfully!');
+        console.log('Profile updated:', user);
+      },
+      error: (err) => {
+        this.profileLoading = false;
+        console.error('Failed to update profile', err);
+        alert('Failed to update profile. Please try again.');
+      }
+    });
+  }
+
+  onFileSelected(event: Event) {
+    this.imageChangedEvent = event;
+    this.showCropperModal = true;
+  }
+
+  imageCropped(event: ImageCroppedEvent) {
+    if (event.base64) {
+      this.croppedImage = event.base64;
+    } else if (event.blob) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        this.croppedImage = reader.result as string;
+      };
+      reader.readAsDataURL(event.blob);
+    } else {
+      this.croppedImage = '';
+    }
+  }
+
+  imageLoaded() {
+    // Image loaded successfully
+  }
+
+  cropperReady() {
+    // Cropper ready
+  }
+
+  loadImageFailed() {
+    alert('Failed to load image. Please try another file.');
+    this.cancelCrop();
+  }
+
+  applyCrop() {
+    if (this.croppedImage) {
+      this.avatarPreview = this.croppedImage;
+      
+      // Upload to Cloudinary via backend
+      this.profileLoading = true;
+      this.authService.updateProfile({
+        displayName: this.displayName,
+        bio: this.bio,
+        avatarUrl: this.croppedImage
+      }).subscribe({
+        next: (user) => {
+          this.profileLoading = false;
+          this.currentUser = this.authService.getCurrentUser();
+          // Update preview with Cloudinary URL
+          this.avatarPreview = user.avatarUrl || null;
+        },
+        error: (err) => {
+          this.profileLoading = false;
+          console.error('Failed to update profile picture', err);
+          alert('Failed to save profile picture. Please try again.');
+        }
+      });
+    }
+    this.showCropperModal = false;
+    this.imageChangedEvent = '';
+  }
+
+  cancelCrop() {
+    this.showCropperModal = false;
+    this.imageChangedEvent = '';
+  }
+
+  removeAvatar() {
+    if (!confirm('Are you sure you want to remove your profile picture?')) {
+      return;
+    }
+    
+    this.avatarPreview = null;
+    this.croppedImage = '';
+    
+    this.profileLoading = true;
+    this.authService.updateProfile({
+      displayName: this.displayName,
+      bio: this.bio,
+      avatarUrl: ''
+    }).subscribe({
+      next: (user) => {
+        this.profileLoading = false;
+        this.currentUser = this.authService.getCurrentUser();
+      },
+      error: (err) => {
+        this.profileLoading = false;
+        alert('Failed to remove profile picture. Please try again.');
+      }
+    });
   }
 
   deleteLink(id: string) {
@@ -127,5 +294,12 @@ export class DashboardComponent implements OnInit {
   logout() {
     this.authService.logout();
     this.router.navigate(['/']);
+  }
+
+  getProfileUrl(): string {
+    if (typeof window !== 'undefined') {
+      return `${window.location.origin}/${this.currentUser?.username}`;
+    }
+    return `/${this.currentUser?.username}`;
   }
 }
