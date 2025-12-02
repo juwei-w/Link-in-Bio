@@ -9,10 +9,12 @@ serviceAccountKey.json
 
 # Frontend build
 frontend/dist/
+frontend/.angular/
+frontend/.angular/cache/
+
+# Project docs (remove these lines if you want to track them)
 Project-Idea.md
 Readme-Guidelines.md
 frontend/src/environments/
 
 prompts/
-node_modules/
-# docs/dev/
