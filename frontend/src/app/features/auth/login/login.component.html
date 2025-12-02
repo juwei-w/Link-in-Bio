@@ -34,6 +34,7 @@
             [attr.aria-pressed]="showPassword"
             aria-label="Toggle password visibility"
           >
+            <!-- Eye closed (password hidden) -->
             <svg
               *ngIf="!showPassword"
               width="20"
@@ -43,22 +44,21 @@
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7z"
-                stroke="#0f172a"
-                stroke-width="1.2"
+                d="M3 3l18 18M10.584 10.587a2 2 0 0 0 2.828 2.83"
+                stroke="currentColor"
+                stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
               />
-              <circle
-                cx="12"
-                cy="12"
-                r="3"
-                stroke="#0f172a"
-                stroke-width="1.2"
+              <path
+                d="M9.363 5.365A9.466 9.466 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.363 2.077M6.637 6.637A9.466 9.466 0 0 0 2 12s3 7 10 7a9.466 9.466 0 0 1 5.363-1.363"
+                stroke="currentColor"
+                stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
               />
             </svg>
+            <!-- Eye open (password visible) -->
             <svg
               *ngIf="showPassword"
               width="20"
@@ -68,23 +68,18 @@
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                d="M3 3l18 18"
-                stroke="#0f172a"
-                stroke-width="1.2"
+                d="M1 12s3-7 11-7 11 7 11 7-3 7-11 7-11-7-11-7z"
+                stroke="currentColor"
+                stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
               />
-              <path
-                d="M10.58 10.58A3 3 0 0 0 13.42 13.42"
-                stroke="#0f172a"
-                stroke-width="1.2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M14.12 14.12C13.14 14.79 12.06 15.14 11 15.14c-5 0-9.27-3.11-11-7 1.03-2.32 2.7-4.2 4.64-5.45"
-                stroke="#0f172a"
-                stroke-width="1.2"
+              <circle
+                cx="12"
+                cy="12"
+                r="3"
+                stroke="currentColor"
+                stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
               />
