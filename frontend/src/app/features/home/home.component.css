@@ -59,16 +59,62 @@ body.dark-mode .navbar {
   margin: 0 auto;
 }
 
-.logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  letter-spacing: -0.02em;
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   transition: var(--transition);
 }
 
-.logo:hover {
+.logo-container:hover {
   transform: scale(1.05);
+}
+
+.logo-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, hsl(14 100% 64%), hsl(330 85% 65%));
+  box-shadow: 0 0 15px hsl(14 100% 70% / 0.4);
+  color: white;
+  animation: pulseGlow 2s;
+  transition: var(--transition);
+}
+
+.logo-container:hover .logo-icon {
+  box-shadow: 0 0 20px hsl(14 100% 70% / 0.6);
+  transform: rotate(5deg) scale(1.05);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 15px hsl(14 100% 70% / 0.4);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 25px hsl(14 100% 70% / 0.6);
+  }
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-light);
+  letter-spacing: -0.02em;
+  transition: var(--transition);
 }
 
 .nav-links {
@@ -171,12 +217,26 @@ body.dark-mode .icon-dark {
 }
 
 .hero {
-  padding: 8rem var(--spacing-xl) 10rem;
+  padding: 4rem var(--spacing-xl) 8rem;
   text-align: center;
   max-width: 1000px;
   margin: 0 auto;
   position: relative;
   z-index: 1;
+}
+
+.hero-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  box-shadow: var(--shadow-glow);
+  color: white;
+  margin-bottom: 1.5rem;
+  animation: pulse 3s cubic-bezier(0.2, 0, 0.6, 3) infinite;
 }
 
 .hero-title {
@@ -185,11 +245,15 @@ body.dark-mode .icon-dark {
   margin-bottom: 1.5rem;
   line-height: 1.1;
   letter-spacing: -0.03em;
-  background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A5B4FC 100%);
+  color: var(--color-text-light);
+  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, hsl(14 100% 64%), hsl(330 85% 65%));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .hero-subtitle {
@@ -345,7 +409,7 @@ body.dark-mode .icon-dark {
   }
 
   .hero {
-    padding: 5rem var(--spacing-lg) 6rem;
+    padding: 3rem var(--spacing-lg) 5rem;
   }
 
   .hero-subtitle {

@@ -1,10 +1,17 @@
 <div class="home-container">
   <nav class="navbar">
     <div class="container nav-content">
-      <h1 class="logo">LinkShare</h1>
+      <div class="logo-container">
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h1 class="logo">Link-in-Bio</h1>
+      </div>
       <div class="nav-links">
-        <a *ngIf="!(authService.currentUser$ | async)" routerLink="/login">Login</a>
-        <a *ngIf="!(authService.currentUser$ | async)" routerLink="/signup" class="btn">Sign Up</a>
+        <a *ngIf="!(authService.currentUser$ | async)" routerLink="/login" class="btn">Sign In</a>
         <a *ngIf="authService.currentUser$ | async" routerLink="/dashboard" class="btn">Dashboard</a>
         <button *ngIf="authService.currentUser$ | async" (click)="logout()" class="btn btn-secondary">Logout</button>
       </div>
@@ -13,17 +20,23 @@
 
   <section class="hero">
     <div class="container hero-content">
-      <h1 class="hero-title">Share Your Links, Your Way</h1>
-      <p class="hero-subtitle">Create a beautiful landing page for all your important links. Perfect for creators, influencers, and professionals.</p>
+      <div class="hero-icon">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h1 class="hero-title">One Link for<br /><span class="gradient-text">Everything You Share</span></h1>
+      <p class="hero-subtitle">Create a beautiful landing page for all your links. Share your social media, portfolio, store, and more—all in one place.</p>
       <div class="hero-cta">
-        <a routerLink="/signup" class="btn btn-large">Get Started Free</a>
+        <a routerLink="/login" class="btn btn-large">Get Started Free</a>
         <a routerLink="/demo" class="btn-link">View Demo</a>
       </div>
     </div>
   </section>
 
   <section class="features container">
-    <h2>Why LinkShare?</h2>
+    <h2>Why Link-in-Bio?</h2>
     <p class="features-subtitle">Everything you need to share your links and grow your audience in one place.</p>
     <div class="features-grid">
       <div class="feature-card card">

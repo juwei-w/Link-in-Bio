@@ -2,7 +2,6 @@ import { Routes } from "@angular/router";
 import { authGuard } from "./core/guards/auth.guard";
 import { HomeComponent } from "./features/home/home.component";
 import { LoginComponent } from "./features/auth/login/login.component";
-import { SignupComponent } from "./features/auth/signup/signup.component";
 import { ForgotComponent } from "./features/auth/forgot/forgot.component";
 import { ResetComponent } from "./features/auth/reset/reset.component";
 import { DashboardComponent } from "./features/dashboard/dashboard.component";
@@ -25,16 +24,17 @@ export const routes: Routes = [
     loadComponent: () => LoginComponent,
   },
   {
+    path: "signup",
+    redirectTo: "/login",
+    pathMatch: "full",
+  },
+  {
     path: "forgot",
     loadComponent: () => ForgotComponent,
   },
   {
     path: "reset-password",
     loadComponent: () => ResetComponent,
-  },
-  {
-    path: "signup",
-    loadComponent: () => SignupComponent,
   },
   {
     path: "dashboard",
