@@ -10,11 +10,15 @@
 }
 
 .auth-container::before {
-  content: '';
+  content: "";
   position: absolute;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 70%
+  );
   border-radius: 50%;
   top: -100px;
   right: -100px;
@@ -22,11 +26,15 @@
 }
 
 .auth-container::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.08) 0%,
+    transparent 70%
+  );
   border-radius: 50%;
   bottom: -100px;
   left: -100px;
@@ -86,27 +94,68 @@
 
 .form-input {
   padding: 1rem 1.25rem;
-  border: 1.5px solid rgba(226, 232, 240, 0.8);
-  border-radius: 1rem;
-  font-size: 1rem;
+  border: 1.5px solid rgba(226, 232, 240, 0.9);
+  border-radius: 12px;
+  height: 44px;
   background-color: rgba(255, 255, 255, 0.9);
   transition: var(--transition);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
   letter-spacing: 0.01em;
+  width: 100%;
+  box-sizing: border-box;
 }
-
+.input-with-toggle {
+  position: relative;
+}
+.input-with-toggle .form-input {
+  /* reserve space for inset icon; slightly smaller to fit inside */
+  padding-right: 48px;
+  position: relative;
+  z-index: 1;
+}
+.toggle-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  padding: 0 12px;
+  background: transparent;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 0 8px 8px 0;
+  z-index: 2;
+}
+.toggle-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  stroke: rgba(15, 23, 42, 0.45);
+}
+.toggle-btn:hover {
+  background: rgba(15, 23, 42, 0.03);
+}
+.toggle-btn:focus {
+  outline: 2px solid rgba(99, 102, 241, 0.12);
+}
+.toggle-btn[aria-pressed="true"] svg {
+  stroke: #4f46e5;
+}
 .form-input:focus {
   outline: none;
   border-color: var(--color-primary);
   background-color: white;
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1), 0 4px 8px rgba(99, 102, 241, 0.15);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1),
+    0 4px 8px rgba(99, 102, 241, 0.15);
   transform: translateY(-1px);
 }
 
 .error-message {
   padding: 1rem 1.25rem;
   background: rgba(254, 226, 226, 0.9);
-  color: #DC2626;
+  color: #dc2626;
   border-radius: 1rem;
   font-size: 0.9375rem;
   border: 1px solid rgba(254, 202, 202, 0.8);
@@ -129,12 +178,17 @@
 
 .divider::before,
 .divider::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   width: 42%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(226, 232, 240, 0.8), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(226, 232, 240, 0.8),
+    transparent
+  );
 }
 
 .divider::before {
@@ -206,7 +260,7 @@
 }
 
 .auth-switch a::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -2px;
   left: 0;
@@ -222,4 +276,18 @@
 
 .auth-switch a:hover {
   color: var(--color-primary-hover);
+}
+
+/* make auth cards consistent height and vertically center content */
+.auth-card {
+  min-height: 640px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (max-width: 720px) {
+  .auth-card {
+    min-height: auto;
+  }
 }

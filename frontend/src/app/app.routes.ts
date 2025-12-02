@@ -1,42 +1,57 @@
-import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
-import { HomeComponent } from './features/home/home.component';
-import { LoginComponent } from './features/auth/login/login.component';
-import { SignupComponent } from './features/auth/signup/signup.component';
-import { DashboardComponent } from './features/dashboard/dashboard.component';
-import { SettingsComponent } from './features/dashboard/settings/settings.component';
-import { ProfileComponent } from './features/profile/profile.component';
+import { Routes } from "@angular/router";
+import { authGuard } from "./core/guards/auth.guard";
+import { HomeComponent } from "./features/home/home.component";
+import { LoginComponent } from "./features/auth/login/login.component";
+import { SignupComponent } from "./features/auth/signup/signup.component";
+import { ForgotComponent } from "./features/auth/forgot/forgot.component";
+import { ResetComponent } from "./features/auth/reset/reset.component";
+import { DashboardComponent } from "./features/dashboard/dashboard.component";
+import { SettingsComponent } from "./features/dashboard/settings/settings.component";
+import { ProfileComponent } from "./features/profile/profile.component";
+import { DemoComponent } from "./features/demo/demo.component";
 
 export const routes: Routes = [
   {
-    path: '',
-    redirectTo: '/home',
-    pathMatch: 'full'
+    path: "",
+    redirectTo: "/home",
+    pathMatch: "full",
   },
   {
-    path: 'home',
-    loadComponent: () => HomeComponent
+    path: "home",
+    loadComponent: () => HomeComponent,
   },
   {
-    path: 'login',
-    loadComponent: () => LoginComponent
+    path: "login",
+    loadComponent: () => LoginComponent,
   },
   {
-    path: 'signup',
-    loadComponent: () => SignupComponent
+    path: "forgot",
+    loadComponent: () => ForgotComponent,
   },
   {
-    path: 'dashboard',
+    path: "reset-password",
+    loadComponent: () => ResetComponent,
+  },
+  {
+    path: "signup",
+    loadComponent: () => SignupComponent,
+  },
+  {
+    path: "dashboard",
     loadComponent: () => DashboardComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
   },
   {
-    path: 'dashboard/settings',
+    path: "dashboard/settings",
     loadComponent: () => SettingsComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
   },
   {
-    path: ':username',
-    loadComponent: () => ProfileComponent
-  }
+    path: "demo",
+    loadComponent: () => DemoComponent,
+  },
+  {
+    path: ":username",
+    loadComponent: () => ProfileComponent,
+  },
 ];

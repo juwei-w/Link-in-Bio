@@ -1,17 +1,24 @@
 <div class="profile-container">
   <div *ngIf="loading" class="loading">Loading...</div>
-  
+
   <div *ngIf="!loading && !error" class="profile-content">
     <div class="profile-header">
-      <div class="avatar">{{ (profile?.username || 'U').charAt(0).toUpperCase() }}</div>
-      <h1>{{ '@' + (profile?.username || '') }}</h1>
+      <div class="avatar">
+        {{ (profile?.username || "U").charAt(0).toUpperCase() }}
+      </div>
+      <h1>{{ "@" + (profile?.username || "") }}</h1>
+      <div *ngIf="isOwner" class="owner-actions">
+        <button class="btn btn-ghost" (click)="goEdit()">
+          ✏️ Edit Profile
+        </button>
+      </div>
       <p *ngIf="profile?.bio" class="bio">{{ profile?.bio }}</p>
     </div>
 
     <div class="links-container">
-      <a 
-        *ngFor="let link of profile?.links" 
-        [href]="link.url" 
+      <a
+        *ngFor="let link of profile?.links"
+        [href]="link.url"
         target="_blank"
         rel="noopener noreferrer"
         class="profile-link card"

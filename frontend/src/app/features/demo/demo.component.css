@@ -1,0 +1,56 @@
+.demo-page {
+  padding: 2rem 1rem;
+}
+.demo-card {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+.demo-header {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+.avatar {
+  font-size: 48px;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f3f3f3;
+}
+.meta h2 {
+  margin: 0;
+}
+.username {
+  color: #666;
+  margin: 0.25rem 0;
+}
+.bio {
+  margin: 0.5rem 0 0;
+}
+.links {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.75rem;
+}
+.link-item {
+  padding: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.link-title {
+  font-weight: 600;
+}
+.link-meta {
+  color: #666;
+  font-size: 0.9rem;
+}
+.demo-cta {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}

@@ -1,51 +1,229 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const { init } = require('../firebaseAdmin');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
+const User = require("../models/User");
+const { init } = require("../firebaseAdmin");
+
+// Configure mail transporter (defaults suitable for MailHog)
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || "localhost",
+  port: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT) : 1025,
+  secure: false,
+});
+
+async function sendResetEmail(toEmail, resetUrl) {
+  const from = process.env.EMAIL_FROM || "no-reply@localhost";
+  const subject = "Reset your password";
+  const text = `You requested a password reset. Click the link to reset your password:\n\n${resetUrl}\n\nIf you didn't request this, ignore this email.`;
+  const html = `<p>You requested a password reset. Click the link to reset your password:</p><p><a href="${resetUrl}">${resetUrl}</a></p><p>If you didn't request this, ignore this email.</p>`;
+  try {
+    await transporter.sendMail({ from, to: toEmail, subject, text, html });
+    console.log("Password reset email sent to", toEmail);
+  } catch (err) {
+    console.error("Failed sending reset email:", err && err.message);
+    throw err;
+  }
+}
 
 // POST /api/auth/signup
-router.post('/signup', async (req, res) => {
+router.post("/signup", async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    if (!username || !email || !password) return res.status(400).json({ message: 'Missing fields' });
+    if (!username || !email || !password)
+      return res.status(400).json({ message: "Missing fields" });
 
     // simple validation done by mongoose schema
-    const existing = await User.findOne({ $or: [{ username: username.toLowerCase() }, { email }] });
-    if (existing) return res.status(409).json({ message: 'Username or email already taken' });
+    const existing = await User.findOne({
+      $or: [{ username: username.toLowerCase() }, { email }],
+    });
+    if (existing)
+      return res
+        .status(409)
+        .json({ message: "Username or email already taken" });
 
     const saltRounds = 10;
     const hash = await bcrypt.hash(password, saltRounds);
 
-    const user = new User({ username, email, passwordHash: hash, provider: 'local' });
+    const user = new User({
+      username,
+      email,
+      passwordHash: hash,
+      provider: "local",
+    });
     await user.save();
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.json({ token, user: { id: user._id, username: user.username, email: user.email } });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+    res.json({
+      token,
+      user: { id: user._id, username: user.username, email: user.email },
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
 // POST /api/auth/login
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ message: 'Missing fields' });
+    if (!email || !password)
+      return res.status(400).json({ message: "Missing fields" });
 
     const user = await User.findOne({ email });
-    if (!user || !user.passwordHash) return res.status(401).json({ message: 'Invalid credentials' });
+    if (!user || !user.passwordHash)
+      return res.status(401).json({ message: "Invalid credentials" });
 
     const ok = await bcrypt.compare(password, user.passwordHash);
-    if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
+    if (!ok) return res.status(401).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.json({ token, user: { id: user._id, username: user.username, email: user.email } });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+    res.json({
+      token,
+      user: { id: user._id, username: user.username, email: user.email },
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// POST /api/auth/forgot
+router.post("/forgot", async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: "Missing email" });
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      // respond with success to avoid user enumeration
+      return res.json({
+        message: "If an account exists, a reset email has been sent",
+      });
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = Date.now() + 3600 * 1000; // 1 hour
+    await user.save();
+
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:4200";
+    const resetUrl = `${frontendUrl}/reset-password?token=${token}&email=${encodeURIComponent(
+      email
+    )}`;
+
+    await sendResetEmail(email, resetUrl);
+    res.json({ message: "If an account exists, a reset email has been sent" });
+  } catch (err) {
+    console.error("Forgot password error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// POST /api/auth/reset
+// Body: { email, token, password }
+router.post("/reset", async (req, res) => {
+  try {
+    const { email, token, password } = req.body;
+    if (!email || !token || !password)
+      return res.status(400).json({ message: "Missing fields" });
+
+    const user = await User.findOne({
+      email,
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+    if (!user)
+      return res.status(400).json({ message: "Invalid or expired token" });
+
+    // Prevent reuse of recent passwords (check current + last N entries)
+    const recentLimit = process.env.PASSWORD_HISTORY_LIMIT
+      ? parseInt(process.env.PASSWORD_HISTORY_LIMIT)
+      : 5;
+
+    // helper to check candidate password against a stored hash
+    async function matchesHash(candidate, hash) {
+      try {
+        return await bcrypt.compare(candidate, hash);
+      } catch (e) {
+        return false;
+      }
+    }
+
+    // check against current password
+    if (user.passwordHash) {
+      const isSameAsCurrent = await matchesHash(password, user.passwordHash);
+      if (isSameAsCurrent) {
+        console.log(
+          `Password reset blocked: user ${user.email} attempted to reuse current password`
+        );
+        return res
+          .status(400)
+          .json({
+            message:
+              "New password must not be the same as your current password",
+          });
+      }
+    }
+
+    // check against password history (if any)
+    if (Array.isArray(user.passwordHistory) && user.passwordHistory.length) {
+      for (
+        let i = 0;
+        i < Math.min(user.passwordHistory.length, recentLimit);
+        i++
+      ) {
+        const histHash = user.passwordHistory[i];
+        const isMatch = await matchesHash(password, histHash);
+        if (isMatch) {
+          console.log(
+            `Password reset blocked: user ${user.email} attempted to reuse historical password at index ${i}`
+          );
+          return res.status(400).json({
+            message: `New password must not match your last ${recentLimit} passwords`,
+          });
+        }
+      }
+    }
+
+    const saltRounds = 10;
+    const hash = await bcrypt.hash(password, saltRounds);
+
+    // push current password into history (if exists) and trim history
+    if (user.passwordHash) {
+      // ensure array exists
+      user.passwordHistory = user.passwordHistory || [];
+      // prepend current hash to history
+      user.passwordHistory.unshift(user.passwordHash);
+      // keep only most recent `recentLimit` entries
+      if (user.passwordHistory.length > recentLimit) {
+        user.passwordHistory = user.passwordHistory.slice(0, recentLimit);
+      }
+    }
+
+    // set new password
+    user.passwordHash = hash;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    const jwtToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+    res.json({
+      token: jwtToken,
+      user: { id: user._id, username: user.username, email: user.email },
+    });
+  } catch (err) {
+    console.error("Reset password error:", err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -53,42 +231,53 @@ router.post('/login', async (req, res) => {
 
 // POST /api/auth/firebase
 // Body: { idToken: string }
-router.post('/firebase', async (req, res) => {
+router.post("/firebase", async (req, res) => {
   try {
     const { idToken } = req.body;
-    if (!idToken) return res.status(400).json({ message: 'Missing idToken' });
+    if (!idToken) return res.status(400).json({ message: "Missing idToken" });
 
     const admin = init();
-    if (!admin) return res.status(501).json({ message: 'Firebase Admin not configured on server' });
+    if (!admin)
+      return res
+        .status(501)
+        .json({ message: "Firebase Admin not configured on server" });
 
     // verify token
     let decoded;
     try {
       decoded = await admin.auth().verifyIdToken(idToken);
-      console.log('Firebase token decoded:', { uid: decoded.uid, email: decoded.email, name: decoded.name });
+      console.log("Firebase token decoded:", {
+        uid: decoded.uid,
+        email: decoded.email,
+        name: decoded.name,
+      });
     } catch (verifyError) {
-      console.error('Token verification failed:', verifyError.code, verifyError.message);
-      return res.status(401).json({ 
-        message: 'Invalid Firebase token', 
+      console.error(
+        "Token verification failed:",
+        verifyError.code,
+        verifyError.message
+      );
+      return res.status(401).json({
+        message: "Invalid Firebase token",
         error: verifyError.message,
-        code: verifyError.code 
+        code: verifyError.code,
       });
     }
 
     const providerId = decoded.uid;
     const email = decoded.email;
     // Replace spaces with hyphens and clean username
-    const usernameBase = (decoded.name || email || 'user')
+    const usernameBase = (decoded.name || email || "user")
       .toLowerCase()
-      .replace(/\s+/g, '-')  // Replace spaces with hyphens
-      .split('@')[0]         // Take part before @ if email
-      .replace(/[^a-z0-9_-]/gi, '');  // Remove invalid characters
+      .replace(/\s+/g, "-") // Replace spaces with hyphens
+      .split("@")[0] // Take part before @ if email
+      .replace(/[^a-z0-9_-]/gi, ""); // Remove invalid characters
 
     // find or create local user
     let user = await User.findOne({ $or: [{ providerId }, { email }] });
     if (!user) {
       // create a unique username by appending random suffix if needed
-      let username = usernameBase.slice(0, 12) || 'user';
+      let username = usernameBase.slice(0, 12) || "user";
       // Ensure username is at least 3 characters (mongoose validation requirement)
       if (username.length < 3) {
         username = username + Math.floor(Math.random() * 1000);
@@ -99,26 +288,48 @@ router.post('/firebase', async (req, res) => {
         i += 1;
         attempt = `${username}${i}`;
       }
-      user = new User({ username: attempt, email, provider: 'firebase', providerId });
+      user = new User({
+        username: attempt,
+        email,
+        provider: "firebase",
+        providerId,
+      });
       await user.save();
-      console.log('Created new user:', { username: user.username, email: user.email, providerId: user.providerId });
+      console.log("Created new user:", {
+        username: user.username,
+        email: user.email,
+        providerId: user.providerId,
+      });
     } else {
       // if found by email but no providerId, set it
       if (!user.providerId) {
-        user.provider = 'firebase';
+        user.provider = "firebase";
         user.providerId = providerId;
         await user.save();
-        console.log('Updated existing user with providerId:', { username: user.username, email: user.email, providerId: user.providerId });
+        console.log("Updated existing user with providerId:", {
+          username: user.username,
+          email: user.email,
+          providerId: user.providerId,
+        });
       } else {
-        console.log('Found existing user:', { username: user.username, email: user.email, providerId: user.providerId });
+        console.log("Found existing user:", {
+          username: user.username,
+          email: user.email,
+          providerId: user.providerId,
+        });
       }
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.json({ token, user: { id: user._id, username: user.username, email: user.email } });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+    res.json({
+      token,
+      user: { id: user._id, username: user.username, email: user.email },
+    });
   } catch (err) {
-    console.error('Firebase auth exchange error:', err);
-    res.status(500).json({ message: 'Server error during authentication' });
+    console.error("Firebase auth exchange error:", err);
+    res.status(500).json({ message: "Server error during authentication" });
   }
 });
 

@@ -1,0 +1,37 @@
+<div class="auth-container">
+  <div class="auth-card" role="region" aria-labelledby="forgot-title">
+    <h1 id="forgot-title" class="title">Forgot Password</h1>
+    <p class="subtitle">
+      Enter your email and we'll send a secure reset link to your inbox.
+    </p>
+
+    <form (ngSubmit)="submit()" class="forgot-form" novalidate>
+      <div class="form-row">
+        <label for="email" class="label"><strong>Email:</strong></label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          required
+          [(ngModel)]="email"
+          class="form-input"
+          placeholder="you@example.com"
+          aria-required="true"
+        />
+      </div>
+
+      <div *ngIf="message" class="message" role="status">{{ message }}</div>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="loading || !email"
+      >
+        <span *ngIf="!loading">Send Reset Email</span>
+        <span *ngIf="loading">Sending...</span>
+      </button>
+    </form>
+
+    <p class="auth-switch"><a routerLink="/login">Back to Login</a></p>
+  </div>
+</div>

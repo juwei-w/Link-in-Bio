@@ -1,0 +1,26 @@
+<div class="demo-page container">
+  <div class="demo-card card">
+    <div class="demo-header">
+      <div class="avatar">👤</div>
+      <div class="meta">
+        <h2>{{ demoProfile.displayName }}</h2>
+        <p class="username">{{ "@" + demoProfile.username }}</p>
+        <p class="bio">{{ demoProfile.bio }}</p>
+      </div>
+    </div>
+
+    <div class="links">
+      <div *ngFor="let link of demoProfile.links" class="link-item card">
+        <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">
+          <div class="link-title">{{ link.title }}</div>
+          <div class="link-meta">Clicks: {{ link.clicks }}</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="demo-cta">
+      <a routerLink="/signup" class="btn btn-large">Create Your Free Profile</a>
+      <a routerLink="/home" class="btn btn-secondary">Back to Home</a>
+    </div>
+  </div>
+</div>

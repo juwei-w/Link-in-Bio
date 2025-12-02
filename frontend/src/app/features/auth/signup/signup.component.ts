@@ -1,44 +1,46 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
+import { Component } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { Router, RouterLink } from "@angular/router";
+import { AuthService } from "../../../core/services/auth.service";
 
 @Component({
-  selector: 'app-signup',
+  selector: "app-signup",
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
-  templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.css']
+  templateUrl: "./signup.component.html",
+  styleUrls: ["./signup.component.css"],
 })
 export class SignupComponent {
-  username = '';
-  email = '';
-  password = '';
+  username = "";
+  email = "";
+  password = "";
+  showPassword = false;
   loading = false;
-  error = '';
+  error = "";
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   async onSubmit() {
     this.loading = true;
-    this.error = '';
+    this.error = "";
+
+    // proceed with signup (no confirm-password check client-side)
 
     try {
-      this.authService.signup(this.username, this.email, this.password).subscribe({
-        next: () => {
-          this.router.navigate(['/dashboard']);
-        },
-        error: (err) => {
-          this.error = err.error?.message || 'Signup failed';
-          this.loading = false;
-        }
-      });
+      this.authService
+        .signup(this.username, this.email, this.password)
+        .subscribe({
+          next: () => {
+            this.router.navigate(["/dashboard"]);
+          },
+          error: (err) => {
+            this.error = err.error?.message || "Signup failed";
+            this.loading = false;
+          },
+        });
     } catch (err: any) {
-      this.error = err.message || 'Signup failed';
+      this.error = err.message || "Signup failed";
       this.loading = false;
     }
   }
@@ -46,18 +48,13 @@ export class SignupComponent {
   async googleSignup() {
     try {
       await this.authService.googleLogin();
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(["/dashboard"]);
     } catch (err: any) {
-      this.error = err.message || 'Google signup failed';
+      this.error = err.message || "Google signup failed";
     }
   }
 
-  async githubSignup() {
-    try {
-      await this.authService.githubLogin();
-      this.router.navigate(['/dashboard']);
-    } catch (err: any) {
-      this.error = err.message || 'GitHub signup failed';
-    }
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 }
