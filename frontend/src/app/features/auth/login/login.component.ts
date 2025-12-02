@@ -12,6 +12,8 @@ import { AuthService } from "../../../core/services/auth.service";
   styleUrls: ["./login.component.css"],
 })
 export class LoginComponent {
+  isSignUp = false; // Toggle between sign in and sign up
+  username = "";
   email = "";
   password = "";
   showPassword = false;
@@ -25,17 +27,33 @@ export class LoginComponent {
     this.error = "";
 
     try {
-      this.authService.login(this.email, this.password).subscribe({
-        next: () => {
-          this.router.navigate(["/dashboard"]);
-        },
-        error: (err) => {
-          this.error = err.error?.message || "Login failed";
-          this.loading = false;
-        },
-      });
+      if (this.isSignUp) {
+        // Sign up
+        this.authService
+          .signup(this.username, this.email, this.password)
+          .subscribe({
+            next: () => {
+              this.router.navigate(["/dashboard"]);
+            },
+            error: (err) => {
+              this.error = err.error?.message || "Sign up failed";
+              this.loading = false;
+            },
+          });
+      } else {
+        // Sign in
+        this.authService.login(this.email, this.password).subscribe({
+          next: () => {
+            this.router.navigate(["/dashboard"]);
+          },
+          error: (err) => {
+            this.error = err.error?.message || "Login failed";
+            this.loading = false;
+          },
+        });
+      }
     } catch (err: any) {
-      this.error = err.message || "Login failed";
+      this.error = err.message || (this.isSignUp ? "Sign up failed" : "Login failed");
       this.loading = false;
     }
   }

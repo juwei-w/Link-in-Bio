@@ -1,9 +1,43 @@
 <div class="auth-container">
   <div class="auth-card card">
-    <h1>Welcome Back</h1>
-    <p class="subtitle">Log in to your account</p>
+    <h1>Welcome</h1>
+    <p class="subtitle">Sign in or create a new account to get started</p>
+
+    <!-- Toggle Buttons -->
+    <div class="auth-toggle">
+      <button 
+        type="button" 
+        class="toggle-option" 
+        [class.active]="!isSignUp"
+        (click)="isSignUp = false; error = ''"
+      >
+        Sign In
+      </button>
+      <button 
+        type="button" 
+        class="toggle-option" 
+        [class.active]="isSignUp"
+        (click)="isSignUp = true; error = ''"
+      >
+        Sign Up
+      </button>
+    </div>
 
     <form (ngSubmit)="onSubmit()" class="auth-form">
+      <!-- Username field - only for sign up -->
+      <div class="form-group" *ngIf="isSignUp">
+        <label for="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          [(ngModel)]="username"
+          name="username"
+          [required]="isSignUp"
+          class="form-input"
+          placeholder="Enter your username"
+        />
+      </div>
+
       <div class="form-group">
         <label for="email">Email</label>
         <input
@@ -13,6 +47,7 @@
           name="email"
           required
           class="form-input"
+          [placeholder]="isSignUp ? 'Enter your email' : 'your@email.com'"
         />
       </div>
 
@@ -26,6 +61,8 @@
             name="password"
             required
             class="form-input"
+            [placeholder]="isSignUp ? 'Minimum 6 characters' : '••••••'"
+            [minlength]="isSignUp ? 6 : 0"
           />
           <button
             type="button"
@@ -91,7 +128,7 @@
       <div *ngIf="error" class="error-message">{{ error }}</div>
 
       <button type="submit" class="btn btn-full" [disabled]="loading">
-        {{ loading ? "Logging in..." : "Log In" }}
+        {{ loading ? (isSignUp ? "Creating account..." : "Signing in...") : (isSignUp ? "Sign Up" : "Sign In") }}
       </button>
     </form>
 
@@ -121,12 +158,9 @@
         </svg>
         Continue with Google
       </button>
-      <!-- GitHub login removed -->
     </div>
 
-    <p class="auth-switch">
-      Don't have an account? <a routerLink="/signup">Sign up</a>
-      <br />
+    <p class="auth-switch" *ngIf="!isSignUp">
       <a routerLink="/forgot">Forgot your password?</a>
     </p>
   </div>
