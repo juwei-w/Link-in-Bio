@@ -1,38 +1,10 @@
 <div class="settings-container">
-  <nav *ngIf="authService.isAuthenticated()" class="navbar">
+  <nav class="navbar">
     <div class="container nav-content">
       <h1 class="logo">LinkShare</h1>
       <div class="nav-links">
-        <span class="username">{{
-          authService.getCurrentUser()?.username
-        }}</span>
-        <a
-          [href]="'/' + authService.getCurrentUser()?.username"
-          target="_blank"
-          class="btn btn-ghost"
-          >View Profile</a
-        >
-        <a routerLink="/dashboard/settings" class="btn btn-ghost">Settings</a>
-        <button (click)="logout()" class="btn btn-secondary">Logout</button>
-      </div>
-    </div>
-    <div class="subnav">
-      <div class="container subnav-content">
-        <ul class="tabs">
-          <li class="tab">Links</li>
-          <li class="tab">Appearance</li>
-          <li class="tab">Analytics</li>
-          <li class="tab active">Settings</li>
-        </ul>
-        <div class="subnav-actions">
-          <a class="btn btn-sm" routerLink="/dashboard">+ New Link</a>
-          <a
-            class="btn btn-sm btn-outline"
-            href="#"
-            (click)="$event.preventDefault()"
-            >Share</a
-          >
-        </div>
+        <button (click)="goBack()" class="btn-link">← Back to Dashboard</button>
+        <button (click)="goBack()" class="btn btn-secondary">Cancel</button>
       </div>
     </div>
   </nav>
@@ -60,17 +32,15 @@
         <!-- Avatar URL -->
         <div class="form-group">
           <label for="avatarUrl">Profile Picture URL</label>
-          <input
-            type="url"
-            id="avatarUrl"
-            [(ngModel)]="profile.avatarUrl"
-            name="avatarUrl"
+          <input 
+            type="url" 
+            id="avatarUrl" 
+            [(ngModel)]="profile.avatarUrl" 
+            name="avatarUrl" 
             class="form-input"
             placeholder="https://example.com/avatar.jpg"
           />
-          <small class="form-hint"
-            >Link to your profile picture (optional)</small
-          >
+          <small class="form-hint">Link to your profile picture (optional)</small>
           <div *ngIf="profile.avatarUrl" class="avatar-preview">
             <img [src]="profile.avatarUrl" alt="Avatar preview" />
           </div>
@@ -79,31 +49,27 @@
         <!-- Username -->
         <div class="form-group">
           <label for="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            [(ngModel)]="profile.username"
-            name="username"
-            required
+          <input 
+            type="text" 
+            id="username" 
+            [(ngModel)]="profile.username" 
+            name="username" 
+            required 
             class="form-input"
             placeholder="your-username"
             pattern="[a-zA-Z0-9_-]{3,16}"
           />
-          <small class="form-hint"
-            >Your unique URL: linkshare.app/{{
-              profile.username || "username"
-            }}</small
-          >
+          <small class="form-hint">Your unique URL: linkshare.app/{{ profile.username || 'username' }}</small>
         </div>
 
         <!-- Display Name -->
         <div class="form-group">
           <label for="displayName">Display Name</label>
-          <input
-            type="text"
-            id="displayName"
-            [(ngModel)]="profile.displayName"
-            name="displayName"
+          <input 
+            type="text" 
+            id="displayName" 
+            [(ngModel)]="profile.displayName" 
+            name="displayName" 
             class="form-input"
             placeholder="John Doe"
           />
@@ -113,27 +79,25 @@
         <!-- Bio -->
         <div class="form-group">
           <label for="bio">Bio</label>
-          <textarea
-            id="bio"
-            [(ngModel)]="profile.bio"
-            name="bio"
+          <textarea 
+            id="bio" 
+            [(ngModel)]="profile.bio" 
+            name="bio" 
             class="form-input"
             rows="4"
             placeholder="Tell people about yourself..."
             maxlength="200"
           ></textarea>
-          <small class="form-hint"
-            >{{ (profile.bio || "").length }}/200 characters</small
-          >
+          <small class="form-hint">{{ (profile.bio || '').length }}/200 characters</small>
         </div>
 
         <!-- Theme Preference -->
         <div class="form-group">
           <label for="theme">Theme Preference</label>
-          <select
-            id="theme"
-            [(ngModel)]="profile.theme"
-            name="theme"
+          <select 
+            id="theme" 
+            [(ngModel)]="profile.theme" 
+            name="theme" 
             class="form-input"
           >
             <option value="light">Light</option>
@@ -145,7 +109,7 @@
         <!-- Submit Button -->
         <div class="form-actions">
           <button type="submit" class="btn btn-large" [disabled]="saving">
-            {{ saving ? "Saving..." : "Save Changes" }}
+            {{ saving ? 'Saving...' : 'Save Changes' }}
           </button>
         </div>
       </form>
