@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
+import { Router } from "@angular/router";
 import { BehaviorSubject, Observable, tap } from "rxjs";
 import { environment } from "../../../environments/environment";
 import { initializeApp } from "firebase/app";
@@ -31,7 +32,7 @@ export class AuthService {
   public currentUser$ = this.currentUserSubject.asObservable();
   private firebaseAuth;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     // Initialize Firebase
     const app = initializeApp(environment.firebase);
     this.firebaseAuth = getAuth(app);
@@ -131,6 +132,7 @@ export class AuthService {
     localStorage.removeItem("user");
     this.currentUserSubject.next(null);
     signOut(this.firebaseAuth);
+    this.router.navigate(['/']);
   }
 
   // Helper to set auth data
