@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { LinksService, Link } from '../../core/services/links.service';
 import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
@@ -9,7 +9,7 @@ import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, ImageCropperComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ImageCropperComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })

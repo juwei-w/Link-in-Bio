@@ -1,0 +1,122 @@
+<div class="analytics-container">
+  <!-- Header -->
+  <div class="analytics-header">
+    <div class="header-content">
+      <div class="header-text">
+        <h1 class="page-title">Analytics Dashboard</h1>
+        <p class="page-subtitle">Track your link performance and engagement</p>
+      </div>
+      <a routerLink="/dashboard" class="btn btn-secondary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Back to Dashboard
+      </a>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">
+    <div class="loading-spinner">
+      <svg width="48" height="48" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.25"/>
+        <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <p>Loading analytics...</p>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading" class="analytics-content">
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+      <div class="summary-card card">
+        <div class="summary-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+        </div>
+        <div class="summary-details">
+          <h3 class="summary-label">Total Clicks</h3>
+          <p class="summary-value">{{ summary.totalClicks }}</p>
+        </div>
+      </div>
+
+      <div class="summary-card card">
+        <div class="summary-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+        </div>
+        <div class="summary-details">
+          <h3 class="summary-label">Total Links</h3>
+          <p class="summary-value">{{ summary.totalLinks }}</p>
+        </div>
+      </div>
+
+      <div class="summary-card card">
+        <div class="summary-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+        </div>
+        <div class="summary-details">
+          <h3 class="summary-label">Avg. Clicks/Link</h3>
+          <p class="summary-value">{{ summary.avgClicksPerLink }}</p>
+        </div>
+      </div>
+
+      <div class="summary-card card highlight" *ngIf="summary.mostClickedLink">
+        <div class="summary-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+        </div>
+        <div class="summary-details">
+          <h3 class="summary-label">Top Performer</h3>
+          <p class="summary-value-small">{{ summary.mostClickedLink.title }}</p>
+          <p class="summary-subtext">{{ summary.mostClickedLink.clicks }} clicks</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Links Performance -->
+    <div class="performance-section card">
+      <div class="section-header">
+        <h2 class="section-title">Link Performance</h2>
+        <p class="section-subtitle">Click distribution across all your links</p>
+      </div>
+
+      <div *ngIf="links.length === 0" class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <p>No links yet. Create your first link in the dashboard!</p>
+      </div>
+
+      <div *ngIf="links.length > 0" class="links-list">
+        <div *ngFor="let link of links; let i = index" class="link-item">
+          <div class="link-rank">{{ i + 1 }}</div>
+          <div class="link-info">
+            <h3 class="link-title">{{ link.title }}</h3>
+            <p class="link-url">{{ link.url }}</p>
+          </div>
+          <div class="link-stats">
+            <div class="stat-bar-container">
+              <div class="stat-bar" [style.width]="getBarWidth(link.clicks || 0)"></div>
+            </div>
+            <div class="stat-values">
+              <span class="stat-clicks">{{ link.clicks || 0 }} clicks</span>
+              <span class="stat-percentage">{{ getClickPercentage(link.clicks || 0) }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
