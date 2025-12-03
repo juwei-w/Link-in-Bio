@@ -38,8 +38,9 @@ router.get('/profile/:username', async (req, res) => {
     res.json({
       username: user.username,
       email: user.email,
+      displayName: user.displayName,
       bio: user.bio,
-      avatar: user.avatarUrl,
+      avatarUrl: user.avatarUrl,
       links
     });
   } catch (err) {
