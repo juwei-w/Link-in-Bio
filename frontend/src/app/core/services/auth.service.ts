@@ -155,6 +155,17 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
+  // Fetch complete user profile from backend
+  getProfile(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/me`).pipe(
+      tap((user) => {
+        // Update stored user data with complete profile
+        localStorage.setItem('user', JSON.stringify(user));
+        this.currentUserSubject.next(user);
+      })
+    );
+  }
+
   // Update user profile
   updateProfile(profileData: { displayName?: string; bio?: string; avatarUrl?: string }): Observable<any> {
     return this.http.put(`${this.apiUrl}/users/me`, profileData).pipe(

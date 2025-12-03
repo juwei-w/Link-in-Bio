@@ -52,12 +52,15 @@ export class DashboardComponent implements OnInit {
   }
 
   loadUserProfile() {
-    this.authService.currentUser$.subscribe(user => {
-      if (user) {
+    // Fetch complete user profile from backend
+    this.authService.getProfile().subscribe({
+      next: (user) => {
         this.displayName = user.displayName || '';
         this.bio = user.bio || '';
         this.avatarPreview = user.avatarUrl || null;
-      }
+        this.currentUser = user;
+      },
+      error: (err) => console.error('Failed to fetch profile', err)
     });
   }
 
