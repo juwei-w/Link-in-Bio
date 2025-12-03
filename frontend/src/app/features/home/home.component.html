@@ -27,15 +27,15 @@
         </svg>
       </div>
       <h1 class="hero-title">One Link for<br /><span class="gradient-text">Everything You Share</span></h1>
-      <p class="hero-subtitle">Create a beautiful landing page for all your links. Share your social media, portfolio, store, and more—all in one place.</p>
+      <p class="hero-subtitle">Share everything in one place. Build your personal landing page and connect your audience to all your content instantly.</p>
       <div class="hero-cta">
         <a routerLink="/login" class="btn btn-large">Get Started Free</a>
-        <a routerLink="/demo" class="btn-link">View Demo</a>
+        <a (click)="scrollToFeatures()" class="btn-link">Learn More</a>
       </div>
     </div>
   </section>
 
-  <section class="features container">
+  <section class="features container" #featuresSection>
     <h2>Why Link-in-Bio?</h2>
     <p class="features-subtitle">Everything you need to share your links and grow your audience in one place.</p>
     <div class="features-grid">
@@ -68,6 +68,16 @@
         <div class="feature-icon">🌐</div>
         <h3>Custom Domain</h3>
         <p>Use your own domain for a professional branded experience.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="container cta-content">
+      <h2 class="cta-title">Ready to Get Started?</h2>
+      <p class="cta-subtitle">Create your Link-in-Bio page in seconds and start sharing your content with the world.</p>
+      <div class="cta-buttons">
+        <a routerLink="/login" class="btn btn-large">Create Yours Now!</a>
       </div>
     </div>
   </section>

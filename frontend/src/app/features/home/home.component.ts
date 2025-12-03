@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
@@ -11,9 +11,15 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent {
+  @ViewChild('featuresSection') featuresSection!: ElementRef;
+
   constructor(public authService: AuthService) {
     // Initialize dark mode from localStorage
     this.initDarkMode();
+  }
+
+  scrollToFeatures() {
+    this.featuresSection.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   logout() {
