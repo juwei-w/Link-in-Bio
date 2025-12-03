@@ -1,0 +1,210 @@
+/* Navbar - matching home page */
+.navbar {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 1px 0 rgba(226, 232, 240, 0.5);
+  padding: 0.75rem 0;
+  min-height: 48px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+}
+
+body.dark-mode .navbar {
+  background: rgba(15, 23, 42, 0.8);
+  box-shadow: 0 1px 0 rgba(51, 65, 85, 0.5);
+  border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+}
+
+.nav-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--spacing-xl);
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.logo-container:hover {
+  transform: scale(1.05);
+}
+
+.logo-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  box-shadow: var(--shadow-glow);
+  color: white;
+  transition: var(--transition);
+}
+
+.logo-container:hover .logo-icon {
+  box-shadow: 0 0 20px hsl(14 100% 70% / 0.6);
+  transform: rotate(5deg) scale(1.05);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-light);
+  letter-spacing: -0.02em;
+  transition: var(--transition);
+}
+
+.nav-links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* Toggle Navigation Group */
+.nav-toggle-group {
+  display: flex;
+  gap: 0;
+  background: rgba(226, 232, 240, 0.4);
+  border-radius: 12px;
+  padding: 0.25rem;
+  position: relative;
+}
+
+.nav-toggle-group::before {
+  content: '';
+  position: absolute;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  left: 0.25rem;
+  width: calc(50% - 0.25rem);
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+  will-change: transform;
+}
+
+body.dark-mode .nav-toggle-group::before {
+  background: rgba(30, 41, 59, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Slide to Analytics (right) when analytics page is active */
+.nav-toggle-group.analytics-active::before {
+  transform: translateX(calc(100% + 0.5rem));
+}
+
+body.dark-mode .nav-toggle-group {
+  background: rgba(51, 65, 85, 0.4);
+}
+
+.nav-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  border-radius: 10px;
+  transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  position: relative;
+  z-index: 1;
+}
+
+.nav-toggle-btn svg {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease;
+}
+
+.nav-toggle-btn:hover {
+  color: var(--color-text-light);
+}
+
+.nav-toggle-btn:hover svg {
+  transform: scale(1.1);
+}
+
+body.dark-mode .nav-toggle-btn {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+body.dark-mode .nav-toggle-btn:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.nav-toggle-btn.active {
+  color: var(--color-text-light);
+}
+
+.nav-toggle-btn.active svg {
+  transform: scale(1.05);
+}
+
+body.dark-mode .nav-toggle-btn.active {
+  color: white;
+}
+
+.btn-gradient {
+  display: inline-flex;
+  align-items: center;
+  background: var(--gradient-primary);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-radius: 0.875rem;
+  transition: var(--transition);
+  font-size: 0.9375rem;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 0 20px hsla(14, 100%, 70%, 0.3);
+  border: none;
+}
+
+.btn-gradient:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px hsla(14, 100%, 70%, 0.5), 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-gradient:active {
+  transform: translateY(0);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  padding: 0.625rem 1.25rem;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  transition: var(--transition);
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.btn-ghost:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--color-text-light);
+}
+
+body.dark-mode .btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
