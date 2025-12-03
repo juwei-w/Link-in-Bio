@@ -169,12 +169,26 @@ router.get('/:id/analytics', auth, async (req, res) => {
     // Calculate geography stats
     const countryStats = {};
     const cityStats = {};
+    // Device & platform stats (per link)
+    const deviceStats = {};
+    const platformStats = {};
     recentClicks.forEach(click => {
       if (click.country) {
         countryStats[click.country] = (countryStats[click.country] || 0) + 1;
       }
       if (click.city) {
         cityStats[click.city] = (cityStats[click.city] || 0) + 1;
+      }
+      // Derive device from UA
+      const ua = (click.userAgent || '').toLowerCase();
+      const isMobile = /iphone|android|mobile/.test(ua);
+      const isTablet = /ipad|tablet/.test(ua);
+      const deviceType = isTablet ? 'tablet' : (isMobile ? 'mobile' : 'desktop');
+      deviceStats[deviceType] = (deviceStats[deviceType] || 0) + 1;
+      // Platform from referrer
+      const ref = click.referrer || 'direct';
+      if (ref && ref !== 'direct') {
+        platformStats[ref] = (platformStats[ref] || 0) + 1;
       }
     });
     
@@ -187,6 +201,20 @@ router.get('/:id/analytics', auth, async (req, res) => {
       .map(([city, count]) => ({ city, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
+    const devices = Object.entries(deviceStats)
+      .map(([type, count]) => ({ type, count }))
+      .sort((a, b) => b.count - a.count);
+    const platforms = Object.entries(platformStats)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 12);
+
+    // Hourly clicks based on recent clicks
+    const hourlyClicks = Array.from({ length: 24 }, (_, h) => ({ hour: h, count: 0 }));
+    recentClicks.forEach(click => {
+      const h = new Date(click.timestamp).getHours();
+      hourlyClicks[h].count += 1;
+    });
     
     res.json({
       linkId: link._id,
@@ -197,6 +225,9 @@ router.get('/:id/analytics', auth, async (req, res) => {
       topReferrers,
       topCountries,
       topCities,
+      devices,
+      platforms,
+      hourlyClicks,
       lastClickedAt: link.lastClickedAt
     });
   } catch (err) {
@@ -219,6 +250,9 @@ router.get('/analytics/overview', auth, async (req, res) => {
     const dailyData = {};
     const referrerStats = {};
     const countryStats = {};
+    const deviceStats = {};
+    const platformStats = {};
+    const hourlyClicks = Array.from({ length: 24 }, (_, h) => ({ hour: h, count: 0 }));
     
     links.forEach(link => {
       totalClicks += link.clicks || 0;
@@ -240,6 +274,22 @@ router.get('/analytics/overview', auth, async (req, res) => {
         if (click.country) {
           countryStats[click.country] = (countryStats[click.country] || 0) + 1;
         }
+
+        // Device aggregation
+        const ua = (click.userAgent || '').toLowerCase();
+        const isMobile = /iphone|android|mobile/.test(ua);
+        const isTablet = /ipad|tablet/.test(ua);
+        const deviceType = isTablet ? 'tablet' : (isMobile ? 'mobile' : 'desktop');
+        deviceStats[deviceType] = (deviceStats[deviceType] || 0) + 1;
+
+        // Platform aggregation (referrer domain)
+        if (ref && ref !== 'direct') {
+          platformStats[ref] = (platformStats[ref] || 0) + 1;
+        }
+
+        // Hourly aggregation
+        const h = new Date(click.timestamp).getHours();
+        hourlyClicks[h].count += 1;
       });
     });
     
@@ -264,6 +314,13 @@ router.get('/analytics/overview', auth, async (req, res) => {
       .map(([country, count]) => ({ country, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
+    const devices = Object.entries(deviceStats)
+      .map(([type, count]) => ({ type, count }))
+      .sort((a, b) => b.count - a.count);
+    const platforms = Object.entries(platformStats)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 12);
     
     res.json({
       totalClicks,
@@ -273,6 +330,9 @@ router.get('/analytics/overview', auth, async (req, res) => {
       timeSeries: timeSeriesData,
       topReferrers,
       topCountries,
+      devices,
+      platforms,
+      hourlyClicks,
       topPerformers: links
         .map(l => ({ id: l._id, title: l.title, clicks: l.clicks }))
         .sort((a, b) => b.clicks - a.clicks)
@@ -296,7 +356,13 @@ router.post('/:id/click', clickLimiter, async (req, res) => {
     const ipHash = hashIP(ip);
 
     // Geolocation (dev returns nulls; replace with provider for prod)
-    const { country, city } = await getLocationFromIP(ip);
+    let { country, city } = await getLocationFromIP(ip);
+    
+    // For development/localhost, use test data so analytics populate
+    if (!country && (ip === '127.0.0.1' || ip === '::1' || ip?.startsWith('192.168.'))) {
+      country = 'MY'; // Malaysia for testing
+      city = 'Kuala Lumpur';
+    }
 
     // Create click event
     const clickEvent = {

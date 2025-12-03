@@ -77,6 +77,16 @@ export class LinksService {
     return this.http.post<void>(`${this.apiUrl}/links/${id}/click`, {});
   }
 
+  // Analytics overview for current user
+  getAnalyticsOverview(days: number = 30): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/links/analytics/overview?days=${days}`);
+  }
+
+  // Analytics for a specific link
+  getLinkAnalytics(id: string, days: number = 30): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/links/${id}/analytics?days=${days}`);
+  }
+
   // Reorder links
   reorderLinks(links: Link[]): Observable<void> {
     // Update order for each link

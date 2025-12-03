@@ -1,17 +1,15 @@
 <div class="analytics-container">
-  <!-- Header -->
+  <!-- Page Header with Date Filter -->
   <div class="analytics-header">
-    <div class="header-content">
-      <div class="header-text">
-        <h1 class="page-title">Analytics Dashboard</h1>
-        <p class="page-subtitle">Track your link performance and engagement</p>
-      </div>
-      <a routerLink="/dashboard" class="btn btn-secondary">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5M12 19l-7-7 7-7"/>
-        </svg>
-        Back to Dashboard
-      </a>
+    <div class="header-text">
+      <h1 class="page-title">Analytics Dashboard</h1>
+      <p class="page-subtitle">Track your link performance and engagement</p>
+    </div>
+    <div class="date-filter">
+      <label for="days-select">Time Range:</label>
+      <select id="days-select" [(ngModel)]="days" (change)="onDaysChange()" class="days-select">
+        <option *ngFor="let range of dateRanges" [value]="range">{{ range }}d</option>
+      </select>
     </div>
   </div>
 
@@ -81,6 +79,62 @@
           <p class="summary-subtext">{{ summary.mostClickedLink.clicks }} clicks</p>
         </div>
       </div>
+      
+      <div class="summary-card card">
+        <div class="summary-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M10 15l3-3 2 2"></path>
+          </svg>
+        </div>
+        <div class="summary-details">
+          <h3 class="summary-label">CTR</h3>
+          <p class="summary-value">{{ summary.ctrPercent }}%</p>
+          <p class="summary-subtext">Views: {{ profileViewsTotal }}</p>
+        </div>
+      </div>
+
+      <div class="summary-card card">
+        <div class="summary-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </div>
+        <div class="summary-details">
+          <h3 class="summary-label">Unique Visitors</h3>
+          <p class="summary-value">{{ getUniqueVisitors() }}</p>
+        </div>
+      </div>
+
+      <div class="summary-card card">
+        <div class="summary-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+          </svg>
+        </div>
+        <div class="summary-details">
+          <h3 class="summary-label">Mobile Traffic</h3>
+          <p class="summary-value">{{ getMobilePercentage() }}%</p>
+        </div>
+      </div>
+
+      <div class="summary-card card">
+        <div class="summary-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <div class="summary-details">
+          <h3 class="summary-label">Peak Hour</h3>
+          <p class="summary-value-small">{{ getPeakHour() }}</p>
+          <p class="summary-subtext">Most active</p>
+        </div>
+      </div>
     </div>
 
     <!-- Links Performance -->
@@ -115,6 +169,85 @@
               <span class="stat-percentage">{{ getClickPercentage(link.clicks || 0) }}%</span>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overview Analytics -->
+    <div *ngIf="overview" class="overview-grid">
+      <!-- Time Series Chart -->
+      <div class="card chart-card full-width">
+        <div class="section-header">
+          <h2 class="section-title">Traffic Over Time</h2>
+          <p class="section-subtitle">Daily clicks for the last {{ days }} days</p>
+        </div>
+        <div class="chart-container">
+          <canvas #timeSeriesCanvas></canvas>
+        </div>
+      </div>
+
+      <!-- Devices & Platforms Row -->
+      <div class="card chart-card">
+        <div class="section-header">
+          <h2 class="section-title">Device Breakdown</h2>
+          <p class="section-subtitle">Mobile vs Desktop vs Tablet</p>
+        </div>
+        <div class="chart-container chart-small">
+          <canvas #devicesCanvas></canvas>
+        </div>
+        <div *ngIf="!overview.devices || overview.devices.length === 0" class="empty-state-small">
+          No device data yet
+        </div>
+      </div>
+
+      <div class="card chart-card">
+        <div class="section-header">
+          <h2 class="section-title">Top Platforms</h2>
+          <p class="section-subtitle">Traffic sources</p>
+        </div>
+        <div class="chart-container chart-small">
+          <canvas #platformsCanvas></canvas>
+        </div>
+        <div *ngIf="!overview.platforms || overview.platforms.length === 0" class="empty-state-small">
+          No platform data yet
+        </div>
+      </div>
+
+      <!-- Hourly Traffic -->
+      <div class="card chart-card full-width">
+        <div class="section-header">
+          <h2 class="section-title">Hourly Traffic Pattern</h2>
+          <p class="section-subtitle">Peak engagement hours (24-hour format)</p>
+        </div>
+        <div class="chart-container">
+          <canvas #hourlyCanvas></canvas>
+        </div>
+      </div>
+
+      <!-- Top Referrers & Countries -->
+      <div class="card">
+        <div class="section-header">
+          <h2 class="section-title">Top Referrers</h2>
+          <p class="section-subtitle">Where clicks come from</p>
+        </div>
+        <div *ngIf="overview.topReferrers?.length === 0" class="empty-state-small">No referrers yet</div>
+        <div *ngFor="let r of overview.topReferrers" class="dist-row">
+          <div class="dist-label">{{ r.source }}</div>
+          <div class="dist-bar-wrap"><div class="dist-bar" [style.width]="clampPercent(r.count) + '%' "></div></div>
+          <div class="dist-value">{{ r.count }}</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-header">
+          <h2 class="section-title">Top Countries</h2>
+          <p class="section-subtitle">Geographic distribution</p>
+        </div>
+        <div *ngIf="overview.topCountries?.length === 0" class="empty-state-small">No country data yet</div>
+        <div *ngFor="let c of overview.topCountries" class="dist-row">
+          <div class="dist-label">{{ c.country }}</div>
+          <div class="dist-bar-wrap"><div class="dist-bar" [style.width]="clampPercent(c.count) + '%' "></div></div>
+          <div class="dist-value">{{ c.count }}</div>
         </div>
       </div>
     </div>
