@@ -29,6 +29,15 @@ const UserSchema = new Schema({
   // store previous password hashes to prevent reuse (most recent first)
   passwordHistory: [{ type: String }],
   createdAt: { type: Date, default: Date.now },
+
+  // Profile Analytics for CTR
+  totalProfileViews: { type: Number, default: 0 },
+  analytics: {
+    profileDailyViews: [{
+      date: { type: String }, // 'YYYY-MM-DD'
+      count: { type: Number, default: 0 }
+    }]
+  }
 });
 
 // normalize username to lowercase
