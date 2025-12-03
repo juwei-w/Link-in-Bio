@@ -17,14 +17,17 @@ This TODO is derived from the PRD and broken into actionable tasks for the MVP. 
 - [x] Auth — Email/password signup & JWT (backend)
   - Acceptance: POST `/api/auth/signup` and POST `/api/auth/login` implemented; passwords hashed with bcrypt; login returns JWT.
 
-- [ ] Auth — Firebase email verification & password reset (integration)
+- [x] Auth — Firebase email verification & password reset (integration)
   - Acceptance: Firebase flows documented and working in dev (verify email, trigger password reset).
 
-- [x] Auth — OAuth: Google + GitHub (backend + frontend)
+- [x] Auth — OAuth: Google (backend + frontend)
   - Acceptance: OAuth flows implemented (callback endpoints / token exchange); frontend demo login working; user accounts mapped to local users.
 
 - [x] User model & username rules
   - Acceptance: Username validated (3–16 chars, letters/numbers/-/_), normalized to lowercase, uniqueness enforced, tests for validation.
+
+- [x] Profile picture upload with Cloudinary
+  - Acceptance: Users can upload, crop (circular), and remove profile pictures; images stored in Cloudinary; URLs saved in MongoDB; pictures displayed on dashboard and public profile.
 
 ---
 
@@ -52,7 +55,7 @@ This TODO is derived from the PRD and broken into actionable tasks for the MVP. 
 - [x] Deploy guide & basic infra (Firebase + Render)
   - Acceptance: README contains steps for setting up Firebase hosting and Render backend; includes required env vars and free-tier hints.
 
-- [ ] Basic tests & CI (backend)
+- [ ] Basic tests & CI (backend) — **Assigned to Juwei**
   - Acceptance: Unit/integration tests for auth and links exist and GitHub Actions workflow runs tests on push.
 
 ---
@@ -69,14 +72,28 @@ This TODO is derived from the PRD and broken into actionable tasks for the MVP. 
 
 ## Post-MVP / Backlog (defer unless resources permit)
 
-- [ ] QR code generation for profile pages
+### Assigned to Juwei (Complex/Backend-Heavy):
 - [ ] Custom themes & color editor (premium later)
-- [ ] Social sharing buttons & advanced analytics (referrers/time-series)
+  - Requires: Color picker UI, theme state management, CSS variable generation, database storage
+- [ ] Analytics dashboard — Show click trends over time with charts
+  - Requires: Time-series data aggregation, chart library integration (Chart.js/Recharts), date filtering
+- [ ] Link scheduling — Enable/disable links on specific dates/times
+  - Requires: Cron jobs/scheduled tasks, timezone handling, backend logic for active/inactive state
+- [ ] Advanced analytics (referrers, geography, time-series)
+  - Requires: Complex data tracking, IP geolocation, referrer parsing, database optimization
 - [ ] Custom domains and payments/subscriptions
+  - Requires: DNS configuration, SSL certificates, payment gateway integration (Stripe), subscription management
 
----
-
-## Notes & Next Steps
-
-- If you'd like, I can convert high-priority tasks above into GitHub Issues automatically (I would need a token). Otherwise use `docs/dev/ISSUES-MVP.md` to copy/paste issue content.
-- After you confirm, I can scaffold the repo structure and implement the top 2 tasks (scaffold + basic auth endpoints) next.
+### Assigned to Chengyung (UI/UX-Focused):
+- [ ] Firebase Email Verification — Ensure signup sends verification email and handles verification flow
+  - Requires: Testing email delivery, creating verification success page, error handling
+- [ ] Password Reset Flow — Test and document forgot password → reset link → new password
+  - Requires: Testing email delivery, creating reset password page, token validation, updating password
+- [ ] Share buttons — Add social sharing (Twitter, Facebook, LinkedIn)
+  - Requires: Social media API integration, share URLs generation, button UI components
+- [ ] QR code generation for profile pages
+  - Requires: QR code library (qrcode.js), download/copy functionality, modal UI
+- [ ] Link icons/favicons — Auto-fetch or allow users to add icons for links
+  - Requires: Favicon API integration (Google, Clearbit), image upload, icon display
+- [ ] Custom profile URL — Allow users to customize their `/:username` slug
+  - Requires: URL validation, uniqueness check, redirect handling, settings UI
