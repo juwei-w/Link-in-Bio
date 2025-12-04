@@ -75,11 +75,11 @@ This TODO is derived from the PRD and broken into actionable tasks for the MVP. 
 ### Assigned to Juwei (Complex/Backend-Heavy):
 - [ ] Custom themes & color editor (premium later)
   - Requires: Color picker UI, theme state management, CSS variable generation, database storage
-- [ ] Analytics dashboard — Show click trends over time with charts
+- [x] Analytics dashboard — Show click trends over time with charts
   - Requires: Time-series data aggregation, chart library integration (Chart.js/Recharts), date filtering
 - [ ] Link scheduling — Enable/disable links on specific dates/times
   - Requires: Cron jobs/scheduled tasks, timezone handling, backend logic for active/inactive state
-- [ ] Advanced analytics (referrers, geography, time-series)
+- [x] Advanced analytics (referrers, geography, time-series)
   - Requires: Complex data tracking, IP geolocation, referrer parsing, database optimization
 - [ ] Custom domains and payments/subscriptions
   - Requires: DNS configuration, SSL certificates, payment gateway integration (Stripe), subscription management
