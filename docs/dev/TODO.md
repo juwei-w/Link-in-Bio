@@ -77,7 +77,7 @@ This TODO is derived from the PRD and broken into actionable tasks for the MVP. 
   - Requires: Color picker UI, theme state management, CSS variable generation, database storage
 - [x] Analytics dashboard — Show click trends over time with charts
   - Requires: Time-series data aggregation, chart library integration (Chart.js/Recharts), date filtering
-- [ ] Link scheduling — Enable/disable links on specific dates/times
+- [x] Link scheduling — Enable/disable links on specific dates/times
   - Requires: Cron jobs/scheduled tasks, timezone handling, backend logic for active/inactive state
 - [x] Advanced analytics (referrers, geography, time-series)
   - Requires: Complex data tracking, IP geolocation, referrer parsing, database optimization
