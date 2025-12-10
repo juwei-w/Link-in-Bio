@@ -5,7 +5,6 @@ import { LoginComponent } from "./features/auth/login/login.component";
 import { ForgotComponent } from "./features/auth/forgot/forgot.component";
 import { ResetComponent } from "./features/auth/reset/reset.component";
 import { DashboardComponent } from "./features/dashboard/dashboard.component";
-import { SettingsComponent } from "./features/dashboard/settings/settings.component";
 import { AnalyticsComponent } from "./features/analytics/analytics.component";
 import { ProfileComponent } from "./features/profile/profile.component";
 import { DemoComponent } from "./features/demo/demo.component";
@@ -40,11 +39,6 @@ export const routes: Routes = [
   {
     path: "dashboard",
     loadComponent: () => DashboardComponent,
-    canActivate: [authGuard],
-  },
-  {
-    path: "dashboard/settings",
-    loadComponent: () => SettingsComponent,
     canActivate: [authGuard],
   },
   {
