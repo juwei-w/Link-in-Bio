@@ -22,6 +22,10 @@ const LinkSchema = new Schema({
   isActive: { type: Boolean, default: true },
   createdAt: { type: Date, default: Date.now },
   
+  // Link Scheduling
+  scheduledStart: { type: Date }, // When the link becomes active (UTC)
+  scheduledEnd: { type: Date }, // When the link becomes inactive (UTC)
+  
   // Advanced Analytics
   clickEvents: [ClickEventSchema], // Time-series click data
   lastClickedAt: { type: Date }, // Last click timestamp

@@ -11,6 +11,8 @@ export interface Link {
   clicks?: number;
   isActive?: boolean;
   createdAt?: Date;
+  scheduledStart?: string | Date;
+  scheduledEnd?: string | Date;
 }
 
 export interface UserProfile {

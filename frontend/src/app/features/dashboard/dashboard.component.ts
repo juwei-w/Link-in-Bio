@@ -17,7 +17,7 @@ export class DashboardComponent implements OnInit {
   links: Link[] = [];
   showAddForm = false;
   editingLink: Link | null = null;
-  formData: Partial<Link> = { title: '', url: '' };
+  formData: Partial<Link> = { title: '', url: '', scheduledStart: undefined, scheduledEnd: undefined };
   loading = false;
   profileLoading = false;
   currentUser: any;
@@ -86,11 +86,28 @@ export class DashboardComponent implements OnInit {
       return;
     }
     
+    // Validate scheduling dates
+    if (this.formData.scheduledStart && this.formData.scheduledEnd) {
+      const start = new Date(this.formData.scheduledStart);
+      const end = new Date(this.formData.scheduledEnd);
+      if (end <= start) {
+        alert('End date must be after start date');
+        return;
+      }
+    }
+    
+    // Convert datetime-local strings to ISO format (UTC) for backend
+    const linkData = {
+      ...this.formData,
+      scheduledStart: this.formData.scheduledStart ? new Date(this.formData.scheduledStart).toISOString() : undefined,
+      scheduledEnd: this.formData.scheduledEnd ? new Date(this.formData.scheduledEnd).toISOString() : undefined
+    };
+    
     this.loading = true;
     
     if (this.editingLink) {
       // Update existing link
-      this.linksService.updateLink(this.editingLink._id!, this.formData).subscribe({
+      this.linksService.updateLink(this.editingLink._id!, linkData).subscribe({
         next: () => {
           this.loadLinks();
           this.cancelEdit();
@@ -104,8 +121,8 @@ export class DashboardComponent implements OnInit {
       });
     } else {
       // Create new link
-      this.formData.order = this.links.length;
-      this.linksService.createLink(this.formData).subscribe({
+      linkData.order = this.links.length;
+      this.linksService.createLink(linkData).subscribe({
         next: () => {
           this.loadLinks();
           this.cancelEdit();
@@ -122,7 +139,12 @@ export class DashboardComponent implements OnInit {
 
   editLink(link: Link) {
     this.editingLink = link;
-    this.formData = { title: link.title, url: link.url };
+    this.formData = { 
+      title: link.title, 
+      url: link.url,
+      scheduledStart: link.scheduledStart ? this.formatDateTimeLocal(link.scheduledStart.toString()) : undefined,
+      scheduledEnd: link.scheduledEnd ? this.formatDateTimeLocal(link.scheduledEnd.toString()) : undefined
+    };
     this.showAddForm = false;
     
     // Scroll to edit section smoothly
@@ -263,7 +285,35 @@ export class DashboardComponent implements OnInit {
   cancelEdit() {
     this.showAddForm = false;
     this.editingLink = null;
-    this.formData = { title: '', url: '' };
+    this.formData = { title: '', url: '', scheduledStart: undefined, scheduledEnd: undefined };
+  }
+  
+  // Helper to format Date to datetime-local input format
+  formatDateTimeLocal(dateString: string): string {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+  
+  // Helper to check if a scheduled link is currently active
+  isLinkScheduledActive(link: Link): boolean {
+    const now = new Date();
+    
+    // If link has a scheduled start time
+    if (link.scheduledStart && now < new Date(link.scheduledStart)) {
+      return false; // Link hasn't started yet
+    }
+    
+    // If link has a scheduled end time
+    if (link.scheduledEnd && now > new Date(link.scheduledEnd)) {
+      return false; // Link has ended
+    }
+    
+    return true; // Link is currently active
   }
 
   onDragStart(event: DragEvent, index: number) {

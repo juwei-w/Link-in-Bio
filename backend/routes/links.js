@@ -6,6 +6,25 @@ const User = require('../models/User');
 const auth = require('../middleware/auth');
 const { getLocationFromIP, hashIP, extractReferrerDomain, getClientIP } = require('../utils/geolocation');
 
+// Helper function to check if a link is currently active based on scheduling
+const isLinkActive = (link) => {
+  if (!link.isActive) return false;
+  
+  const now = new Date();
+  
+  // Check if link has a scheduled start time
+  if (link.scheduledStart && now < new Date(link.scheduledStart)) {
+    return false; // Link hasn't started yet
+  }
+  
+  // Check if link has a scheduled end time
+  if (link.scheduledEnd && now > new Date(link.scheduledEnd)) {
+    return false; // Link has ended
+  }
+  
+  return true;
+};
+
 // Get current user's links (private)
 router.get('/', auth, async (req, res) => {
   try {
@@ -20,7 +39,9 @@ router.get('/', auth, async (req, res) => {
 // Get user's public links by userId
 router.get('/users/:userId/links', async (req, res) => {
   try {
-    const links = await Link.find({ userId: req.params.userId, isActive: true }).sort({ order: 1, createdAt: 1 });
+    const allLinks = await Link.find({ userId: req.params.userId, isActive: true }).sort({ order: 1, createdAt: 1 });
+    // Filter links based on scheduling
+    const links = allLinks.filter(link => isLinkActive(link));
     res.json(links);
   } catch (err) {
     console.error(err);
@@ -34,7 +55,9 @@ router.get('/profile/:username', async (req, res) => {
     const user = await User.findOne({ username: req.params.username.toLowerCase() });
     if (!user) return res.status(404).json({ message: 'User not found' });
     
-    const links = await Link.find({ userId: user._id, isActive: true }).sort({ order: 1, createdAt: 1 });
+    const allLinks = await Link.find({ userId: user._id, isActive: true }).sort({ order: 1, createdAt: 1 });
+    // Filter links based on scheduling
+    const links = allLinks.filter(link => isLinkActive(link));
     
     // Optional tracking of a profile view for CTR
     const trackView = req.query.trackView === '1';
@@ -74,8 +97,8 @@ router.get('/profile/:username', async (req, res) => {
 // Create link (private)
 router.post('/', auth, async (req, res) => {
   try {
-    const { title, url, iconUrl, position } = req.body;
-    const link = new Link({ userId: req.user.id, title, url, iconUrl, position });
+    const { title, url, iconUrl, position, order, scheduledStart, scheduledEnd } = req.body;
+    const link = new Link({ userId: req.user.id, title, url, iconUrl, position, order, scheduledStart, scheduledEnd });
     await link.save();
     res.json(link);
   } catch (err) {

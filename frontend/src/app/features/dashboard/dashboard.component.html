@@ -116,6 +116,41 @@
               />
             </div>
 
+            <!-- Scheduling Section -->
+            <div class="form-group">
+              <label class="form-label">Schedule Link (Optional)</label>
+              <p class="form-hint" style="margin-bottom: 1rem;">Set when this link should be visible on your profile</p>
+              
+              <div class="scheduling-fields">
+                <div class="form-subgroup">
+                  <label for="scheduledStart" class="form-label-sm">Start Date & Time</label>
+                  <input 
+                    type="datetime-local" 
+                    id="scheduledStart" 
+                    [(ngModel)]="formData.scheduledStart" 
+                    name="scheduledStart"
+                    class="form-input"
+                    min="2000-01-01T00:00"
+                    max="2099-12-31T23:59"
+                  />
+                </div>
+                
+                <div class="form-subgroup">
+                  <label for="scheduledEnd" class="form-label-sm">End Date & Time</label>
+                  <input 
+                    type="datetime-local" 
+                    id="scheduledEnd" 
+                    [(ngModel)]="formData.scheduledEnd" 
+                    name="scheduledEnd"
+                    class="form-input"
+                    min="2000-01-01T00:00"
+                    max="2099-12-31T23:59"
+                  />
+                </div>
+              </div>
+              <p class="form-hint">Leave empty for link to be always active. Times are in your local timezone.</p>
+            </div>
+
             <button type="submit" class="btn btn-primary btn-full" [disabled]="loading">
               <svg *ngIf="!editingLink" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -160,7 +195,25 @@
                 <div class="link-info">
                   <h4 class="link-title">{{ link.title }}</h4>
                   <a [href]="link.url" target="_blank" class="link-url">{{ link.url }}</a>
-                  <p class="link-stats">{{ link.clicks || 0 }} clicks</p>
+                  <div class="link-meta">
+                    <p class="link-stats">{{ link.clicks || 0 }} clicks</p>
+                    <span *ngIf="link.scheduledStart || link.scheduledEnd" 
+                          [class]="isLinkScheduledActive(link) ? 'status-badge status-active' : 'status-badge status-inactive'">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                      </svg>
+                      {{ isLinkScheduledActive(link) ? 'Active' : 'Inactive' }}
+                    </span>
+                  </div>
+                  <div class="schedule-details">
+                    <span class="schedule-info">
+                      Start: {{ link.scheduledStart ? (link.scheduledStart | date:'short') : '—' }}
+                    </span>
+                    <span *ngIf="link.scheduledStart && link.scheduledEnd" class="schedule-separator">—</span>
+                    <span class="schedule-info">
+                      End: {{ link.scheduledEnd ? (link.scheduledEnd | date:'short') : '—' }}
+                    </span>
+                  </div>
                 </div>
               </div>
               <div class="link-actions">
