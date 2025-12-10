@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "frontend/dist/link-sharing-frontend/browser",
+    "public": "frontend/dist/link-sharing-frontend",
     "ignore": [
       "firebase.json",
       "**/.*",
