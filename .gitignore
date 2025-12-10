@@ -12,6 +12,9 @@ frontend/dist/
 frontend/.angular/
 frontend/.angular/cache/
 
+# Firebase
+.firebase/
+
 # Project docs (remove these lines if you want to track them)
 Project-Idea.md
 Readme-Guidelines.md
