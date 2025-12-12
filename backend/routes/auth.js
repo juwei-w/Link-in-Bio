@@ -4,26 +4,85 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
+const axios = require("axios");
 const User = require("../models/User");
 const { init } = require("../firebaseAdmin");
 
-// Configure mail transporter (defaults suitable for MailHog)
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "localhost",
-  port: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT) : 1025,
-  secure: false,
-});
+// Configure mail transporter (defaults suitable for MailHog). If SMTP_* env vars
+// are provided they will be used. Alternatively, if BREVO_API_KEY is set the
+// Brevo HTTP API will be used instead of SMTP.
+function createSmtpTransport() {
+  const host = process.env.SMTP_HOST || "localhost";
+  const port = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT) : 1025;
+  const secure = process.env.SMTP_SECURE === "true" || false;
+  const authUser = process.env.SMTP_USER;
+  const authPass = process.env.SMTP_PASS;
+
+  const transportOpts = { host, port, secure };
+  if (authUser && authPass)
+    transportOpts.auth = { user: authUser, pass: authPass };
+  return nodemailer.createTransport(transportOpts);
+}
 
 async function sendResetEmail(toEmail, resetUrl) {
-  const from = process.env.EMAIL_FROM || "no-reply@localhost";
+  const fromEmail = process.env.EMAIL_FROM || "no-reply@localhost";
+  const fromName = process.env.EMAIL_FROM_NAME || "Link-in-Bio";
   const subject = "Reset your password";
   const text = `You requested a password reset. Click the link to reset your password:\n\n${resetUrl}\n\nIf you didn't request this, ignore this email.`;
   const html = `<p>You requested a password reset. Click the link to reset your password:</p><p><a href="${resetUrl}">${resetUrl}</a></p><p>If you didn't request this, ignore this email.</p>`;
+
+  // If BREVO_API_KEY is present, prefer Brevo HTTP API (no SMTP required)
+  const brevoApiKey = process.env.BREVO_API_KEY;
+  if (brevoApiKey) {
+    try {
+      const payload = {
+        sender: { name: fromName, email: fromEmail },
+        to: [{ email: toEmail }],
+        subject,
+        htmlContent: html,
+        textContent: text,
+      };
+      const res = await axios.post(
+        "https://api.brevo.com/v3/smtp/email",
+        payload,
+        {
+          headers: {
+            "api-key": brevoApiKey,
+            "Content-Type": "application/json",
+          },
+          timeout: 10000,
+        }
+      );
+      console.log(
+        "Password reset email sent via Brevo to",
+        toEmail,
+        "status",
+        res.status
+      );
+      return;
+    } catch (err) {
+      console.error(
+        "Brevo API send failed:",
+        err && err.response ? err.response.data : err && err.message
+      );
+      // Fall through to SMTP attempt if configured
+    }
+  }
+
+  // Fallback to SMTP (MailHog by default). Create transporter on demand so tests
+  // and environments can change env vars without restarting the server.
+  const transporter = createSmtpTransport();
   try {
-    await transporter.sendMail({ from, to: toEmail, subject, text, html });
+    await transporter.sendMail({
+      from: `${fromName} <${fromEmail}>`,
+      to: toEmail,
+      subject,
+      text,
+      html,
+    });
     console.log("Password reset email sent to", toEmail);
   } catch (err) {
-    console.error("Failed sending reset email:", err && err.message);
+    console.error("Failed sending reset email via SMTP:", err && err.message);
     throw err;
   }
 }
@@ -164,12 +223,9 @@ router.post("/reset", async (req, res) => {
         console.log(
           `Password reset blocked: user ${user.email} attempted to reuse current password`
         );
-        return res
-          .status(400)
-          .json({
-            message:
-              "New password must not be the same as your current password",
-          });
+        return res.status(400).json({
+          message: "New password must not be the same as your current password",
+        });
       }
     }
 
