@@ -1,0 +1,30 @@
+<div class="verify-container">
+  <div class="verify-card">
+    <h1>Verify Your Email</h1>
+
+    <div *ngIf="loading" class="loading">
+      <div class="spinner"></div>
+      <p>{{ message }}</p>
+    </div>
+
+    <div *ngIf="success && !loading" class="success">
+      <div class="success-icon">✓</div>
+      <p>{{ message }}</p>
+      <p class="redirect-text">Redirecting to dashboard...</p>
+    </div>
+
+    <div *ngIf="error && !loading" class="error-box">
+      <h2 class="error-title">Email Verification Required</h2>
+      <p class="error-message">
+        We sent a verification link to <strong>{{ emailFromError }}</strong
+        >.
+      </p>
+      <p class="error-message">
+        Click the link in your email to verify your account and log in.
+      </p>
+      <button (click)="resendEmail()" class="resend-btn">
+        Resend Verification Email
+      </button>
+    </div>
+  </div>
+</div>

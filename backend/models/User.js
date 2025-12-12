@@ -28,16 +28,22 @@ const UserSchema = new Schema({
   resetPasswordExpires: { type: Date },
   // store previous password hashes to prevent reuse (most recent first)
   passwordHistory: [{ type: String }],
+  // email verification
+  emailVerified: { type: Boolean, default: false },
+  emailVerificationToken: { type: String },
+  emailVerificationExpires: { type: Date },
   createdAt: { type: Date, default: Date.now },
 
   // Profile Analytics for CTR
   totalProfileViews: { type: Number, default: 0 },
   analytics: {
-    profileDailyViews: [{
-      date: { type: String }, // 'YYYY-MM-DD'
-      count: { type: Number, default: 0 }
-    }]
-  }
+    profileDailyViews: [
+      {
+        date: { type: String }, // 'YYYY-MM-DD'
+        count: { type: Number, default: 0 },
+      },
+    ],
+  },
 });
 
 // normalize username to lowercase

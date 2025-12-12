@@ -4,6 +4,7 @@ import { HomeComponent } from "./features/home/home.component";
 import { LoginComponent } from "./features/auth/login/login.component";
 import { ForgotComponent } from "./features/auth/forgot/forgot.component";
 import { ResetComponent } from "./features/auth/reset/reset.component";
+import { VerifyEmailComponent } from "./features/auth/verify-email/verify-email.component";
 import { DashboardComponent } from "./features/dashboard/dashboard.component";
 import { AnalyticsComponent } from "./features/analytics/analytics.component";
 import { ProfileComponent } from "./features/profile/profile.component";
@@ -35,6 +36,10 @@ export const routes: Routes = [
   {
     path: "reset-password",
     loadComponent: () => ResetComponent,
+  },
+  {
+    path: "verify-email",
+    loadComponent: () => VerifyEmailComponent,
   },
   {
     path: "dashboard",

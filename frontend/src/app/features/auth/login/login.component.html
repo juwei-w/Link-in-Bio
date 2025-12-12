@@ -5,17 +5,17 @@
 
     <!-- Toggle Buttons -->
     <div class="auth-toggle">
-      <button 
-        type="button" 
-        class="toggle-option" 
+      <button
+        type="button"
+        class="toggle-option"
         [class.active]="!isSignUp"
         (click)="isSignUp = false; error = ''"
       >
         Sign In
       </button>
-      <button 
-        type="button" 
-        class="toggle-option" 
+      <button
+        type="button"
+        class="toggle-option"
         [class.active]="isSignUp"
         (click)="isSignUp = true; error = ''"
       >
@@ -126,9 +126,41 @@
       </div>
 
       <div *ngIf="error" class="error-message">{{ error }}</div>
+      <div *ngIf="successMessage" class="success-message">
+        {{ successMessage }}
+      </div>
+
+      <!-- Email verification prompt -->
+      <div *ngIf="emailNotVerifiedEmail" class="email-verification-prompt">
+        <p class="verification-title">Email Verification Required</p>
+        <p class="verification-text">
+          We sent a verification link to
+          <strong>{{ emailNotVerifiedEmail }}</strong
+          >.
+        </p>
+        <p class="verification-text">
+          Click the link in your email to verify your account and log in.
+        </p>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="resendVerificationEmail()"
+          [disabled]="loading"
+        >
+          Resend Verification Email
+        </button>
+      </div>
 
       <button type="submit" class="btn btn-full" [disabled]="loading">
-        {{ loading ? (isSignUp ? "Creating account..." : "Signing in...") : (isSignUp ? "Sign Up" : "Sign In") }}
+        {{
+          loading
+            ? isSignUp
+              ? "Creating account..."
+              : "Signing in..."
+            : isSignUp
+            ? "Sign Up"
+            : "Sign In"
+        }}
       </button>
     </form>
 

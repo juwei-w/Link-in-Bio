@@ -46,18 +46,18 @@ export class AuthService {
   }
 
   // Email/Password signup with local backend
+  // NOTE: Does NOT store token after signup - user must verify email first
   signup(
     username: string,
     email: string,
     password: string
   ): Observable<AuthResponse> {
-    return this.http
-      .post<AuthResponse>(`${this.apiUrl}/auth/signup`, {
-        username,
-        email,
-        password,
-      })
-      .pipe(tap((res) => this.setAuth(res)));
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/signup`, {
+      username,
+      email,
+      password,
+    });
+    // Intentionally NOT calling setAuth() - user must verify email first
   }
 
   // Email/Password login with local backend
@@ -88,11 +88,12 @@ export class AuthService {
   }
 
   // OAuth login (Google)
-  async googleLogin(): Promise<void> {
+  // Returns response with isNewUser flag
+  async googleLogin(): Promise<any> {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(this.firebaseAuth, provider);
-      await this.exchangeFirebaseToken(result.user);
+      return await this.exchangeFirebaseToken(result.user);
     } catch (error: any) {
       console.error("Google login error:", error);
       throw error;
@@ -115,15 +116,35 @@ export class AuthService {
       .toPromise();
   }
 
+  // Verify email using token from email
+  verifyEmail(email: string, token: string): Observable<any> {
+    return this.http
+      .post<AuthResponse>(`${this.apiUrl}/auth/verify-email`, {
+        email,
+        token,
+      })
+      .pipe(tap((res) => this.setAuth(res)));
+  }
+
+  // Resend verification email
+  resendVerificationEmail(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/resend-verification`, { email });
+  }
+
   // Exchange Firebase ID token for backend JWT
-  private async exchangeFirebaseToken(user: User): Promise<void> {
+  // Returns the response including isNewUser flag
+  async exchangeFirebaseToken(user: User): Promise<any> {
     const idToken = await user.getIdToken();
     const res = await this.http
-      .post<AuthResponse>(`${this.apiUrl}/auth/firebase`, { idToken })
+      .post<any>(`${this.apiUrl}/auth/firebase`, { idToken })
       .toPromise();
     if (res) {
-      this.setAuth(res);
+      // Only auto-login if existing user; new users must verify email first
+      if (!res.isNewUser) {
+        this.setAuth(res);
+      }
     }
+    return res;
   }
 
   // Logout
@@ -132,7 +153,7 @@ export class AuthService {
     localStorage.removeItem("user");
     this.currentUserSubject.next(null);
     signOut(this.firebaseAuth);
-    this.router.navigate(['/']);
+    this.router.navigate(["/"]);
   }
 
   // Helper to set auth data
@@ -162,20 +183,24 @@ export class AuthService {
     return this.http.get(`${this.apiUrl}/users/me`).pipe(
       tap((user) => {
         // Update stored user data with complete profile
-        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem("user", JSON.stringify(user));
         this.currentUserSubject.next(user);
       })
     );
   }
 
   // Update user profile
-  updateProfile(profileData: { displayName?: string; bio?: string; avatarUrl?: string }): Observable<any> {
+  updateProfile(profileData: {
+    displayName?: string;
+    bio?: string;
+    avatarUrl?: string;
+  }): Observable<any> {
     return this.http.put(`${this.apiUrl}/users/me`, profileData).pipe(
       tap((user) => {
         // Update stored user data
         const currentUser = this.getCurrentUser();
         const updatedUser = { ...currentUser, ...user };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
+        localStorage.setItem("user", JSON.stringify(updatedUser));
         this.currentUserSubject.next(updatedUser);
       })
     );

@@ -24,6 +24,68 @@ function createSmtpTransport() {
   return nodemailer.createTransport(transportOpts);
 }
 
+async function sendVerificationEmail(toEmail, verificationUrl) {
+  const fromEmail = process.env.EMAIL_FROM || "no-reply@localhost";
+  const fromName = process.env.EMAIL_FROM_NAME || "Link-in-Bio";
+  const subject = "Verify your email address";
+  const text = `Welcome! Click the link to verify your email address:\n\n${verificationUrl}\n\nIf you didn't create this account, ignore this email.`;
+  const html = `<p>Welcome! Click the link to verify your email address:</p><p><a href="${verificationUrl}">Verify Email</a></p><p>If you didn't create this account, ignore this email.</p>`;
+
+  const brevoApiKey = process.env.BREVO_API_KEY;
+  if (brevoApiKey) {
+    try {
+      const payload = {
+        sender: { name: fromName, email: fromEmail },
+        to: [{ email: toEmail }],
+        subject,
+        htmlContent: html,
+        textContent: text,
+      };
+      const res = await axios.post(
+        "https://api.brevo.com/v3/smtp/email",
+        payload,
+        {
+          headers: {
+            "api-key": brevoApiKey,
+            "Content-Type": "application/json",
+          },
+          timeout: 10000,
+        }
+      );
+      console.log(
+        "Verification email sent via Brevo to",
+        toEmail,
+        "status",
+        res.status
+      );
+      return;
+    } catch (err) {
+      console.error(
+        "Brevo API send failed:",
+        err && err.response ? err.response.data : err && err.message
+      );
+    }
+  }
+
+  const transporter = createSmtpTransport();
+  try {
+    await transporter.sendMail({
+      from: `${fromName} <${fromEmail}>`,
+      to: toEmail,
+      subject,
+      text,
+      html,
+    });
+    console.log("Verification email sent to", toEmail);
+  } catch (err) {
+    console.error(
+      "Failed sending verification email via SMTP:",
+      err && err.message
+    );
+    throw err;
+  }
+}
+
 async function sendResetEmail(toEmail, resetUrl) {
   const fromEmail = process.env.EMAIL_FROM || "no-reply@localhost";
   const fromName = process.env.EMAIL_FROM_NAME || "Link-in-Bio";
@@ -106,20 +168,47 @@ router.post("/signup", async (req, res) => {
     const saltRounds = 10;
     const hash = await bcrypt.hash(password, saltRounds);
 
+    // Generate email verification token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const emailVerificationExpires = Date.now() + 24 * 3600 * 1000; // 24 hours
+
     const user = new User({
       username,
       email,
       passwordHash: hash,
       provider: "local",
+      emailVerificationToken: verificationToken,
+      emailVerificationExpires,
     });
     await user.save();
 
+    // Send verification email
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:4200";
+    const verifyUrl = `${frontendUrl}/verify-email?token=${verificationToken}&email=${encodeURIComponent(
+      email
+    )}`;
+
+    try {
+      await sendVerificationEmail(email, verifyUrl);
+      console.log("Verification email sent for user:", email);
+    } catch (emailErr) {
+      console.error("Failed to send verification email:", emailErr.message);
+      // Continue anyway; user can request resend later
+    }
+
+    // Return token but user must verify email before full access
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
-    res.json({
+    res.status(201).json({
       token,
-      user: { id: user._id, username: user.username, email: user.email },
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        emailVerified: user.emailVerified,
+      },
+      message: "Signup successful. Please verify your email.",
     });
   } catch (err) {
     console.error(err);
@@ -137,6 +226,14 @@ router.post("/login", async (req, res) => {
     const user = await User.findOne({ email });
     if (!user || !user.passwordHash)
       return res.status(401).json({ message: "Invalid credentials" });
+
+    // Check if email is verified
+    if (!user.emailVerified) {
+      return res.status(403).json({
+        message: "Please verify your email before logging in",
+        code: "EMAIL_NOT_VERIFIED",
+      });
+    }
 
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) return res.status(401).json({ message: "Invalid credentials" });
@@ -331,7 +428,9 @@ router.post("/firebase", async (req, res) => {
 
     // find or create local user
     let user = await User.findOne({ $or: [{ providerId }, { email }] });
+    let isNewUser = false;
     if (!user) {
+      isNewUser = true;
       // create a unique username by appending random suffix if needed
       let username = usernameBase.slice(0, 12) || "user";
       // Ensure username is at least 3 characters (mongoose validation requirement)
@@ -349,6 +448,8 @@ router.post("/firebase", async (req, res) => {
         email,
         provider: "firebase",
         providerId,
+        emailVerificationToken: crypto.randomBytes(32).toString("hex"),
+        emailVerificationExpires: Date.now() + 24 * 3600 * 1000,
       });
       await user.save();
       console.log("Created new user:", {
@@ -356,6 +457,18 @@ router.post("/firebase", async (req, res) => {
         email: user.email,
         providerId: user.providerId,
       });
+
+      // Send verification email for new Firebase users
+      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:4200";
+      const verifyUrl = `${frontendUrl}/verify-email?token=${
+        user.emailVerificationToken
+      }&email=${encodeURIComponent(email)}`;
+      try {
+        await sendVerificationEmail(email, verifyUrl);
+        console.log("Verification email sent for new Firebase user:", email);
+      } catch (emailErr) {
+        console.error("Failed to send verification email:", emailErr.message);
+      }
     } else {
       // if found by email but no providerId, set it
       if (!user.providerId) {
@@ -381,11 +494,114 @@ router.post("/firebase", async (req, res) => {
     });
     res.json({
       token,
-      user: { id: user._id, username: user.username, email: user.email },
+      isNewUser, // Flag to indicate new user needs to verify email
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        emailVerified: user.emailVerified,
+      },
     });
   } catch (err) {
     console.error("Firebase auth exchange error:", err);
     res.status(500).json({ message: "Server error during authentication" });
+  }
+});
+
+// POST /api/auth/verify-email
+// Body: { email, token }
+router.post("/verify-email", async (req, res) => {
+  try {
+    const { email, token } = req.body;
+    if (!email || !token)
+      return res.status(400).json({ message: "Missing email or token" });
+
+    const user = await User.findOne({
+      email,
+      emailVerificationToken: token,
+      emailVerificationExpires: { $gt: Date.now() },
+    });
+
+    if (!user)
+      return res
+        .status(400)
+        .json({ message: "Invalid or expired verification token" });
+
+    // Mark email as verified
+    user.emailVerified = true;
+    user.emailVerificationToken = undefined;
+    user.emailVerificationExpires = undefined;
+    await user.save();
+
+    console.log("Email verified for user:", user.email);
+
+    // Return updated user info
+    const jwtToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+    res.json({
+      token: jwtToken,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        emailVerified: user.emailVerified,
+      },
+      message: "Email verified successfully",
+    });
+  } catch (err) {
+    console.error("Email verification error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// POST /api/auth/resend-verification
+// Body: { email }
+// Re-send verification email to user
+router.post("/resend-verification", async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: "Missing email" });
+
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.json({
+        message: "If an account exists, verification email has been sent",
+      });
+
+    // If already verified, no need to send again
+    if (user.emailVerified) {
+      return res.json({ message: "Email already verified" });
+    }
+
+    // Generate new verification token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    user.emailVerificationToken = verificationToken;
+    user.emailVerificationExpires = Date.now() + 24 * 3600 * 1000; // 24 hours
+    await user.save();
+
+    // Send verification email
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:4200";
+    const verifyUrl = `${frontendUrl}/verify-email?token=${verificationToken}&email=${encodeURIComponent(
+      email
+    )}`;
+
+    try {
+      await sendVerificationEmail(email, verifyUrl);
+      console.log("Verification email resent to:", email);
+    } catch (emailErr) {
+      console.error("Failed to send verification email:", emailErr.message);
+      return res
+        .status(500)
+        .json({ message: "Failed to send verification email" });
+    }
+
+    res.json({
+      message: "Verification email sent. Please check your inbox.",
+    });
+  } catch (err) {
+    console.error("Resend verification error:", err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
