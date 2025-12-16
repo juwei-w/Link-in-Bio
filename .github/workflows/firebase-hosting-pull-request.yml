@@ -20,6 +20,15 @@ jobs:
       - name: Install dependencies
         working-directory: ./frontend
         run: npm install
+      - name: Create environment files
+        working-directory: ./frontend/src/environments
+        run: |
+          echo 'export const environment = {
+            production: false,
+            apiUrl: "https://localhost:4200/api",
+            firebase: ${{ secrets.ENVIRONMENT_PROD_JSON }}
+          };' > environment.ts
+          echo 'export const environment = ${{ secrets.ENVIRONMENT_PROD_JSON }};' > environment.prod.ts
       - name: Build
         working-directory: ./frontend
         run: npm run build
