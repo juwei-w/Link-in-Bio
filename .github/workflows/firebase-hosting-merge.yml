@@ -23,16 +23,16 @@ jobs:
           ENV_PROD_JSON: ${{ secrets.ENVIRONMENT_PROD_JSON }}
         run: |
           mkdir -p ./frontend/src/environments
-          cat > ./frontend/src/environments/environment.ts << 'ENVEOF'
+          cat > ./frontend/src/environments/environment.ts << EOF
           export const environment = {
             production: false,
             apiUrl: "https://localhost:4200/api",
-            firebase: $(echo $ENV_PROD_JSON)
+            firebase: ${ENV_PROD_JSON}
           };
-          ENVEOF
-          cat > ./frontend/src/environments/environment.prod.ts << 'ENVEOF'
-          export const environment = $(echo $ENV_PROD_JSON);
-          ENVEOF
+          EOF
+          cat > ./frontend/src/environments/environment.prod.ts << EOF
+          export const environment = ${ENV_PROD_JSON};
+          EOF
       - name: Build
         working-directory: ./frontend
         run: npm run build
