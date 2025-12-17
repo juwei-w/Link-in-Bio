@@ -6,11 +6,15 @@
 
 /* Floating background elements */
 .home-container::before {
-  content: '';
+  content: "";
   position: absolute;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(99, 102, 241, 0.08) 0%,
+    transparent 70%
+  );
   border-radius: 50%;
   top: -200px;
   right: -200px;
@@ -19,11 +23,15 @@
 }
 
 .home-container::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.06) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(139, 92, 246, 0.06) 0%,
+    transparent 70%
+  );
   border-radius: 50%;
   bottom: -150px;
   left: -150px;
@@ -55,7 +63,8 @@ body.dark-mode .navbar {
   justify-content: space-between;
   align-items: center;
   padding: 0 var(--spacing-xl);
-  max-width: 1240px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -90,7 +99,8 @@ body.dark-mode .navbar {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -99,7 +109,8 @@ body.dark-mode .navbar {
 }
 
 @keyframes pulseGlow {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     box-shadow: 0 0 15px hsl(14 100% 70% / 0.4);
   }
@@ -143,7 +154,7 @@ body.dark-mode .navbar {
 }
 
 .dark-mode-toggle::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 3px;
   left: 3px;
@@ -298,7 +309,7 @@ body.dark-mode .icon-dark {
 }
 
 .btn-link::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -4px;
   left: 0;
@@ -362,7 +373,7 @@ body.dark-mode .icon-dark {
 }
 
 .feature-card::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background: var(--gradient-accent);
@@ -406,13 +417,21 @@ body.dark-mode .icon-dark {
 /* CTA Section */
 .cta-section {
   padding: 6rem var(--spacing-2xl) 8rem;
-  background: linear-gradient(135deg, rgba(252, 97, 88, 0.05) 0%, rgba(217, 70, 239, 0.05) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(252, 97, 88, 0.05) 0%,
+    rgba(217, 70, 239, 0.05) 100%
+  );
   position: relative;
   overflow: hidden;
 }
 
 body.dark-mode .cta-section {
-  background: linear-gradient(135deg, rgba(252, 97, 88, 0.08) 0%, rgba(217, 70, 239, 0.08) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(252, 97, 88, 0.08) 0%,
+    rgba(217, 70, 239, 0.08) 100%
+  );
 }
 
 .cta-content {

@@ -4,6 +4,8 @@ import {
   ViewChild,
   ElementRef,
   AfterViewInit,
+  HostListener,
+  OnDestroy,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -18,7 +20,7 @@ import * as QRCode from "qrcode";
   templateUrl: "./profile.component.html",
   styleUrls: ["./profile.component.css"],
 })
-export class ProfileComponent implements OnInit, AfterViewInit {
+export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   profile: UserProfile | null = null;
   loading = true;
   error = "";
@@ -28,6 +30,10 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   copySuccess = false;
 
   @ViewChild("qrCodeElement") qrCodeElement!: ElementRef;
+  @ViewChild("shareOverlay") shareOverlay!: ElementRef;
+  @ViewChild("qrOverlay") qrOverlay!: ElementRef;
+  private _overlayAppended = false;
+  private _qrOverlayAppended = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -49,6 +55,31 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     if (this.showQRModal && this.qrCodeElement) {
       this.generateQRCode();
+    }
+  }
+
+  ngOnDestroy() {
+    // ensure overlays are removed from body if component is destroyed
+    try {
+      if (
+        this.shareOverlay &&
+        this.shareOverlay.nativeElement?.parentElement === document.body
+      ) {
+        document.body.removeChild(this.shareOverlay.nativeElement);
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    try {
+      if (
+        this.qrOverlay &&
+        this.qrOverlay.nativeElement?.parentElement === document.body
+      ) {
+        document.body.removeChild(this.qrOverlay.nativeElement);
+      }
+    } catch (e) {
+      // ignore
     }
   }
 
@@ -136,15 +167,66 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   toggleShareModal() {
     this.showShareModal = !this.showShareModal;
     this.copySuccess = false;
+
+    // When opening, move the overlay element to document.body so it's not clipped
+    if (this.showShareModal) {
+      // wait for DOM to render the overlay
+      setTimeout(() => {
+        try {
+          const el = this.shareOverlay?.nativeElement;
+          if (el && el.parentElement !== document.body) {
+            document.body.appendChild(el);
+            this._overlayAppended = true;
+          }
+        } catch (e) {
+          // ignore safe-fail
+        }
+      }, 0);
+    } else {
+      // closing: let Angular remove the node; just reset flag
+      this._overlayAppended = false;
+    }
+  }
+
+  @HostListener("document:keydown.escape")
+  onEscapeKey() {
+    this.showShareModal = false;
+    this.showQRModal = false;
   }
 
   showQRCodeModal() {
     this.showQRModal = true;
+    // wait for DOM to render overlay and qr element
     setTimeout(() => {
+      // append qr overlay to body so it sits above the share modal
+      try {
+        const el = this.qrOverlay?.nativeElement;
+        if (el && el.parentElement !== document.body) {
+          document.body.appendChild(el);
+          this._qrOverlayAppended = true;
+        }
+      } catch (e) {
+        // ignore
+      }
+
       if (this.qrCodeElement) {
         this.generateQRCode();
       }
     }, 0);
+  }
+
+  closeQRModal() {
+    this.showQRModal = false;
+    // remove overlay from body if we appended it
+    try {
+      const el = this.qrOverlay?.nativeElement;
+      if (el && this._qrOverlayAppended && el.parentElement === document.body) {
+        document.body.removeChild(el);
+      }
+    } catch (e) {
+      // ignore
+    }
+    this._qrOverlayAppended = false;
   }
 
   copyToClipboard() {

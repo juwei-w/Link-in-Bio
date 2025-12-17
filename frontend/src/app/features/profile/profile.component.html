@@ -96,6 +96,7 @@
       <!-- Share Modal -->
       <div
         *ngIf="showShareModal"
+        #shareOverlay
         class="share-modal-overlay"
         (click)="toggleShareModal()"
       >
@@ -295,11 +296,12 @@
       <!-- QR Code Modal -->
       <div
         *ngIf="showQRModal"
+        #qrOverlay
         class="qr-modal-overlay"
-        (click)="showQRModal = false"
+        (click)="closeQRModal()"
       >
         <div class="qr-modal" (click)="$event.stopPropagation()">
-          <button class="close-btn" (click)="showQRModal = false">
+          <button class="close-btn" (click)="closeQRModal()">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
