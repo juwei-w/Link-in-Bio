@@ -270,7 +270,7 @@ router.post("/forgot", async (req, res) => {
     user.resetPasswordExpires = Date.now() + 3600 * 1000; // 1 hour
     await user.save();
 
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:4200";
+    const frontendUrl = process.env.CORS_ORIGIN || "http://localhost:4200";
     const resetUrl = `${frontendUrl}/reset-password?token=${token}&email=${encodeURIComponent(
       email
     )}`;
@@ -459,7 +459,7 @@ router.post("/firebase", async (req, res) => {
       });
 
       // Send verification email for new Firebase users
-      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:4200";
+      const frontendUrl = process.env.CORS_ORIGIN || "http://localhost:4200";
       const verifyUrl = `${frontendUrl}/verify-email?token=${
         user.emailVerificationToken
       }&email=${encodeURIComponent(email)}`;
@@ -581,7 +581,7 @@ router.post("/resend-verification", async (req, res) => {
     await user.save();
 
     // Send verification email
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:4200";
+    const frontendUrl = process.env.CORS_ORIGIN || "http://localhost:4200";
     const verifyUrl = `${frontendUrl}/verify-email?token=${verificationToken}&email=${encodeURIComponent(
       email
     )}`;
