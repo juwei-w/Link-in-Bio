@@ -18,6 +18,13 @@ const UserSchema = new Schema({
   avatarUrl: { type: String },
   bio: { type: String },
   theme: { type: String, enum: ["light", "dark"], default: "light" },
+  // Custom theme colors
+  themeColors: {
+    primary: { type: String, default: "#FF6B6B" }, // primary accent color
+    secondary: { type: String, default: "#4ECDC4" }, // secondary accent color
+    background: { type: String, default: "#FFFFFF" }, // background
+    text: { type: String, default: "#000000" }, // text color
+  },
   provider: {
     type: String,
     enum: ["local", "google", "github", "firebase"],

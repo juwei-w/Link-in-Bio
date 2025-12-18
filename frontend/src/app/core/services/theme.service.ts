@@ -1,0 +1,92 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
+
+export interface ThemeColors {
+  primary: string;
+  secondary: string;
+  background: string;
+  text: string;
+}
+
+export interface Theme {
+  theme: 'light' | 'dark';
+  themeColors: ThemeColors;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ThemeService {
+  private apiUrl = environment.apiUrl + '/theme';
+  
+  private themeSubject = new BehaviorSubject<Theme>({
+    theme: 'light',
+    themeColors: {
+      primary: '#FF6B6B',
+      secondary: '#4ECDC4',
+      background: '#FFFFFF',
+      text: '#000000',
+    }
+  });
+  
+  theme$ = this.themeSubject.asObservable();
+
+  constructor(private http: HttpClient) {
+    this.loadTheme();
+  }
+
+  loadTheme(): void {
+    this.http.get<Theme>(`${this.apiUrl}`).subscribe({
+      next: (theme) => {
+        this.themeSubject.next(theme);
+        this.applyTheme(theme);
+      },
+      error: () => {
+        // Use defaults if not authenticated
+        const savedTheme = localStorage.getItem('theme');
+        const savedColors = localStorage.getItem('themeColors');
+        if (savedTheme && savedColors) {
+          const theme: Theme = {
+            theme: savedTheme as 'light' | 'dark',
+            themeColors: JSON.parse(savedColors)
+          };
+          this.themeSubject.next(theme);
+          this.applyTheme(theme);
+        }
+      }
+    });
+  }
+
+  getPublicTheme(username: string): Observable<Theme> {
+    return this.http.get<Theme>(`${this.apiUrl}/public/${username}`);
+  }
+
+  updateTheme(theme: Partial<Theme>): Observable<any> {
+    return this.http.put<Theme>(`${this.apiUrl}`, theme).pipe(
+      tap((response) => {
+        this.themeSubject.next(response);
+        this.applyTheme(response);
+        localStorage.setItem('theme', response.theme);
+        localStorage.setItem('themeColors', JSON.stringify(response.themeColors));
+      })
+    );
+  }
+
+  applyTheme(theme: Theme): void {
+    const root = document.documentElement;
+    const colors = theme.themeColors;
+
+    // Set CSS variables
+    root.style.setProperty('--primary-color', colors.primary);
+    root.style.setProperty('--secondary-color', colors.secondary);
+    root.style.setProperty('--bg-color', colors.background);
+    root.style.setProperty('--text-color', colors.text);
+  }
+
+  getCurrentTheme(): Theme {
+    return this.themeSubject.value;
+  }
+}

@@ -4,9 +4,26 @@
       <!-- Profile Card -->
       <div class="card profile-card">
         <div class="card-header">
-          <h2 class="card-title">Profile Settings</h2>
-          <p class="card-description">Customize your public profile</p>
+          <div class="header-content">
+            <h2 class="card-title">Profile Settings</h2>
+            <p class="card-description">Customize your public profile</p>
+          </div>
+          <button class="btn-icon-header" (click)="showThemeEditor = !showThemeEditor" title="Customize Theme Colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="1"></circle>
+              <path d="M12 1v6m0 6v6"></path>
+              <circle cx="12" cy="5" r="1" opacity="0.3"></circle>
+              <circle cx="12" cy="19" r="1" opacity="0.3"></circle>
+            </svg>
+            <span>Theme</span>
+          </button>
         </div>
+
+        <!-- Theme Editor Section -->
+        <div *ngIf="showThemeEditor" class="theme-editor-section">
+          <app-color-picker (closeEditor)="showThemeEditor = false"></app-color-picker>
+        </div>
+
         <div class="card-content">
           <div class="profile-info">
 

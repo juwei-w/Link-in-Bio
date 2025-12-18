@@ -4,12 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { LinksService, Link } from '../../core/services/links.service';
+import { ThemeService } from '../../core/services/theme.service';
 import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
+import { ColorPickerComponent } from '../color-picker/color-picker.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ImageCropperComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ImageCropperComponent, ColorPickerComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -33,6 +35,9 @@ export class DashboardComponent implements OnInit {
   imageChangedEvent: any = '';
   croppedImage: string = '';
   
+  // Theme settings
+  showThemeEditor = false;
+  
   // Ref-trigger helper
   triggerImageSelect(input: HTMLInputElement) {
     input.click();
@@ -41,6 +46,7 @@ export class DashboardComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private linksService: LinksService,
+    private themeService: ThemeService,
     private router: Router
   ) {
     this.currentUser = this.authService.getCurrentUser();

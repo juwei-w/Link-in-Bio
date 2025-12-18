@@ -1,0 +1,259 @@
+.color-picker-container {
+  background: var(--bg-color, #FFFFFF);
+  color: var(--text-color, #000000);
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--primary-color, #FF6B6B);
+  padding-bottom: 16px;
+}
+
+.header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-color, #000000);
+  opacity: 0.6;
+  transition: opacity 0.2s;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-btn:hover {
+  opacity: 1;
+}
+
+/* Color Input Groups */
+.color-inputs {
+  margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.color-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.color-input-group label {
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.color-input-group input[type="color"] {
+  width: 100%;
+  height: 48px;
+  border: 2px solid #E0E0E0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.color-input-group input[type="color"]:hover {
+  border-color: var(--primary-color, #FF6B6B);
+}
+
+.color-value {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+}
+
+/* Preset Themes */
+.preset-section {
+  margin-bottom: 24px;
+}
+
+.preset-section h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.preset-btn {
+  background: #F5F5F5;
+  border: 2px solid #E0E0E0;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.preset-btn:hover {
+  border-color: var(--primary-color, #FF6B6B);
+  background: rgba(255, 107, 107, 0.05);
+  transform: translateY(-2px);
+}
+
+.preset-preview {
+  display: flex;
+  gap: 6px;
+}
+
+.color-box {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.preset-btn span {
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.btn {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary {
+  background: var(--primary-color, #FF6B6B);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #E0E0E0;
+  color: var(--text-color, #000000);
+}
+
+.btn-secondary:hover {
+  background: #D0D0D0;
+  transform: translateY(-2px);
+}
+
+/* Save Message */
+.save-message {
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 500;
+  background: #FFE5E5;
+  color: #C42E3B;
+}
+
+.save-message.success {
+  background: #E5FFE5;
+  color: #2D662D;
+}
+
+/* Dark Mode Styles */
+:global(.dark-mode) .color-picker-container {
+  background: #1E1E2E;
+  color: #E0E0E0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+:global(.dark-mode) .color-input-group input[type="color"] {
+  border-color: #333;
+  background: #2A2A3E;
+}
+
+:global(.dark-mode) .preset-btn {
+  background: #2A2A3E;
+  border-color: #333;
+  color: #E0E0E0;
+}
+
+:global(.dark-mode) .preset-btn:hover {
+  background: rgba(255, 107, 107, 0.15);
+}
+
+:global(.dark-mode) .color-value {
+  color: #999;
+}
+
+:global(.dark-mode) .btn-secondary {
+  background: #333;
+  color: #E0E0E0;
+}
+
+:global(.dark-mode) .btn-secondary:hover {
+  background: #444;
+}
+
+@media (max-width: 768px) {
+  .color-inputs {
+    grid-template-columns: 1fr;
+  }
+
+  .preset-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .color-picker-container {
+    padding: 16px;
+  }
+
+  .preset-grid {
+    grid-template-columns: 1fr;
+  }
+}

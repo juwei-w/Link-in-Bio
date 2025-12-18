@@ -321,9 +321,69 @@ body.dark-mode .card {
 .card-header {
   padding: 0.75rem 1rem;
   border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.header-content {
+  flex: 1;
 }
 
 body.dark-mode .card-header {
+  border-bottom-color: rgba(51, 65, 85, 0.5);
+}
+
+.btn-icon-header {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--primary-color, #FF6B6B);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.btn-icon-header:hover {
+  background: rgba(255, 107, 107, 0.1);
+  transform: scale(1.05);
+}
+
+body.dark-mode .btn-icon-header:hover {
+  background: rgba(255, 107, 107, 0.2);
+}
+
+.theme-editor-section {
+  padding: 20px 1rem 1rem 1rem;
+  margin: 0 -1rem;
+  background: rgba(255, 107, 107, 0.03);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body.dark-mode .theme-editor-section {
+  background: rgba(255, 107, 107, 0.05);
   border-bottom-color: rgba(51, 65, 85, 0.5);
 }
 

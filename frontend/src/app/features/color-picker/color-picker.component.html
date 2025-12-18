@@ -1,0 +1,81 @@
+<div class="color-picker-container">
+  <div class="header">
+    <h3>Customize Theme</h3>
+    <button class="close-btn" (click)="close()">✕</button>
+  </div>
+
+  <!-- Color Inputs -->
+  <div class="color-inputs">
+    <div class="color-input-group">
+      <label>Primary Color</label>
+      <input 
+        type="color" 
+        [(ngModel)]="currentTheme.themeColors.primary"
+        (change)="updateColor('primary', currentTheme.themeColors.primary)"
+      >
+      <span class="color-value">{{ currentTheme.themeColors.primary }}</span>
+    </div>
+
+    <div class="color-input-group">
+      <label>Secondary Color</label>
+      <input 
+        type="color" 
+        [(ngModel)]="currentTheme.themeColors.secondary"
+        (change)="updateColor('secondary', currentTheme.themeColors.secondary)"
+      >
+      <span class="color-value">{{ currentTheme.themeColors.secondary }}</span>
+    </div>
+
+    <div class="color-input-group">
+      <label>Background Color</label>
+      <input 
+        type="color" 
+        [(ngModel)]="currentTheme.themeColors.background"
+        (change)="updateColor('background', currentTheme.themeColors.background)"
+      >
+      <span class="color-value">{{ currentTheme.themeColors.background }}</span>
+    </div>
+
+    <div class="color-input-group">
+      <label>Text Color</label>
+      <input 
+        type="color" 
+        [(ngModel)]="currentTheme.themeColors.text"
+        (change)="updateColor('text', currentTheme.themeColors.text)"
+      >
+      <span class="color-value">{{ currentTheme.themeColors.text }}</span>
+    </div>
+  </div>
+
+  <!-- Preset Themes -->
+  <div class="preset-section">
+    <h4>Preset Themes</h4>
+    <div class="preset-grid">
+      <button 
+        *ngFor="let preset of presetThemes" 
+        class="preset-btn"
+        (click)="applyPreset(preset)"
+        [title]="preset.name"
+      >
+        <div class="preset-preview">
+          <div class="color-box" [style.background-color]="preset.colors.primary"></div>
+          <div class="color-box" [style.background-color]="preset.colors.secondary"></div>
+        </div>
+        <span>{{ preset.name }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Save/Reset Buttons -->
+  <div class="action-buttons">
+    <button class="btn btn-primary" (click)="saveTheme()" [disabled]="saving">
+      {{ saving ? 'Saving...' : 'Save Theme' }}
+    </button>
+    <button class="btn btn-secondary" (click)="resetTheme()">Reset</button>
+  </div>
+
+  <!-- Save Message -->
+  <div *ngIf="saveMessage" class="save-message" [class.success]="saveMessage.includes('successfully')">
+    {{ saveMessage }}
+  </div>
+</div>

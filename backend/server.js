@@ -9,6 +9,7 @@ const openapi = require('./openapi.json');
 const authRoutes = require('./routes/auth');
 const linksRoutes = require('./routes/links');
 const usersRoutes = require('./routes/users');
+const themeRoutes = require('./routes/theme');
 
 const app = express();
 app.use(cors());
@@ -20,10 +21,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 // API docs (OpenAPI / Swagger UI)
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapi));
 
+// Specific routes first (more precise routes)
 app.use('/api/auth', authRoutes);
+app.use('/api/theme', themeRoutes);
 app.use('/api/links', linksRoutes);
 app.use('/api/users', usersRoutes);
-// Profile and users routes are also in linksRoutes but exposed at /api level
+// Generic route last (catches remaining /api routes from linksRoutes)
 app.use('/api', linksRoutes);
 
 // ===========================================

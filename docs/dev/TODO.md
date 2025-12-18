@@ -85,7 +85,7 @@ This TODO is derived from the PRD and broken into actionable tasks for the MVP. 
 
 ### Assigned to Juwei (Complex/Backend-Heavy):
 
-- [ ] Custom themes & color editor (premium later)
+- [x] Custom themes & color editor (premium later)
   - Requires: Color picker UI, theme state management, CSS variable generation, database storage
 - [x] Analytics dashboard — Show click trends over time with charts
   - Requires: Time-series data aggregation, chart library integration (Chart.js/Recharts), date filtering
