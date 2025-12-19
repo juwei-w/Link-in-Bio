@@ -29,9 +29,14 @@ export class DashboardComponent implements OnInit {
   draggedIndex = -1;
 
   // Profile data
+  username: string = "";
   displayName: string = "";
   bio: string = "";
   avatarPreview: string | null = null;
+  usernameError: string = "";
+  usernameAvailable: boolean | null = null;
+  checkingUsername = false;
+  usernameCheckTimeout: any = null;
 
   // Image cropper data
   showCropperModal = false;
@@ -64,6 +69,7 @@ export class DashboardComponent implements OnInit {
     // Fetch complete user profile from backend
     this.authService.getProfile().subscribe({
       next: (user) => {
+        this.username = user.username || "";
         this.displayName = user.displayName || "";
         this.bio = user.bio || "";
         this.avatarPreview = user.avatarUrl || null;
@@ -177,9 +183,32 @@ export class DashboardComponent implements OnInit {
   }
 
   updateProfile() {
+    // Validate username if changed
+    if (this.username !== this.currentUser?.username) {
+      if (!this.isValidUsername(this.username)) {
+        alert(
+          "Invalid username. Use 3-16 characters (letters, numbers, - and _ only)"
+        );
+        return;
+      }
+      // If availability check returned false -> block
+      if (this.usernameAvailable === false) {
+        alert("Username is not available");
+        return;
+      }
+      // If availability could not be verified (null), ask user to confirm
+      if (this.usernameAvailable === null) {
+        const proceed = confirm(
+          "Could not verify username availability due to a network error. Do you want to try saving anyway? It may fail if the username is taken."
+        );
+        if (!proceed) return;
+      }
+    }
+
     this.profileLoading = true;
 
     const profileData: any = {
+      username: this.username,
       displayName: this.displayName,
       bio: this.bio,
     };
@@ -192,13 +221,32 @@ export class DashboardComponent implements OnInit {
     this.authService.updateProfile(profileData).subscribe({
       next: (user) => {
         this.profileLoading = false;
-        alert("Profile updated successfully!");
-        console.log("Profile updated:", user);
+
+        // If username changed, redirect to new URL
+        if (user.username !== this.currentUser?.username) {
+          alert(
+            "Username updated successfully! Redirecting to your new profile..."
+          );
+          // Update localStorage and redirect
+          localStorage.setItem("username", user.username);
+          window.location.href = `/${user.username}`;
+        } else {
+          alert("Profile updated successfully!");
+          console.log("Profile updated:", user);
+          this.currentUser = user;
+          this.loadUserProfile();
+        }
       },
       error: (err) => {
         this.profileLoading = false;
         console.error("Failed to update profile", err);
-        alert("Failed to update profile. Please try again.");
+        const errorMsg =
+          err.error?.message || "Failed to update profile. Please try again.";
+        alert(errorMsg);
+        // Reset username on error
+        this.username = this.currentUser?.username || "";
+        this.usernameError = "";
+        this.usernameAvailable = null;
       },
     });
   }
@@ -375,9 +423,60 @@ export class DashboardComponent implements OnInit {
 
   getProfileUrl(): string {
     if (typeof window !== "undefined") {
-      return `${window.location.origin}/${this.currentUser?.username}`;
+      return `${window.location.origin}/${
+        this.username || this.currentUser?.username
+      }`;
     }
-    return `/${this.currentUser?.username}`;
+    return `/${this.username || this.currentUser?.username}`;
+  }
+
+  // Username validation
+  isValidUsername(username: string): boolean {
+    const USERNAME_REGEX = /^[a-z0-9_-]{3,16}$/i;
+    return USERNAME_REGEX.test(username);
+  }
+
+  // Check username availability with debounce
+  onUsernameChange() {
+    this.usernameError = "";
+    this.usernameAvailable = null;
+
+    if (!this.username || this.username === this.currentUser?.username) {
+      this.usernameAvailable = true;
+      return;
+    }
+
+    // Validate format
+    if (!this.isValidUsername(this.username)) {
+      this.usernameError = "3-16 characters (letters, numbers, - and _ only)";
+      this.usernameAvailable = false;
+      return;
+    }
+
+    // Clear previous timeout
+    if (this.usernameCheckTimeout) {
+      clearTimeout(this.usernameCheckTimeout);
+    }
+
+    // Debounce the availability check (wait 500ms after user stops typing)
+    this.checkingUsername = true;
+    this.usernameCheckTimeout = setTimeout(() => {
+      this.authService.checkUsernameAvailability(this.username).subscribe({
+        next: (result) => {
+          this.usernameAvailable = result.available;
+          if (!result.available) {
+            this.usernameError = "Username already taken";
+          }
+          this.checkingUsername = false;
+        },
+        error: (err) => {
+          console.error("Error checking username:", err);
+          this.usernameAvailable = null;
+          this.usernameError = "Error checking availability";
+          this.checkingUsername = false;
+        },
+      });
+    }, 500);
   }
 
   // Icon management methods

@@ -605,4 +605,33 @@ router.post("/resend-verification", async (req, res) => {
   }
 });
 
+// Check if username is available
+router.post("/check-username", async (req, res) => {
+  try {
+    const { username } = req.body;
+
+    console.debug("[auth] check-username called with:", username);
+
+    if (!username) {
+      return res.status(400).json({ message: "Username is required" });
+    }
+
+    // Username validation regex (same as in User model)
+    const USERNAME_REGEX = /^[a-z0-9_-]{3,16}$/i;
+    if (!USERNAME_REGEX.test(username)) {
+      return res.json({ available: false });
+    }
+
+    // Check if username exists in database (excluding current user if updating)
+    const existingUser = await User.findOne({
+      username: username.toLowerCase(),
+    });
+
+    res.json({ available: !existingUser });
+  } catch (err) {
+    console.error("Check username error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 module.exports = router;
