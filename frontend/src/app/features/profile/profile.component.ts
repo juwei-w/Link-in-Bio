@@ -302,4 +302,10 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     );
   }
+
+  onIconLoadError(event: any) {
+    // Handle broken icon images by hiding them
+    event.target.style.display = "none";
+    event.target.parentElement?.classList.add("icon-load-failed");
+  }
 }

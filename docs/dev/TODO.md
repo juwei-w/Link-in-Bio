@@ -106,7 +106,7 @@ This TODO is derived from the PRD and broken into actionable tasks for the MVP. 
   - Requires: Social media API integration, share URLs generation, button UI components
 - [x] QR code generation for profile pages
   - Requires: QR code library (qrcode.js), download/copy functionality, modal UI
-- [ ] Link icons/favicons — Auto-fetch or allow users to add icons for links
+- [x] Link icons/favicons — Auto-fetch or allow users to add icons for links
   - Requires: Favicon API integration (Google, Clearbit), image upload, icon display
 - [ ] Custom profile URL — Allow users to customize their `/:username` slug
   - Requires: URL validation, uniqueness check, redirect handling, settings UI
