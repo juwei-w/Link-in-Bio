@@ -43,13 +43,242 @@ export class DashboardComponent implements OnInit {
   imageChangedEvent: any = "";
   croppedImage: string = "";
 
-  // Platform detection preview
-  detectedPlatform: any = null;
-  platformDetectionTimeout: any = null;
+  // Icon upload helpers
+  iconUploadLinkId: string | null = null;
+  iconUploadIndex: number | null = null;
+  // Custom icon modal state
+  showCustomModal = false;
+  customModalLinkId: string | null = null;
+  customModalIndex: number | null = null;
+  customModalUrl: string = "";
+  modalSelectedFile: File | null = null;
+  modalSelectedFileName: string | null = null;
+  modalPreviewUrl: string | null = null;
 
   // Ref-trigger helper
   triggerImageSelect(input: HTMLInputElement) {
     input.click();
+  }
+
+  // Note: inline 'Upload' button removed; use Custom modal to upload images.
+
+  // Open custom-icon modal for a link (Upload or URL)
+  openCustomModal(linkId: string, index: number) {
+    this.customModalLinkId = linkId;
+    this.customModalIndex = index;
+    // Also pre-set upload target so upload button from modal works
+    this.iconUploadLinkId = linkId;
+    this.iconUploadIndex = index;
+    this.customModalUrl = "";
+    this.showCustomModal = true;
+  }
+
+  closeCustomModal() {
+    this.showCustomModal = false;
+    this.customModalLinkId = null;
+    this.customModalIndex = null;
+    this.customModalUrl = "";
+    // clear any modal-selected file state
+    this.modalSelectedFile = null;
+    this.modalSelectedFileName = null;
+    if (this.modalPreviewUrl) {
+      try {
+        URL.revokeObjectURL(this.modalPreviewUrl);
+      } catch (e) {}
+      this.modalPreviewUrl = null;
+    }
+  }
+
+  // Apply custom URL entered in modal
+  applyCustomUrl() {
+    const url = (this.customModalUrl || "").trim();
+    if (!url) {
+      alert("Please enter a valid image URL.");
+      return;
+    }
+
+    if (!this.customModalLinkId || this.customModalIndex === null) {
+      alert("No link selected");
+      return;
+    }
+
+    this.linksService.setLinkIcon(this.customModalLinkId, url).subscribe({
+      next: () => {
+        // Update local list and cache-bust
+        if (this.links[this.customModalIndex!]) {
+          this.links[this.customModalIndex!].iconUrl = this.cacheBustUrl(url);
+        }
+        this.closeCustomModal();
+        alert("Icon set successfully!");
+      },
+      error: (err) => {
+        console.error("Failed to set custom icon from modal:", err);
+        const serverMsg =
+          err?.error?.message || err?.error?.details || err?.message || null;
+        alert(
+          "Failed to set icon. " +
+            (serverMsg ? `Server: ${serverMsg}` : "Please try again.")
+        );
+      },
+    });
+  }
+
+  // Handle selected icon file for a link
+  onIconFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+    const file = input.files[0];
+    if (!this.iconUploadLinkId) return;
+
+    // Basic validation
+    if (!file.type.startsWith("image/")) {
+      alert("Please select an image file for the icon.");
+      return;
+    }
+
+    // If the custom modal is open, store the selected file and show name/preview
+    if (this.showCustomModal) {
+      this.modalSelectedFile = file;
+      this.modalSelectedFileName = file.name;
+      try {
+        this.modalPreviewUrl = URL.createObjectURL(file);
+      } catch (e) {
+        this.modalPreviewUrl = null;
+      }
+      // Leave iconUploadLinkId/index set so confirmUpload has the target
+      // Do not upload immediately from modal; wait for user to confirm
+      // Reset the input so same file can be re-selected later if removed
+      input.value = "";
+      return;
+    }
+
+    // Regular immediate upload flow (when not using modal)
+    this.linksService.uploadIcon(this.iconUploadLinkId, file).subscribe({
+      next: (res) => {
+        if (res && res.success) {
+          // Refresh links from server to get persisted state, then cache-bust the updated icon URL
+          this.linksService.getMyLinks().subscribe({
+            next: (links) => {
+              this.links = links.sort((a, b) => a.order - b.order);
+              if (
+                this.iconUploadIndex !== null &&
+                this.links[this.iconUploadIndex]
+              ) {
+                this.links[this.iconUploadIndex].iconUrl = this.cacheBustUrl(
+                  res.iconUrl
+                );
+              }
+              alert("Icon uploaded successfully!");
+            },
+            error: (err) => {
+              console.error("Failed to refresh links after upload", err);
+              // Fallback: update local list entry if available
+              if (
+                this.iconUploadIndex !== null &&
+                this.links[this.iconUploadIndex]
+              ) {
+                this.links[this.iconUploadIndex].iconUrl = this.cacheBustUrl(
+                  res.iconUrl
+                );
+              }
+              alert("Icon uploaded successfully (couldn't refresh list).");
+            },
+          });
+        }
+      },
+      error: (err) => {
+        console.error("Failed to upload icon:", err);
+        const serverMsg =
+          err?.error?.message || err?.error?.details || err?.message || null;
+        alert(
+          "Failed to upload icon. " +
+            (serverMsg ? `Server: ${serverMsg}` : "Please try again.")
+        );
+      },
+      complete: () => {
+        // Reset
+        input.value = "";
+        this.iconUploadLinkId = null;
+        this.iconUploadIndex = null;
+      },
+    });
+  }
+
+  // Confirm upload from custom modal (called when user presses Confirm)
+  confirmUpload() {
+    if (!this.modalSelectedFile) {
+      alert("No file selected to upload.");
+      return;
+    }
+    if (!this.iconUploadLinkId) {
+      alert("No link selected to attach the icon to.");
+      return;
+    }
+
+    this.linksService
+      .uploadIcon(this.iconUploadLinkId, this.modalSelectedFile)
+      .subscribe({
+        next: (res) => {
+          if (res && res.success) {
+            // Refresh links and cache-bust
+            this.linksService.getMyLinks().subscribe({
+              next: (links) => {
+                this.links = links.sort((a, b) => a.order - b.order);
+                if (
+                  this.customModalIndex !== null &&
+                  this.links[this.customModalIndex]
+                ) {
+                  this.links[this.customModalIndex].iconUrl = this.cacheBustUrl(
+                    res.iconUrl
+                  );
+                }
+                alert("Icon uploaded successfully!");
+                this.closeCustomModal();
+              },
+              error: (err) => {
+                console.error("Failed to refresh links after upload", err);
+                if (
+                  this.customModalIndex !== null &&
+                  this.links[this.customModalIndex]
+                ) {
+                  this.links[this.customModalIndex].iconUrl = this.cacheBustUrl(
+                    res.iconUrl
+                  );
+                }
+                alert("Icon uploaded successfully (could not refresh list).");
+                this.closeCustomModal();
+              },
+            });
+          }
+        },
+        error: (err) => {
+          console.error("Failed to upload icon from modal:", err);
+          const serverMsg =
+            err?.error?.message || err?.error?.details || err?.message || null;
+          alert(
+            "Failed to upload icon. " +
+              (serverMsg ? `Server: ${serverMsg}` : "Please try again.")
+          );
+        },
+      });
+  }
+
+  removeModalSelectedFile() {
+    this.modalSelectedFile = null;
+    this.modalSelectedFileName = null;
+    if (this.modalPreviewUrl) {
+      try {
+        URL.revokeObjectURL(this.modalPreviewUrl);
+      } catch (e) {}
+      this.modalPreviewUrl = null;
+    }
+  }
+
+  // Append a timestamp query param to bust browser cache when replacing icons
+  cacheBustUrl(url: string): string {
+    if (!url) return url;
+    const sep = url.includes("?") ? "&" : "?";
+    return `${url}${sep}_ts=${Date.now()}`;
   }
 
   constructor(
@@ -484,7 +713,7 @@ export class DashboardComponent implements OnInit {
     this.linksService.fetchFaviconForLink(linkId).subscribe({
       next: (result) => {
         if (result.success && this.links[index]) {
-          this.links[index].iconUrl = result.iconUrl;
+          this.links[index].iconUrl = this.cacheBustUrl(result.iconUrl);
           alert("Favicon fetched successfully!");
         }
       },
@@ -531,7 +760,7 @@ export class DashboardComponent implements OnInit {
       this.linksService.setLinkIcon(linkId, iconUrl).subscribe({
         next: () => {
           if (this.links[index]) {
-            this.links[index].iconUrl = iconUrl;
+            this.links[index].iconUrl = this.cacheBustUrl(iconUrl);
             alert("Icon set successfully!");
           }
         },
@@ -564,92 +793,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // Detect video platform and suggest icon
-  detectPlatformIcon(linkId: string, index: number) {
-    this.linksService.detectPlatformIcon(linkId).subscribe({
-      next: (result) => {
-        if (result.success && result.platform) {
-          const platform = result.platform;
-          const confirmUse = confirm(
-            `📺 Platform Detected: ${platform.name}\n\n` +
-              `Would you like to use the ${platform.name} icon for this link?\n\n` +
-              "Click OK to accept, Cancel to skip."
-          );
-
-          if (confirmUse) {
-            this.linksService.setLinkIcon(linkId, platform.icon).subscribe({
-              next: () => {
-                if (this.links[index]) {
-                  this.links[index].iconUrl = platform.icon;
-                  alert(`✓ ${platform.name} icon applied!`);
-                }
-              },
-              error: (err) => {
-                console.error("Failed to set platform icon:", err);
-                alert("Failed to apply platform icon.");
-              },
-            });
-          }
-        } else {
-          alert(
-            "No platform detected for this URL. Try using the auto-fetch feature instead."
-          );
-        }
-      },
-      error: (err) => {
-        console.error("Failed to detect platform:", err);
-        alert(
-          "Could not detect platform. Try using the auto-fetch feature instead."
-        );
-      },
-    });
-  }
-
-  // Handle URL input change for live platform detection preview
-  onUrlInputChange() {
-    // Clear existing timeout
-    if (this.platformDetectionTimeout) {
-      clearTimeout(this.platformDetectionTimeout);
-    }
-
-    // Clear previous detection
-    this.detectedPlatform = null;
-
-    // Only detect if URL is not empty
-    if (!this.formData.url || this.formData.url.trim() === "") {
-      return;
-    }
-
-    // Debounce the detection request (wait 800ms after user stops typing)
-    this.platformDetectionTimeout = setTimeout(() => {
-      this.linksService.detectPlatformPreview(this.formData.url!).subscribe({
-        next: (result) => {
-          if (result.success && result.platform) {
-            this.detectedPlatform = result.platform;
-          }
-        },
-        error: (err) => {
-          console.error("Failed to detect platform:", err);
-          // Silently fail - don't show error to user for preview
-        },
-      });
-    }, 800);
-  }
-
-  // Apply detected platform icon to form (before saving link)
-  applyDetectedPlatform() {
-    if (this.detectedPlatform && this.editingLink) {
-      // Store the detected icon to apply when saving
-      this.formData.iconUrl = this.detectedPlatform.icon;
-      alert(`✓ ${this.detectedPlatform.name} icon will be applied!`);
-      this.dismissDetectedPlatform();
-    }
-  }
-
-  // Dismiss the detected platform preview
-  dismissDetectedPlatform() {
-    this.detectedPlatform = null;
-  }
+  // Platform detection removed — use auto-fetch, custom URL, or upload
 
   logout() {
     this.authService.logout();

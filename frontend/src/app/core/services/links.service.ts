@@ -127,23 +127,17 @@ export class LinksService {
     });
   }
 
+  // Upload an icon image file for a link (multipart/form-data)
+  uploadIcon(id: string, file: File): Observable<any> {
+    const fd = new FormData();
+    fd.append("icon", file);
+    return this.http.post<any>(`${this.apiUrl}/links/${id}/upload-icon`, fd);
+  }
+
   // Clear icon for a link
   clearLinkIcon(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/links/${id}/icon`);
   }
 
-  // Detect video platform from link URL
-  detectPlatformIcon(id: string): Observable<any> {
-    return this.http.post<any>(
-      `${this.apiUrl}/links/${id}/detect-platform-icon`,
-      {}
-    );
-  }
-
-  // Preview platform detection for a URL (before saving)
-  detectPlatformPreview(url: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/links/detect-platform/preview`, {
-      url,
-    });
-  }
+  // Platform detection removed; use uploadIcon or setLinkIcon instead
 }

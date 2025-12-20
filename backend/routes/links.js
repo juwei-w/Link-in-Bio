@@ -11,7 +11,14 @@ const {
   getClientIP,
 } = require("../utils/geolocation");
 const { fetchFavicon, isValidImageUrl } = require("../utils/faviconFetch");
-const { detectPlatform } = require("../utils/videoPlatformDetector");
+const cloudinary = require("../config/cloudinary");
+const multer = require("multer");
+
+// Use memory storage for small icon uploads (allow up to 5MB)
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
 
 // Helper function to check if a link is currently active based on scheduling
 const isLinkActive = (link) => {
@@ -676,36 +683,74 @@ router.post("/:id/fetch-icon", auth, async (req, res) => {
   }
 });
 
-// Detect video platform and suggest icon
-router.post("/:id/detect-platform-icon", auth, async (req, res) => {
-  try {
-    const link = await Link.findOne({
-      _id: req.params.id,
-      userId: req.user.id,
-    });
-    if (!link)
-      return res.status(404).json({ message: "Not found or not authorized" });
+// Upload a custom icon image for a link (private)
+// Accepts multipart/form-data with field `icon`
+router.post(
+  "/:id/upload-icon",
+  auth,
+  upload.single("icon"),
+  async (req, res) => {
+    try {
+      if (!req.file) {
+        return res
+          .status(400)
+          .json({ message: "No file uploaded (field name: icon)" });
+      }
 
-    // Detect platform from URL
-    console.debug(
-      "[links] /:id/detect-platform-icon called for link id:",
-      req.params.id,
-      "url:",
-      link.url
-    );
-    const platformInfo = detectPlatform(link.url);
-    console.debug("[links] platform detection result:", platformInfo);
+      // Basic file type validation
+      if (!req.file.mimetype || !req.file.mimetype.startsWith("image/")) {
+        return res
+          .status(400)
+          .json({ message: "Uploaded file is not an image" });
+      }
 
-    if (platformInfo) {
-      res.json({ success: true, platform: platformInfo });
-    } else {
-      res.status(404).json({ message: "No platform detected for this URL" });
+      const link = await Link.findOne({
+        _id: req.params.id,
+        userId: req.user.id,
+      });
+      if (!link)
+        return res.status(404).json({ message: "Not found or not authorized" });
+
+      // Convert buffer to base64 data URI for Cloudinary upload
+      const mime = req.file.mimetype || "image/png";
+      const b64 = req.file.buffer.toString("base64");
+      const dataUri = `data:${mime};base64,${b64}`;
+
+      let uploadResult;
+      try {
+        uploadResult = await cloudinary.uploader.upload(dataUri, {
+          folder: "link_icons",
+          resource_type: "image",
+          quality: "auto",
+        });
+      } catch (uploadErr) {
+        console.error("Cloudinary upload error:", uploadErr);
+        return res
+          .status(502)
+          .json({
+            message: "Cloudinary upload failed",
+            details: uploadErr.message || uploadErr,
+          });
+      }
+
+      if (!uploadResult || !uploadResult.secure_url) {
+        console.error("Cloudinary returned no secure_url", uploadResult);
+        return res
+          .status(500)
+          .json({ message: "Failed to upload image", details: uploadResult });
+      }
+
+      link.iconUrl = uploadResult.secure_url;
+      await link.save();
+      res.json({ success: true, iconUrl: link.iconUrl });
+    } catch (err) {
+      console.error(err);
+      res
+        .status(500)
+        .json({ message: "Server error", details: err.message || err });
     }
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
   }
-});
+);
 
 // Auto-fetch icons for all user's links (private, bulk operation) - MUST COME BEFORE /:id routes
 router.post("/fetch-icons/all", auth, async (req, res) => {
@@ -750,30 +795,7 @@ router.post("/fetch-icons/all", auth, async (req, res) => {
   }
 });
 
-// Detect platform from URL in request body (for preview before saving link) - MUST COME BEFORE /:id routes
-router.post("/detect-platform/preview", auth, async (req, res) => {
-  try {
-    const { url } = req.body;
-
-    if (!url) {
-      return res.status(400).json({ message: "URL is required" });
-    }
-
-    const platformInfo = detectPlatform(url);
-
-    if (platformInfo) {
-      res.json({ success: true, platform: platformInfo });
-    } else {
-      res.json({
-        success: false,
-        message: "No platform detected for this URL",
-      });
-    }
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+// (platform detection removed) If you need server-side preview logic, implement explicit rules
 
 // Upload or set custom icon URL for a link (private)
 router.post("/:id/set-icon", auth, async (req, res) => {

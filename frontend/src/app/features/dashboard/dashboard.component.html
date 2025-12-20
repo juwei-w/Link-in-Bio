@@ -92,7 +92,9 @@
             </div>
 
             <div class="info-group">
-              <label for="username" class="form-label">Profile Username</label>
+              <label for="username" class="form-label"
+                >Profile Personalised Url</label
+              >
               <div class="username-input-wrapper">
                 <div class="username-prefix">yoursite.com/</div>
                 <input
@@ -208,43 +210,11 @@
                 type="url"
                 id="url"
                 [(ngModel)]="formData.url"
-                (input)="onUrlInputChange()"
                 name="url"
                 required
                 class="form-input"
                 placeholder="https://example.com"
               />
-              <!-- Platform Detection Preview -->
-              <div *ngIf="detectedPlatform" class="platform-detection-preview">
-                <div class="platform-preview-content">
-                  <img
-                    [src]="detectedPlatform.icon"
-                    [alt]="detectedPlatform.name"
-                    class="platform-icon-preview"
-                  />
-                  <div class="platform-info">
-                    <p class="platform-name">
-                      📺 {{ detectedPlatform.name }} detected!
-                    </p>
-                    <button
-                      type="button"
-                      class="btn-apply-platform"
-                      (click)="applyDetectedPlatform()"
-                      title="Apply this icon"
-                    >
-                      Use {{ detectedPlatform.name }} Icon
-                    </button>
-                  </div>
-                  <button
-                    type="button"
-                    class="btn-dismiss-platform"
-                    (click)="dismissDetectedPlatform()"
-                    title="Dismiss"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
             </div>
 
             <!-- Scheduling Section -->
@@ -480,38 +450,12 @@
                         </svg>
                         Auto-fetch
                       </button>
+                      <!-- Upload button removed; use Custom modal to upload images -->
                       <button
                         type="button"
                         class="btn-icon-sm"
-                        title="Detect video platform"
-                        (click)="detectPlatformIcon(link._id!, i)"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="14"
-                          height="14"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path d="M23 7l-7 5 7 5V7z"></path>
-                          <rect
-                            x="1"
-                            y="5"
-                            width="15"
-                            height="14"
-                            rx="2"
-                            ry="2"
-                          ></rect>
-                        </svg>
-                        Detect
-                      </button>
-                      <button
-                        type="button"
-                        class="btn-icon-sm"
-                        title="Set custom icon URL"
-                        (click)="setCustomIcon(link._id!, i)"
+                        title="Custom icon (upload or URL)"
+                        (click)="openCustomModal(link._id!, i)"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -551,6 +495,7 @@
                   </div>
                 </div>
               </div>
+
               <div class="link-actions">
                 <button (click)="editLink(link)" class="btn-icon" title="Edit">
                   <svg
@@ -639,6 +584,90 @@
       <div class="modal-footer">
         <button class="btn btn-ghost" (click)="cancelCrop()">Cancel</button>
         <button class="btn btn-primary" (click)="applyCrop()">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Single Custom Icon Modal (global) -->
+  <div
+    *ngIf="showCustomModal"
+    class="modal-overlay custom-modal"
+    (click)="closeCustomModal()"
+  >
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Custom Icon</h3>
+        <button class="btn-close" (click)="closeCustomModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>Select how you'd like to add a custom icon for this link.</p>
+        <div class="options">
+          <div class="custom-option">
+            <label class="upload-label" style="cursor: pointer">
+              Upload Image
+              <input
+                type="file"
+                accept="image/*"
+                #modalIconFile
+                hidden
+                (change)="onIconFileSelected($event)"
+              />
+            </label>
+            <small style="color: #6b7280"
+              >Supported: JPG, PNG, GIF. Max 5MB.</small
+            >
+            <div *ngIf="modalSelectedFile" class="modal-file-selected">
+              <div class="file-preview" *ngIf="modalPreviewUrl">
+                <img [src]="modalPreviewUrl" alt="preview" />
+              </div>
+              <div class="file-meta">
+                <strong>{{ modalSelectedFileName }}</strong>
+                <div class="file-actions">
+                  <button
+                    class="btn btn-ghost btn-sm"
+                    type="button"
+                    (click)="removeModalSelectedFile()"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr />
+        <div>
+          <label class="form-label">Or use an image URL</label>
+          <input
+            type="url"
+            class="form-input"
+            [(ngModel)]="customModalUrl"
+            placeholder="https://example.com/icon.png"
+          />
+          <div style="margin-top: 0.5rem" class="custom-url-input">
+            <button
+              *ngIf="!modalSelectedFile"
+              class="btn-use-url"
+              (click)="applyCustomUrl()"
+            >
+              Use URL
+            </button>
+            <button
+              *ngIf="modalSelectedFile"
+              class="btn btn-primary"
+              (click)="confirmUpload()"
+            >
+              Confirm Upload
+            </button>
+            <button
+              class="btn btn-ghost"
+              (click)="closeCustomModal()"
+              style="margin-left: 0.5rem"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

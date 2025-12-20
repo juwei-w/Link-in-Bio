@@ -125,82 +125,9 @@ const PLATFORMS = {
   },
 };
 
-/**
- * Detect video/content platform from URL
- * @param {string} url - The URL to detect
- * @returns {Object|null} - Platform info with name, icon, and color, or null if not detected
- */
-function detectPlatform(url) {
-  if (!url) return null;
+// Platform auto-detection removed; keep platforms list and helper
 
-  try {
-    const urlObj = new URL(url);
-    const fullUrl = urlObj.toString();
-    const hostname = urlObj.hostname.toLowerCase();
-
-    // Debug: log incoming URL for detection
-    console.debug(
-      "[videoPlatformDetector] detectPlatform called for URL:",
-      fullUrl
-    );
-
-    // Handle localhost - return null to let user use auto-fetch or custom icon
-    if (
-      hostname === "localhost" ||
-      hostname === "127.0.0.1" ||
-      hostname.startsWith("192.168.") ||
-      hostname.startsWith("10.")
-    ) {
-      console.debug(
-        "[videoPlatformDetector] local URL detected, skipping platform detection for:",
-        hostname
-      );
-      return null; // Local URLs don't need platform detection
-    }
-
-    // Check each platform's patterns
-    for (const [key, platform] of Object.entries(PLATFORMS)) {
-      for (const pattern of platform.patterns) {
-        try {
-          if (pattern.test(fullUrl)) {
-            console.debug(
-              `[videoPlatformDetector] matched platform=${key} using pattern=${pattern}`
-            );
-            return {
-              platformId: key,
-              name: platform.name,
-              icon: platform.icon,
-              color: platform.color,
-              url: url,
-            };
-          }
-        } catch (re) {
-          // in case pattern.test throws for malformed regex or input
-          console.warn("[videoPlatformDetector] pattern test error", {
-            key,
-            pattern: String(pattern),
-            err: re.message,
-          });
-        }
-      }
-    }
-
-    console.debug(
-      "[videoPlatformDetector] no platform matched for URL:",
-      fullUrl
-    );
-
-    // If no platform matched, return null
-    return null;
-  } catch (err) {
-    console.error("Error detecting platform:", err.message);
-    return null;
-  }
-}
-
-/**
- * Get all available platforms
- */
+// Note: platform auto-detection removed in favor of explicit icon upload
 function getAllPlatforms() {
   return Object.entries(PLATFORMS).map(([key, platform]) => ({
     platformId: key,
@@ -211,7 +138,6 @@ function getAllPlatforms() {
 }
 
 module.exports = {
-  detectPlatform,
   getAllPlatforms,
   PLATFORMS,
 };
