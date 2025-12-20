@@ -216,6 +216,74 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+// GET /api/auth/check-username
+// Query param: username
+// Returns: { available: boolean, message: string }
+router.get("/check-username", async (req, res) => {
+  try {
+    const { username } = req.query;
+    if (!username || username.trim().length < 3) {
+      return res.json({
+        available: false,
+        message: "Username must be at least 3 characters",
+      });
+    }
+    if (username.length > 16) {
+      return res.json({
+        available: false,
+        message: "Username must be 16 characters or less",
+      });
+    }
+    if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+      return res.json({
+        available: false,
+        message: "Username can only contain letters, numbers, - and _",
+      });
+    }
+
+    const existing = await User.findOne({ username: username.toLowerCase() });
+    if (existing) {
+      return res.json({
+        available: false,
+        message: "Username is already taken",
+      });
+    }
+
+    res.json({ available: true, message: "Username is available" });
+  } catch (err) {
+    console.error("Check username error:", err);
+    res.status(500).json({ available: false, message: "Server error" });
+  }
+});
+
+// GET /api/auth/check-email
+// Query param: email
+// Returns: { available: boolean, message: string }
+router.get("/check-email", async (req, res) => {
+  try {
+    const { email } = req.query;
+    if (!email || !email.includes("@")) {
+      return res.json({
+        available: false,
+        message: "Please enter a valid email",
+      });
+    }
+
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.json({
+        available: false,
+        message: "Email is already registered",
+      });
+    }
+
+    res.json({ available: true, message: "Email is available" });
+  } catch (err) {
+    console.error("Check email error:", err);
+    res.status(500).json({ available: false, message: "Server error" });
+  }
+});
+
 // POST /api/auth/login
 router.post("/login", async (req, res) => {
   try {

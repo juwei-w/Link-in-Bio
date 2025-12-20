@@ -210,10 +210,20 @@ export class AuthService {
   // Check username availability
   checkUsernameAvailability(
     username: string
-  ): Observable<{ available: boolean }> {
-    return this.http.post<{ available: boolean }>(
-      `${this.apiUrl}/auth/check-username`,
-      { username }
+  ): Observable<{ available: boolean; message: string }> {
+    return this.http.get<{ available: boolean; message: string }>(
+      `${this.apiUrl}/auth/check-username?username=${encodeURIComponent(
+        username
+      )}`
+    );
+  }
+
+  // Check email availability
+  checkEmailAvailability(
+    email: string
+  ): Observable<{ available: boolean; message: string }> {
+    return this.http.get<{ available: boolean; message: string }>(
+      `${this.apiUrl}/auth/check-email?email=${encodeURIComponent(email)}`
     );
   }
 }

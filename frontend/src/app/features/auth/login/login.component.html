@@ -31,11 +31,24 @@
           type="text"
           id="username"
           [(ngModel)]="username"
+          (input)="onUsernameChange()"
           name="username"
           [required]="isSignUp"
           class="form-input"
+          [class.error]="username && usernameError"
+          [class.success]="username && usernameAvailable"
           placeholder="Enter your username"
         />
+        <div *ngIf="checkingUsername" class="checking-spinner">
+          ⏳ Checking...
+        </div>
+        <p *ngIf="usernameError" class="form-error">{{ usernameError }}</p>
+        <p
+          *ngIf="username && usernameAvailable && !checkingUsername"
+          class="form-success"
+        >
+          ✓ Username available
+        </p>
       </div>
 
       <div class="form-group">
@@ -44,11 +57,26 @@
           type="email"
           id="email"
           [(ngModel)]="email"
+          (input)="isSignUp && onEmailChange()"
           name="email"
           required
           class="form-input"
+          [class.error]="email && isSignUp && emailError"
+          [class.success]="email && isSignUp && emailAvailable"
           [placeholder]="isSignUp ? 'Enter your email' : 'your@email.com'"
         />
+        <div *ngIf="isSignUp && checkingEmail" class="checking-spinner">
+          ⏳ Checking...
+        </div>
+        <p *ngIf="isSignUp && emailError" class="form-error">
+          {{ emailError }}
+        </p>
+        <p
+          *ngIf="isSignUp && email && emailAvailable && !checkingEmail"
+          class="form-success"
+        >
+          ✓ Email available
+        </p>
       </div>
 
       <div class="form-group">

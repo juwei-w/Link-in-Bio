@@ -22,7 +22,73 @@ export class LoginComponent {
   successMessage = ""; // New: show success message after signup
   emailNotVerifiedEmail = ""; // Track email that needs verification
 
+  // Real-time validation feedback
+  usernameError = "";
+  usernameAvailable: boolean | null = null;
+  emailError = "";
+  emailAvailable: boolean | null = null;
+  checkingUsername = false;
+  checkingEmail = false;
+  private usernameCheckTimeout: any = null;
+  private emailCheckTimeout: any = null;
+
   constructor(private authService: AuthService, private router: Router) {}
+
+  // Check username availability (with debounce)
+  onUsernameChange() {
+    this.usernameError = "";
+    this.usernameAvailable = null;
+
+    if (this.usernameCheckTimeout) {
+      clearTimeout(this.usernameCheckTimeout);
+    }
+
+    const username = this.username.trim();
+    if (!username) return;
+
+    this.checkingUsername = true;
+    this.usernameCheckTimeout = setTimeout(() => {
+      this.authService.checkUsernameAvailability(username).subscribe({
+        next: (res) => {
+          this.usernameAvailable = res.available;
+          this.usernameError = res.available ? "" : res.message;
+          this.checkingUsername = false;
+        },
+        error: (err) => {
+          this.usernameError = "Could not check username availability";
+          this.checkingUsername = false;
+        },
+      });
+    }, 500); // 500ms debounce
+  }
+
+  // Check email availability (with debounce)
+  onEmailChange() {
+    this.emailError = "";
+    this.emailAvailable = null;
+
+    if (this.emailCheckTimeout) {
+      clearTimeout(this.emailCheckTimeout);
+    }
+
+    const email = this.email.trim();
+    if (!email) return;
+
+    this.checkingEmail = true;
+    this.emailCheckTimeout = setTimeout(() => {
+      this.authService.checkEmailAvailability(email).subscribe({
+        next: (res) => {
+          this.emailAvailable = res.available;
+          this.emailError = res.available ? "" : res.message;
+          this.checkingEmail = false;
+        },
+        error: (err) => {
+          this.emailError = "Could not check email availability";
+          this.checkingEmail = false;
+        },
+      });
+    }, 500); // 500ms debounce
+  }
 
   async onSubmit() {
     this.loading = true;
@@ -32,6 +98,18 @@ export class LoginComponent {
 
     try {
       if (this.isSignUp) {
+        // Validate username and email availability before signup
+        if (!this.usernameAvailable) {
+          this.error = this.usernameError || "Username is not available";
+          this.loading = false;
+          return;
+        }
+        if (!this.emailAvailable) {
+          this.error = this.emailError || "Email is not available";
+          this.loading = false;
+          return;
+        }
+
         // Sign up
         this.authService
           .signup(this.username, this.email, this.password)
@@ -46,6 +124,8 @@ export class LoginComponent {
               this.username = "";
               this.email = "";
               this.password = "";
+              this.usernameAvailable = null;
+              this.emailAvailable = null;
               this.loading = false;
             },
             error: (err) => {
