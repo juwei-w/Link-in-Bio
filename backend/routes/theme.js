@@ -17,6 +17,8 @@ router.get("/", auth, async (req, res) => {
         background: "#FFFFFF",
         text: "#000000",
       },
+      vibrancy: user.vibrancy || "subtle",
+      cardStyle: user.cardStyle || "glass",
     });
   } catch (err) {
     console.error("Get theme error:", err);
@@ -40,6 +42,8 @@ router.get("/public/:username", async (req, res) => {
         background: "#FFFFFF",
         text: "#000000",
       },
+      vibrancy: user.vibrancy || "subtle",
+      cardStyle: user.cardStyle || "glass",
     });
   } catch (err) {
     console.error("Get public theme error:", err);
@@ -51,7 +55,7 @@ router.get("/public/:username", async (req, res) => {
 // Body: { theme, themeColors: { primary, secondary, background, text } }
 router.put("/", auth, async (req, res) => {
   try {
-    const { theme, themeColors } = req.body;
+    const { theme, themeColors, vibrancy, cardStyle } = req.body;
 
     const user = await User.findById(req.userId);
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -76,12 +80,22 @@ router.put("/", auth, async (req, res) => {
       user.theme = theme;
     }
 
+    if (vibrancy && ["subtle", "medium", "high"].includes(vibrancy)) {
+      user.vibrancy = vibrancy;
+    }
+
+    if (cardStyle && ["glass", "solid", "gradient"].includes(cardStyle)) {
+      user.cardStyle = cardStyle;
+    }
+
     await user.save();
 
     res.json({
       message: "Theme updated successfully",
       theme: user.theme,
       themeColors: user.themeColors,
+      vibrancy: user.vibrancy,
+      cardStyle: user.cardStyle,
     });
   } catch (err) {
     console.error("Update theme error:", err);

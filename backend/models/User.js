@@ -25,6 +25,16 @@ const UserSchema = new Schema({
     background: { type: String, default: "#FFFFFF" }, // background
     text: { type: String, default: "#000000" }, // text color
   },
+  vibrancy: {
+    type: String,
+    enum: ["subtle", "medium", "high"],
+    default: "subtle",
+  },
+  cardStyle: {
+    type: String,
+    enum: ["glass", "solid", "gradient"],
+    default: "glass",
+  },
   provider: {
     type: String,
     enum: ["local", "google", "github", "firebase"],

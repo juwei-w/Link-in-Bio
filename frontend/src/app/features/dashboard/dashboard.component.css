@@ -95,9 +95,11 @@ body.dark-mode .dashboard-container {
 }
 
 body.dark-mode .navbar {
-  background: rgba(15, 23, 42, 0.8);
-  box-shadow: 0 1px 0 rgba(51, 65, 85, 0.5);
-  border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+  background: rgba(15, 23, 42, 0.95);
+  /* More opaque for better legibility */
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+  /* Softer border */
 }
 
 .nav-content {
@@ -376,6 +378,7 @@ body.dark-mode .btn-icon-header:hover {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -702,18 +705,22 @@ body.dark-mode .btn-secondary:hover {
 
 .link-item {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem 1.75rem;
+  align-items: stretch;
+  /* Stretch children to full height */
+  gap: 0;
+  /* Remove gap, handle spacing via padding */
+  padding: 0;
+  /* Remove padding from container */
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%);
   border: 1px solid rgba(226, 232, 240, 0.6);
   border-radius: 1rem;
-  cursor: move;
   transition: var(--transition);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  /* Ensure children don't overflow rounded corners */
 }
 
-body.dark-mode .link-item {
+:host-context(body.dark-mode) .link-item {
   background: linear-gradient(135deg, rgba(51, 65, 85, 0.4) 0%, rgba(30, 41, 59, 0.4) 100%);
   border-color: rgba(51, 65, 85, 0.6);
 }
@@ -725,38 +732,72 @@ body.dark-mode .link-item {
   border-color: hsla(14, 100%, 70%, 0.3);
 }
 
-body.dark-mode .link-item:hover {
+:host-context(body.dark-mode) .link-item:hover {
   background: linear-gradient(135deg, rgba(51, 65, 85, 0.6) 0%, rgba(30, 41, 59, 0.6) 100%);
   border-color: hsla(14, 100%, 70%, 0.4);
 }
 
-.link-content {
+/* 1. Drag Handle Wrapper */
+.drag-handle-wrapper {
   display: flex;
-  gap: 1rem;
-  flex: 1;
-  align-items: flex-start;
-  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  /* Padding creates the spacing. Width ~3rem total if width is auto */
+  padding: 0 0.75rem;
+  border-right: 1px solid rgba(226, 232, 240, 0.6);
+  min-width: 3rem;
+  /* Ensure click target is usable */
+  background: transparent;
+  transition: background-color 0.2s;
+}
+
+:host-context(body.dark-mode) .drag-handle-wrapper {
+  border-right-color: rgba(51, 65, 85, 0.6);
 }
 
 .drag-handle {
-  cursor: grab;
   color: var(--color-text-secondary);
-  flex-shrink: 0;
-  margin-top: 0.25rem;
   transition: var(--transition);
 }
 
-.drag-handle:hover {
+.drag-handle-wrapper:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+:host-context(body.dark-mode) .drag-handle-wrapper:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.drag-handle-wrapper:hover .drag-handle {
   color: var(--color-primary);
 }
 
-.drag-handle:active {
+.drag-handle-wrapper:active {
   cursor: grabbing;
+}
+
+/* 2. Main Content Wrapper */
+.link-content-wrapper {
+  display: flex;
+  flex: 1;
+  /* Take remaining space */
+  min-width: 0;
+  /* Enable truncation in flex child */
+  align-items: flex-start;
+  justify-content: space-between;
+  /* Push actions to right */
+  gap: 1rem;
+  /* Add padding here to match original design */
+  padding: 1.5rem 1.75rem 1.5rem 1rem;
 }
 
 .link-info {
   flex: 1;
   min-width: 0;
+  /* Enable truncation */
+  display: flex;
+  flex-direction: column;
 }
 
 .link-title {
@@ -764,7 +805,14 @@ body.dark-mode .link-item:hover {
   font-weight: 600;
   font-size: 1rem;
   color: var(--color-text-light);
+  /* Default Light Mode */
   letter-spacing: -0.01em;
+}
+
+/* Dark Mode Text Visibility Fix */
+:host-context(body.dark-mode) .link-title {
+  color: #f1f5f9;
+  /* Explicit White/Light */
 }
 
 .link-url {
@@ -774,9 +822,12 @@ body.dark-mode .link-item:hover {
   margin-bottom: 0.375rem;
   font-weight: 500;
   transition: var(--transition);
+
+  /* Overflow Logic */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  max-width: 100%;
   text-decoration: none;
 }
 
@@ -796,6 +847,14 @@ body.dark-mode .link-item:hover {
   font-size: 0.75rem;
   color: var(--color-text-secondary);
   margin: 0;
+}
+
+/* 3. Actions */
+.link-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  /* Keep buttons fixed width */
 }
 
 .status-badge {

@@ -1,49 +1,69 @@
 <div class="color-picker-container">
-  <div class="header">
-    <h3>Customize Theme</h3>
-    <button class="close-btn" (click)="close()">✕</button>
+  <!-- Header removed for embedded view -->
+
+  <!-- Live Preview Section -->
+  <div class="preview-section">
+    <h4>Live Preview</h4>
+    <div class="mini-profile-container">
+      <div class="mini-header">
+        <div class="mini-avatar">U</div>
+        <div class="mini-name">User</div>
+      </div>
+      <div class="mini-links">
+        <div class="profile-link">
+          <div class="link-content">
+            <span class="link-title">Sample Link</span>
+            <span class="link-url">https://example.com</span>
+          </div>
+          <div class="link-arrow">→</div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Color Inputs -->
   <div class="color-inputs">
     <div class="color-input-group">
       <label>Primary Color</label>
-      <input 
-        type="color" 
-        [(ngModel)]="currentTheme.themeColors.primary"
-        (change)="updateColor('primary', currentTheme.themeColors.primary)"
-      >
+      <input type="color" [(ngModel)]="currentTheme.themeColors.primary" (change)="updateColor('primary', $event)">
       <span class="color-value">{{ currentTheme.themeColors.primary }}</span>
     </div>
 
     <div class="color-input-group">
       <label>Secondary Color</label>
-      <input 
-        type="color" 
-        [(ngModel)]="currentTheme.themeColors.secondary"
-        (change)="updateColor('secondary', currentTheme.themeColors.secondary)"
-      >
+      <input type="color" [(ngModel)]="currentTheme.themeColors.secondary" (change)="updateColor('secondary', $event)">
       <span class="color-value">{{ currentTheme.themeColors.secondary }}</span>
     </div>
 
     <div class="color-input-group">
       <label>Background Color</label>
-      <input 
-        type="color" 
-        [(ngModel)]="currentTheme.themeColors.background"
-        (change)="updateColor('background', currentTheme.themeColors.background)"
-      >
+      <input type="color" [(ngModel)]="currentTheme.themeColors.background"
+        (change)="updateColor('background', $event)">
       <span class="color-value">{{ currentTheme.themeColors.background }}</span>
     </div>
 
     <div class="color-input-group">
       <label>Text Color</label>
-      <input 
-        type="color" 
-        [(ngModel)]="currentTheme.themeColors.text"
-        (change)="updateColor('text', currentTheme.themeColors.text)"
-      >
+      <input type="color" [(ngModel)]="currentTheme.themeColors.text" (change)="updateColor('text', $event)">
       <span class="color-value">{{ currentTheme.themeColors.text }}</span>
+    </div>
+  </div>
+
+  <!-- Style Options -->
+  <div class="style-section">
+    <h4>Theme Intensity</h4>
+    <div class="btn-group">
+      <button [class.active]="currentTheme.vibrancy === 'subtle'" (click)="updateVibrancy('subtle')">Subtle</button>
+      <button [class.active]="currentTheme.vibrancy === 'medium'" (click)="updateVibrancy('medium')">Medium</button>
+      <button [class.active]="currentTheme.vibrancy === 'high'" (click)="updateVibrancy('high')">High</button>
+    </div>
+
+    <h4>Link Style</h4>
+    <div class="btn-group">
+      <button [class.active]="currentTheme.cardStyle === 'glass'" (click)="updateCardStyle('glass')">Glass</button>
+      <button [class.active]="currentTheme.cardStyle === 'solid'" (click)="updateCardStyle('solid')">Solid</button>
+      <button [class.active]="currentTheme.cardStyle === 'gradient'"
+        (click)="updateCardStyle('gradient')">Gradient</button>
     </div>
   </div>
 
@@ -51,15 +71,11 @@
   <div class="preset-section">
     <h4>Preset Themes</h4>
     <div class="preset-grid">
-      <button 
-        *ngFor="let preset of presetThemes" 
-        class="preset-btn"
-        (click)="applyPreset(preset)"
-        [title]="preset.name"
-      >
+      <button *ngFor="let preset of presets" class="preset-btn" (click)="applyPreset(preset)" [title]="preset.name">
         <div class="preset-preview">
-          <div class="color-box" [style.background-color]="preset.colors.primary"></div>
-          <div class="color-box" [style.background-color]="preset.colors.secondary"></div>
+          <div class="color-box" [style.background]="preset.colors.primary"></div>
+          <div class="color-box" [style.background]="preset.colors.secondary"></div>
+          <div class="color-box" [style.background]="preset.colors.background"></div>
         </div>
         <span>{{ preset.name }}</span>
       </button>

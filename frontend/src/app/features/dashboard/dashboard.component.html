@@ -4,25 +4,11 @@
       <!-- Profile Card -->
       <div class="card profile-card">
         <div class="card-header">
-          <div class="header-content">
-            <h2 class="card-title">Profile Settings</h2>
-            <p class="card-description">Customize your public profile</p>
-          </div>
-          <button class="btn-icon-header" (click)="showThemeEditor = !showThemeEditor" title="Customize Theme Colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="1"></circle>
-              <path d="M12 1v6m0 6v6"></path>
-              <circle cx="12" cy="5" r="1" opacity="0.3"></circle>
-              <circle cx="12" cy="19" r="1" opacity="0.3"></circle>
-            </svg>
-            <span>Theme</span>
-          </button>
+          <h2 class="card-title">Profile Settings</h2>
+          <p class="card-description">Customize your public profile</p>
         </div>
 
-        <!-- Theme Editor Section -->
-        <div *ngIf="showThemeEditor" class="theme-editor-section">
-          <app-color-picker (closeEditor)="showThemeEditor = false"></app-color-picker>
-        </div>
+        <!-- Theme Editor Section Removed -->
 
         <div class="card-content">
           <div class="profile-info">
@@ -31,26 +17,31 @@
             <div class="info-group">
               <label class="form-label">Profile Picture</label>
               <div class="avatar-upload-wrapper">
-                <div class="avatar-preview" 
-                     [style.background-image]="avatarPreview ? 'url(' + avatarPreview + ')' : 'none'"
-                     [class.has-image]="avatarPreview"
-                     (click)="triggerImageSelect(fileInput)"
-                     title="Click to upload/crop">
-                  <span *ngIf="!avatarPreview">{{ (displayName || currentUser?.username || 'U').charAt(0).toUpperCase() }}</span>
+                <div class="avatar-preview"
+                  [style.background-image]="avatarPreview ? 'url(' + avatarPreview + ')' : 'none'"
+                  [class.has-image]="avatarPreview" (click)="triggerImageSelect(fileInput)"
+                  title="Click to upload/crop">
+                  <span *ngIf="!avatarPreview">{{ (displayName || currentUser?.username || 'U').charAt(0).toUpperCase()
+                    }}</span>
                 </div>
                 <div class="avatar-upload-controls">
                   <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden />
                   <div class="upload-buttons">
                     <button type="button" class="btn btn-secondary btn-sm" (click)="fileInput.click()">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        style="margin-right: 0.5rem;">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                         <polyline points="17 8 12 3 7 8"></polyline>
                         <line x1="12" y1="3" x2="12" y2="15"></line>
                       </svg>
                       Choose Image
                     </button>
-                    <button type="button" *ngIf="avatarPreview || croppedImage" class="btn btn-ghost btn-sm" (click)="removeAvatar()">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
+                    <button type="button" *ngIf="avatarPreview || croppedImage" class="btn btn-ghost btn-sm"
+                      (click)="removeAvatar()">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        style="margin-right: 0.5rem;">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                       </svg>
@@ -61,7 +52,7 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="info-group">
               <label class="info-label">Username</label>
               <div class="username-display">{{ currentUser?.username }}</div>
@@ -70,32 +61,31 @@
 
             <div class="info-group">
               <label for="displayName" class="form-label">Display Name</label>
-              <input 
-                type="text" 
-                id="displayName" 
-                [(ngModel)]="displayName" 
-                name="displayName"
-                class="form-input"
-                placeholder="Your Name"
-              />
+              <input type="text" id="displayName" [(ngModel)]="displayName" name="displayName" class="form-input"
+                placeholder="Your Name" />
             </div>
-            
+
             <div class="info-group">
               <label for="bio" class="form-label">Bio</label>
-              <textarea 
-                id="bio" 
-                [(ngModel)]="bio" 
-                name="bio"
-                class="form-textarea"
-                placeholder="Tell visitors about yourself..."
-                rows="3"
-              ></textarea>
+              <textarea id="bio" [(ngModel)]="bio" name="bio" class="form-textarea"
+                placeholder="Tell visitors about yourself..." rows="3"></textarea>
             </div>
-            
+
             <button (click)="updateProfile()" class="btn btn-primary" [disabled]="profileLoading">
               {{ profileLoading ? 'Saving...' : 'Save Profile' }}
             </button>
           </div>
+        </div>
+      </div>
+
+      <!-- Appearance / Theme Card -->
+      <div class="card appearance-card">
+        <div class="card-header">
+          <h2 class="card-title">Appearance</h2>
+          <p class="card-description">Customize your page theme and style</p>
+        </div>
+        <div class="card-content">
+          <app-color-picker></app-color-picker>
         </div>
       </div>
 
@@ -109,73 +99,48 @@
           <form (ngSubmit)="saveLink()">
             <div class="form-group">
               <label for="title" class="form-label">Link Title</label>
-              <input 
-                type="text" 
-                id="title" 
-                [(ngModel)]="formData.title" 
-                name="title" 
-                required 
-                class="form-input"
-                placeholder="My Website"
-              />
+              <input type="text" id="title" [(ngModel)]="formData.title" name="title" required class="form-input"
+                placeholder="My Website" />
             </div>
 
             <div class="form-group">
               <label for="url" class="form-label">Link URL</label>
-              <input 
-                type="url" 
-                id="url" 
-                [(ngModel)]="formData.url" 
-                name="url" 
-                required 
-                class="form-input"
-                placeholder="https://example.com"
-              />
+              <input type="url" id="url" [(ngModel)]="formData.url" name="url" required class="form-input"
+                placeholder="https://example.com" />
             </div>
 
             <!-- Scheduling Section -->
             <div class="form-group">
               <label class="form-label">Schedule Link (Optional)</label>
               <p class="form-hint" style="margin-bottom: 1rem;">Set when this link should be visible on your profile</p>
-              
+
               <div class="scheduling-fields">
                 <div class="form-subgroup">
                   <label for="scheduledStart" class="form-label-sm">Start Date & Time</label>
-                  <input 
-                    type="datetime-local" 
-                    id="scheduledStart" 
-                    [(ngModel)]="formData.scheduledStart" 
-                    name="scheduledStart"
-                    class="form-input"
-                    min="2000-01-01T00:00"
-                    max="2099-12-31T23:59"
-                  />
+                  <input type="datetime-local" id="scheduledStart" [(ngModel)]="formData.scheduledStart"
+                    name="scheduledStart" class="form-input" min="2000-01-01T00:00" max="2099-12-31T23:59" />
                 </div>
-                
+
                 <div class="form-subgroup">
                   <label for="scheduledEnd" class="form-label-sm">End Date & Time</label>
-                  <input 
-                    type="datetime-local" 
-                    id="scheduledEnd" 
-                    [(ngModel)]="formData.scheduledEnd" 
-                    name="scheduledEnd"
-                    class="form-input"
-                    min="2000-01-01T00:00"
-                    max="2099-12-31T23:59"
-                  />
+                  <input type="datetime-local" id="scheduledEnd" [(ngModel)]="formData.scheduledEnd" name="scheduledEnd"
+                    class="form-input" min="2000-01-01T00:00" max="2099-12-31T23:59" />
                 </div>
               </div>
               <p class="form-hint">Leave empty for link to be always active. Times are in your local timezone.</p>
             </div>
 
             <button type="submit" class="btn btn-primary btn-full" [disabled]="loading">
-              <svg *ngIf="!editingLink" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
+              <svg *ngIf="!editingLink" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                style="margin-right: 0.5rem;">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
               </svg>
               {{ loading ? 'Saving...' : (editingLink ? 'Update Link' : 'Add Link') }}
             </button>
-            <button *ngIf="editingLink" type="button" (click)="cancelEdit()" class="btn btn-secondary btn-full" style="margin-top: 0.5rem;">Cancel</button>
+            <button *ngIf="editingLink" type="button" (click)="cancelEdit()" class="btn btn-secondary btn-full"
+              style="margin-top: 0.5rem;">Cancel</button>
           </form>
         </div>
       </div>
@@ -192,16 +157,13 @@
           </div>
 
           <div class="links-list" *ngIf="links.length > 0">
-            <div 
-              *ngFor="let link of links; let i = index" 
-              class="link-item"
-              draggable="true"
-              (dragstart)="onDragStart($event, i)"
-              (dragover)="onDragOver($event)"
-              (drop)="onDrop($event, i)"
-            >
-              <div class="link-content">
-                <svg class="drag-handle" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div *ngFor="let link of links; let i = index" class="link-item" draggable="true"
+              (dragstart)="onDragStart($event, i)" (dragover)="onDragOver($event)" (drop)="onDrop($event, i)">
+
+              <!-- 1. Drag Handle (Left) -->
+              <div class="drag-handle-wrapper">
+                <svg class="drag-handle" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="9" cy="5" r="1"></circle>
                   <circle cx="9" cy="12" r="1"></circle>
                   <circle cx="9" cy="19" r="1"></circle>
@@ -209,14 +171,19 @@
                   <circle cx="15" cy="12" r="1"></circle>
                   <circle cx="15" cy="19" r="1"></circle>
                 </svg>
+              </div>
+
+              <!-- 2. Main Content (Middle) -->
+              <div class="link-content-wrapper">
                 <div class="link-info">
                   <h4 class="link-title">{{ link.title }}</h4>
                   <a [href]="link.url" target="_blank" class="link-url">{{ link.url }}</a>
                   <div class="link-meta">
                     <p class="link-stats">{{ link.clicks || 0 }} clicks</p>
-                    <span *ngIf="link.scheduledStart || link.scheduledEnd" 
-                          [class]="isLinkScheduledActive(link) ? 'status-badge status-active' : 'status-badge status-inactive'">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <span *ngIf="link.scheduledStart || link.scheduledEnd"
+                      [class]="isLinkScheduledActive(link) ? 'status-badge status-active' : 'status-badge status-inactive'">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"></circle>
                       </svg>
                       {{ isLinkScheduledActive(link) ? 'Active' : 'Inactive' }}
@@ -232,20 +199,28 @@
                     </span>
                   </div>
                 </div>
-              </div>
-              <div class="link-actions">
-                <button (click)="editLink(link)" class="btn-icon" title="Edit">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                  </svg>
-                </button>
-                <button (click)="deleteLink(link._id!)" class="btn-icon btn-icon-danger" title="Delete">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                  </svg>
-                </button>
+
+                <!-- 3. Actions (Right, inside wrapper to keep alignment if needed, or separate) -->
+                <!-- Let's keep actions inside the wrapper or separate? 
+                     User said: "dragable button to be on the left... and all the contents on the right"
+                     So: [Drag] [Info + Actions]
+                -->
+                <div class="link-actions">
+                  <button (click)="editLink(link)" class="btn-icon" title="Edit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                  </button>
+                  <button (click)="deleteLink(link._id!)" class="btn-icon btn-icon-danger" title="Delete">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -260,25 +235,18 @@
       <div class="modal-header">
         <h3>Crop Your Image</h3>
         <button class="btn-close" (click)="cancelCrop()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
       </div>
       <div class="modal-body">
-        <image-cropper
-          [imageChangedEvent]="imageChangedEvent"
-          [maintainAspectRatio]="true"
-          [aspectRatio]="1"
-          [roundCropper]="true"
-          [resizeToWidth]="300"
-          format="png"
-          (imageCropped)="imageCropped($event)"
-          (imageLoaded)="imageLoaded()"
-          (cropperReady)="cropperReady()"
-          (loadImageFailed)="loadImageFailed()"
-        ></image-cropper>
+        <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true" [aspectRatio]="1"
+          [roundCropper]="true" [resizeToWidth]="300" format="png" (imageCropped)="imageCropped($event)"
+          (imageLoaded)="imageLoaded()" (cropperReady)="cropperReady()"
+          (loadImageFailed)="loadImageFailed()"></image-cropper>
       </div>
       <div class="modal-footer">
         <button class="btn btn-ghost" (click)="cancelCrop()">Cancel</button>

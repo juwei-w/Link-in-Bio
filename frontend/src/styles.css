@@ -40,11 +40,9 @@
   --transition-slow: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
   --gradient-primary: linear-gradient(135deg, #fc6158 0%, #d946ef 100%);
   --gradient-accent: linear-gradient(135deg, #ff9b96 0%, #fae8ff 100%);
-  --gradient-orange-pink: linear-gradient(
-    135deg,
-    hsl(14 100% 64%),
-    hsl(330 85% 65%)
-  );
+  --gradient-orange-pink: linear-gradient(135deg,
+      hsl(14 100% 64%),
+      hsl(330 85% 65%));
 }
 
 * {
@@ -109,6 +107,7 @@ button {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -116,20 +115,24 @@ button {
 }
 
 @keyframes float {
+
   0%,
   100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-20px);
   }
 }
 
 @keyframes glow {
+
   0%,
   100% {
     box-shadow: 0 0 20px rgba(252, 97, 88, 0.3), 0 0 40px rgba(252, 97, 88, 0.1);
   }
+
   50% {
     box-shadow: 0 0 30px rgba(252, 97, 88, 0.5), 0 0 60px rgba(252, 97, 88, 0.2);
   }
@@ -143,14 +146,17 @@ button {
   animation-delay: 0.1s;
   opacity: 0;
 }
+
 .stagger-2 {
   animation-delay: 0.2s;
   opacity: 0;
 }
+
 .stagger-3 {
   animation-delay: 0.3s;
   opacity: 0;
 }
+
 .stagger-4 {
   animation-delay: 0.4s;
   opacity: 0;
@@ -177,11 +183,9 @@ button {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.2),
-    rgba(255, 255, 255, 0)
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.2),
+      rgba(255, 255, 255, 0));
   opacity: 0;
   transition: var(--transition);
 }
@@ -234,4 +238,143 @@ button {
 body.dark-mode .card {
   background: rgba(30, 41, 59, 0.7);
   border: 1px solid rgba(71, 85, 105, 0.5);
+}
+
+/* Global Link Styles (Theme Sync Fix) */
+
+/* Default Glass Style */
+.profile-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* Padding managed by specific components if needed, but defaults: */
+  padding: 1.5rem 1.75rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, color-mix(in srgb, var(--primary-color) 3%, white) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  text-decoration: none;
+  color: var(--text-color);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 1.25rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  border: 2px solid var(--primary-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+}
+
+.profile-link:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 50px color-mix(in srgb, var(--primary-color) 30%, transparent), 0 0 30px color-mix(in srgb, var(--primary-color) 20%, transparent);
+  border-color: var(--secondary-color);
+}
+
+.profile-link:hover::after {
+  opacity: 0.1;
+}
+
+/* Dark Mode Glass Style */
+body.dark-mode .profile-link {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, color-mix(in srgb, var(--primary-color) 5%, rgba(30, 41, 59, 0.95)) 100%);
+  border-color: var(--primary-color);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .profile-link:hover {
+  box-shadow: 0 20px 50px color-mix(in srgb, var(--primary-color) 40%, transparent), 0 0 30px color-mix(in srgb, var(--primary-color) 25%, transparent);
+}
+
+/* Child Elements Global Colors */
+.link-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.profile-link .link-title {
+  color: var(--text-color);
+}
+
+body.dark-mode .profile-link .link-title {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.profile-link .link-url {
+  color: var(--color-text-secondary);
+}
+
+body.dark-mode .profile-link .link-url {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.profile-link .link-arrow {
+  color: var(--primary-color);
+}
+
+.profile-link:hover .link-arrow {
+  color: var(--secondary-color);
+}
+
+/* Solid Style */
+[data-card-style="solid"] .profile-link {
+  background: var(--bg-color) !important;
+  border: 2px solid var(--text-color) !important;
+  box-shadow: 4px 4px 0 var(--text-color) !important;
+  border-radius: 8px !important;
+}
+
+[data-card-style="solid"] .profile-link:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--text-color) !important;
+}
+
+[data-card-style="solid"] .profile-link::after {
+  display: none;
+}
+
+/* Gradient Style */
+[data-card-style="gradient"] .profile-link {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+  border: none !important;
+  box-shadow: 0 10px 20px color-mix(in srgb, var(--primary-color) 40%, transparent) !important;
+}
+
+[data-card-style="gradient"] .profile-link .link-title,
+[data-card-style="gradient"] .profile-link .link-url,
+[data-card-style="gradient"] .profile-link .link-arrow {
+  color: white !important;
+}
+
+[data-card-style="gradient"] .profile-link:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 15px 30px color-mix(in srgb, var(--primary-color) 50%, transparent) !important;
+}
+
+/* Dashboard Dark Mode Fail-Safes (Global) */
+/* These ensure that even if component encapsulation fails, the dark mode styling applies */
+body.dark-mode .link-item {
+  background: linear-gradient(135deg, rgba(51, 65, 85, 0.4) 0%, rgba(30, 41, 59, 0.4) 100%) !important;
+  border-color: rgba(51, 65, 85, 0.6) !important;
+}
+
+body.dark-mode .link-title {
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .navbar {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border-bottom: 1px solid rgba(51, 65, 85, 0.3) !important;
 }

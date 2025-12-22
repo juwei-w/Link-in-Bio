@@ -14,6 +14,8 @@ export interface ThemeColors {
 export interface Theme {
   theme: 'light' | 'dark';
   themeColors: ThemeColors;
+  vibrancy?: 'subtle' | 'medium' | 'high';
+  cardStyle?: 'glass' | 'solid' | 'gradient';
 }
 
 @Injectable({
@@ -21,7 +23,7 @@ export interface Theme {
 })
 export class ThemeService {
   private apiUrl = environment.apiUrl + '/theme';
-  
+
   private themeSubject = new BehaviorSubject<Theme>({
     theme: 'light',
     themeColors: {
@@ -29,9 +31,11 @@ export class ThemeService {
       secondary: '#4ECDC4',
       background: '#FFFFFF',
       text: '#000000',
-    }
+    },
+    vibrancy: 'subtle',
+    cardStyle: 'glass'
   });
-  
+
   theme$ = this.themeSubject.asObservable();
 
   constructor(private http: HttpClient) {
@@ -84,6 +88,22 @@ export class ThemeService {
     root.style.setProperty('--secondary-color', colors.secondary);
     root.style.setProperty('--bg-color', colors.background);
     root.style.setProperty('--text-color', colors.text);
+
+    // Apply Vibrancy
+    let vibrancyLevel = '5%'; // Default subtle
+    if (theme.vibrancy === 'medium') vibrancyLevel = '15%';
+    if (theme.vibrancy === 'high') vibrancyLevel = '30%';
+    root.style.setProperty('--theme-intensity', vibrancyLevel);
+
+    // Apply Card Style
+    root.setAttribute('data-card-style', theme.cardStyle || 'glass');
+
+    // Toggle Dark Mode Class
+    if (theme.theme === 'dark') {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
   }
 
   getCurrentTheme(): Theme {

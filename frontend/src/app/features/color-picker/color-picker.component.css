@@ -1,45 +1,92 @@
 .color-picker-container {
-  background: var(--bg-color, #FFFFFF);
+  background: transparent;
   color: var(--text-color, #000000);
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-  border-bottom: 2px solid var(--primary-color, #FF6B6B);
-  padding-bottom: 16px;
-}
-
-.header h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: var(--text-color, #000000);
-  opacity: 0.6;
-  transition: opacity 0.2s;
   padding: 0;
-  width: 32px;
-  height: 32px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Header styles removed */
+
+/* Live Preview Section */
+.preview-section {
+  margin-bottom: 24px;
+}
+
+.preview-section h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mini-profile-container {
+  background: linear-gradient(135deg, var(--bg-color) 0%, color-mix(in srgb, var(--primary-color) var(--theme-intensity, 5%), var(--bg-color)) 100%);
+  border-radius: 12px;
+  padding: 24px 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+:global(.dark-mode) .mini-profile-container {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, var(--bg-color) 0%, color-mix(in srgb, var(--primary-color) var(--theme-intensity, 10%), var(--bg-color)) 100%);
+}
+
+.mini-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.mini-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  border: 3px solid var(--bg-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
 }
 
-.close-btn:hover {
-  opacity: 1;
+.mini-name {
+  font-size: 16px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
+
+.mini-links {
+  width: 100%;
+}
+
+/* Reusing Profile Link Styles locally scoped for preview */
+.profile-link {
+  /* Override global padding/sizing for preview if needed, or stick to global */
+  padding: 12px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  /* Other visual styles inherited from global .profile-link */
+}
+
+/* Card Styles Logic for Preview */
+/* Global selectors in styles.css handle [data-card-style] */
 
 /* Color Input Groups */
 .color-inputs {
@@ -80,6 +127,74 @@
   font-size: 12px;
   color: #666;
   text-transform: uppercase;
+}
+
+/* Style Options */
+.style-section {
+  margin-bottom: 24px;
+}
+
+.style-section h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-group {
+  display: flex;
+  background: #F5F5F5;
+  border-radius: 8px;
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 20px;
+  border: 1px solid #E0E0E0;
+}
+
+.btn-group button {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #666;
+}
+
+.btn-group button:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #333;
+}
+
+.btn-group button.active {
+  background: white;
+  color: var(--primary-color, #FF6B6B);
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+:global(.dark-mode) .btn-group {
+  background: #2A2A3E;
+  border-color: #333;
+}
+
+:global(.dark-mode) .btn-group button {
+  color: #999;
+}
+
+:global(.dark-mode) .btn-group button:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #E0E0E0;
+}
+
+:global(.dark-mode) .btn-group button.active {
+  background: #3E3E55;
+  color: var(--primary-color, #FF6B6B);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* Preset Themes */
