@@ -13,10 +13,10 @@
   border-bottom: 1px solid rgba(226, 232, 240, 0.5);
 }
 
-body.dark-mode .navbar {
-  background: rgba(15, 23, 42, 0.8);
-  box-shadow: 0 1px 0 rgba(51, 65, 85, 0.5);
-  border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+:host-context(body.dark-mode) .navbar {
+  background: rgba(15, 23, 42, 0.95);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(51, 65, 85, 0.3);
 }
 
 .nav-content {
@@ -97,7 +97,7 @@ body.dark-mode .navbar {
   will-change: transform;
 }
 
-body.dark-mode .nav-toggle-group::before {
+:host-context(body.dark-mode) .nav-toggle-group::before {
   background: rgba(30, 41, 59, 0.9);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
@@ -107,7 +107,7 @@ body.dark-mode .nav-toggle-group::before {
   transform: translateX(calc(100% + 0.5rem));
 }
 
-body.dark-mode .nav-toggle-group {
+:host-context(body.dark-mode) .nav-toggle-group {
   background: rgba(51, 65, 85, 0.4);
 }
 
@@ -141,11 +141,11 @@ body.dark-mode .nav-toggle-group {
   transform: scale(1.1);
 }
 
-body.dark-mode .nav-toggle-btn {
+:host-context(body.dark-mode) .nav-toggle-btn {
   color: rgba(255, 255, 255, 0.6);
 }
 
-body.dark-mode .nav-toggle-btn:hover {
+:host-context(body.dark-mode) .nav-toggle-btn:hover {
   color: rgba(255, 255, 255, 0.9);
 }
 
@@ -157,7 +157,7 @@ body.dark-mode .nav-toggle-btn:hover {
   transform: scale(1.05);
 }
 
-body.dark-mode .nav-toggle-btn.active {
+:host-context(body.dark-mode) .nav-toggle-btn.active {
   color: white;
 }
 
@@ -205,6 +205,6 @@ body.dark-mode .nav-toggle-btn.active {
   color: var(--color-text-light);
 }
 
-body.dark-mode .btn-ghost:hover {
+:host-context(body.dark-mode) .btn-ghost:hover {
   background: rgba(255, 255, 255, 0.1);
 }
