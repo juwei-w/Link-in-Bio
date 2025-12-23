@@ -11,6 +11,14 @@ const {
   getClientIP,
 } = require("../utils/geolocation");
 const { fetchFavicon, isValidImageUrl } = require("../utils/faviconFetch");
+const {
+  isValidTitle,
+  isValidUrl,
+  isValidBio,
+  isValidDisplayName,
+  isValidOrder,
+  isValidScheduledDates,
+} = require("../utils/validation");
 const cloudinary = require("../config/cloudinary");
 const multer = require("multer");
 
@@ -134,6 +142,45 @@ router.post("/", auth, async (req, res) => {
       scheduledStart,
       scheduledEnd,
     } = req.body;
+
+    // Validate required fields
+    if (!title || !url) {
+      return res
+        .status(400)
+        .json({ message: "Missing required fields: title, url" });
+    }
+
+    // Validate title
+    if (!isValidTitle(title)) {
+      return res
+        .status(400)
+        .json({ message: "Invalid title. Max 200 characters" });
+    }
+
+    // Validate URL
+    if (!isValidUrl(url)) {
+      return res.status(400).json({ message: "Invalid URL format" });
+    }
+
+    // Validate optional icon URL
+    if (iconUrl && !isValidImageUrl(iconUrl)) {
+      return res.status(400).json({ message: "Invalid icon URL format" });
+    }
+
+    // Validate order
+    if (!isValidOrder(order)) {
+      return res
+        .status(400)
+        .json({ message: "Invalid order. Must be a non-negative integer" });
+    }
+
+    // Validate scheduled dates
+    if (!isValidScheduledDates(scheduledStart, scheduledEnd)) {
+      return res
+        .status(400)
+        .json({ message: "Invalid scheduled dates. End must be after start" });
+    }
+
     const link = new Link({
       userId: req.user.id,
       title,
@@ -145,7 +192,7 @@ router.post("/", auth, async (req, res) => {
       scheduledEnd,
     });
     await link.save();
-    res.json(link);
+    res.status(201).json(link);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
@@ -155,10 +202,48 @@ router.post("/", auth, async (req, res) => {
 // Update link (private)
 router.put("/:id", auth, async (req, res) => {
   try {
+    const { title, url, iconUrl, order, scheduledStart, scheduledEnd } =
+      req.body;
+
+    // Validate title if provided
+    if (title !== undefined && !isValidTitle(title)) {
+      return res
+        .status(400)
+        .json({ message: "Invalid title. Max 200 characters" });
+    }
+
+    // Validate URL if provided
+    if (url !== undefined && !isValidUrl(url)) {
+      return res.status(400).json({ message: "Invalid URL format" });
+    }
+
+    // Validate icon URL if provided
+    if (
+      iconUrl !== undefined &&
+      iconUrl !== null &&
+      !isValidImageUrl(iconUrl)
+    ) {
+      return res.status(400).json({ message: "Invalid icon URL format" });
+    }
+
+    // Validate order if provided
+    if (order !== undefined && !isValidOrder(order)) {
+      return res
+        .status(400)
+        .json({ message: "Invalid order. Must be a non-negative integer" });
+    }
+
+    // Validate scheduled dates
+    if (!isValidScheduledDates(scheduledStart, scheduledEnd)) {
+      return res
+        .status(400)
+        .json({ message: "Invalid scheduled dates. End must be after start" });
+    }
+
     const updated = await Link.findOneAndUpdate(
       { _id: req.params.id, userId: req.user.id },
       req.body,
-      { new: true }
+      { new: true, runValidators: true }
     );
     if (!updated)
       return res.status(404).json({ message: "Not found or not authorized" });
@@ -172,8 +257,15 @@ router.put("/:id", auth, async (req, res) => {
 // Delete link (private)
 router.delete("/:id", auth, async (req, res) => {
   try {
+    const { id } = req.params;
+
+    // Validate link ID format (MongoDB ObjectId)
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid link ID format" });
+    }
+
     const removed = await Link.findOneAndDelete({
-      _id: req.params.id,
+      _id: id,
       userId: req.user.id,
     });
     if (!removed)
@@ -202,10 +294,24 @@ router.get("/user/:userId", async (req, res) => {
 // Get analytics for a specific link (private)
 router.get("/:id/analytics", auth, async (req, res) => {
   try {
+    const { id } = req.params;
     const { days = 30 } = req.query; // Default to last 30 days
 
+    // Validate link ID format (MongoDB ObjectId)
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid link ID format" });
+    }
+
+    // Validate days parameter
+    const parsedDays = parseInt(days, 10);
+    if (isNaN(parsedDays) || parsedDays < 1 || parsedDays > 365) {
+      return res.status(400).json({
+        message: "Invalid days parameter. Must be between 1 and 365",
+      });
+    }
+
     const link = await Link.findOne({
-      _id: req.params.id,
+      _id: id,
       userId: req.user.id,
     });
     if (!link)
@@ -213,7 +319,7 @@ router.get("/:id/analytics", auth, async (req, res) => {
 
     // Get date range
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - parseInt(days));
+    startDate.setDate(startDate.getDate() - parsedDays);
 
     // Filter click events by date range
     const recentClicks =
@@ -444,6 +550,13 @@ router.get("/analytics/overview", auth, async (req, res) => {
 const clickLimiter = rateLimit({ windowMs: 60 * 1000, max: 30 });
 router.post("/:id/click", clickLimiter, async (req, res) => {
   try {
+    const { id } = req.params;
+
+    // Validate link ID format (MongoDB ObjectId)
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid link ID format" });
+    }
+
     // Derive referrer, IP, userAgent
     const incomingReferrer =
       req.body?.referrer ||
@@ -660,8 +773,15 @@ router.post("/:id/click", clickLimiter, async (req, res) => {
 // Auto-fetch favicon for a link URL (private)
 router.post("/:id/fetch-icon", auth, async (req, res) => {
   try {
+    const { id } = req.params;
+
+    // Validate link ID format (MongoDB ObjectId)
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid link ID format" });
+    }
+
     const link = await Link.findOne({
-      _id: req.params.id,
+      _id: id,
       userId: req.user.id,
     });
     if (!link)
@@ -691,6 +811,13 @@ router.post(
   upload.single("icon"),
   async (req, res) => {
     try {
+      const { id } = req.params;
+
+      // Validate link ID format (MongoDB ObjectId)
+      if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+        return res.status(400).json({ message: "Invalid link ID format" });
+      }
+
       if (!req.file) {
         return res
           .status(400)
@@ -704,8 +831,15 @@ router.post(
           .json({ message: "Uploaded file is not an image" });
       }
 
+      // Validate file size (max 5MB)
+      if (req.file.size > 5 * 1024 * 1024) {
+        return res
+          .status(400)
+          .json({ message: "File size must not exceed 5MB" });
+      }
+
       const link = await Link.findOne({
-        _id: req.params.id,
+        _id: id,
         userId: req.user.id,
       });
       if (!link)
@@ -725,12 +859,10 @@ router.post(
         });
       } catch (uploadErr) {
         console.error("Cloudinary upload error:", uploadErr);
-        return res
-          .status(502)
-          .json({
-            message: "Cloudinary upload failed",
-            details: uploadErr.message || uploadErr,
-          });
+        return res.status(502).json({
+          message: "Cloudinary upload failed",
+          details: uploadErr.message || uploadErr,
+        });
       }
 
       if (!uploadResult || !uploadResult.secure_url) {
@@ -800,7 +932,13 @@ router.post("/fetch-icons/all", auth, async (req, res) => {
 // Upload or set custom icon URL for a link (private)
 router.post("/:id/set-icon", auth, async (req, res) => {
   try {
+    const { id } = req.params;
     const { iconUrl } = req.body;
+
+    // Validate link ID format (MongoDB ObjectId)
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid link ID format" });
+    }
 
     if (!iconUrl) {
       return res.status(400).json({ message: "iconUrl is required" });
@@ -819,7 +957,7 @@ router.post("/:id/set-icon", auth, async (req, res) => {
     }
 
     const link = await Link.findOne({
-      _id: req.params.id,
+      _id: id,
       userId: req.user.id,
     });
     if (!link)
@@ -837,8 +975,15 @@ router.post("/:id/set-icon", auth, async (req, res) => {
 // Clear icon for a link (private)
 router.delete("/:id/icon", auth, async (req, res) => {
   try {
+    const { id } = req.params;
+
+    // Validate link ID format (MongoDB ObjectId)
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid link ID format" });
+    }
+
     const link = await Link.findOne({
-      _id: req.params.id,
+      _id: id,
       userId: req.user.id,
     });
     if (!link)
