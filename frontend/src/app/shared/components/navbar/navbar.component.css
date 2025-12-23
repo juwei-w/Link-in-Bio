@@ -306,10 +306,7 @@
   .nav-toggle-btn {
     width: 100%;
     justify-content: center;
-    padding: 1rem;
-    font-size: 1.1rem;
     background: rgba(226, 232, 240, 0.3);
-    border-radius: 12px;
   }
 
   :host-context(body.dark-mode) .nav-toggle-btn {
