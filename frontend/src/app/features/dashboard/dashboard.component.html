@@ -18,8 +18,7 @@
               <div class="avatar-upload-wrapper">
                 <div class="avatar-preview" [style.background-image]="
                     avatarPreview ? 'url(' + avatarPreview + ')' : 'none'
-                  " [class.has-image]="avatarPreview" (click)="triggerImageSelect(fileInput)"
-                  title="Click to upload/crop">
+                  " [class.has-image]="avatarPreview" (click)="profileInput.click()" title="Click to upload/crop">
                   <span *ngIf="!avatarPreview">{{
                     (displayName || currentUser?.username || "U")
                     .charAt(0)
@@ -27,9 +26,10 @@
                     }}</span>
                 </div>
                 <div class="avatar-upload-controls">
-                  <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden />
+                  <input type="file" #profileInput (change)="onFileSelected($event, 'profile')" accept="image/*"
+                    hidden />
                   <div class="upload-buttons">
-                    <button type="button" class="btn btn-secondary btn-sm" (click)="fileInput.click()">
+                    <button type="button" class="btn btn-secondary btn-sm" (click)="profileInput.click()">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                         style="margin-right: 0.5rem">
@@ -137,7 +137,7 @@
                 <!-- Mock Link Card -->
                 <div class="preview-card" [class.no-icon]="!formData.iconUrl">
                   <!-- Icon Area (Clickable to upload) -->
-                  <div class="preview-icon-area" (click)="fileInput.click()" title="Click to upload icon">
+                  <div class="preview-icon-area" (click)="iconInput.click()" title="Click to upload icon">
                     <img *ngIf="formData.iconUrl" [src]="formData.iconUrl" class="preview-icon-img" alt="Icon">
                     <div *ngIf="!formData.iconUrl" class="preview-icon-placeholder">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -183,7 +183,8 @@
                     Remove
                   </button>
                   <!-- Hidden Input -->
-                  <input #fileInput type="file" hidden accept="image/*" (change)="onFormIconSelected($event)">
+                  <input #iconInput type="file" hidden accept="image/*"
+                    (change)="onFileSelected($event, 'link', editingLink?._id)">
                 </div>
               </div>
             </div>
@@ -384,55 +385,5 @@
     </div>
   </div>
 
-  <!-- Single Custom Icon Modal (global) -->
-  <div *ngIf="showCustomModal" class="modal-overlay custom-modal" (click)="closeCustomModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>Custom Icon</h3>
-        <button class="btn-close" (click)="closeCustomModal()">✕</button>
-      </div>
-      <div class="modal-body">
-        <p>Select how you'd like to add a custom icon for this link.</p>
-        <div class="options">
-          <div class="custom-option">
-            <label class="upload-label" style="cursor: pointer">
-              Upload Image
-              <input type="file" accept="image/*" #modalIconFile hidden (change)="onIconFileSelected($event)" />
-            </label>
-            <small style="color: #6b7280">Supported: JPG, PNG, GIF. Max 5MB.</small>
-            <div *ngIf="modalSelectedFile" class="modal-file-selected">
-              <div class="file-preview" *ngIf="modalPreviewUrl">
-                <img [src]="modalPreviewUrl" alt="preview" />
-              </div>
-              <div class="file-meta">
-                <strong>{{ modalSelectedFileName }}</strong>
-                <div class="file-actions">
-                  <button class="btn btn-ghost btn-sm" type="button" (click)="removeModalSelectedFile()">
-                    Remove
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <hr />
-        <div>
-          <label class="form-label">Or use an image URL</label>
-          <input type="url" class="form-input" [(ngModel)]="customModalUrl"
-            placeholder="https://example.com/icon.png" />
-          <div style="margin-top: 0.5rem" class="custom-url-input">
-            <button *ngIf="!modalSelectedFile" class="btn-use-url" (click)="applyCustomUrl()">
-              Use URL
-            </button>
-            <button *ngIf="modalSelectedFile" class="btn btn-primary" (click)="confirmUpload()">
-              Confirm Upload
-            </button>
-            <button class="btn btn-ghost" (click)="closeCustomModal()" style="margin-left: 0.5rem">
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+
 </div>

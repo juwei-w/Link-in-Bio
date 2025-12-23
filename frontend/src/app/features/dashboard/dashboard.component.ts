@@ -46,60 +46,12 @@ export class DashboardComponent implements OnInit {
   showCropperModal = false;
   imageChangedEvent: any = '';
   croppedImage: string = '';
+  cropperTarget: 'profile' | 'link' = 'profile'; // Track what we are cropping
+  cropperLinkId: string | null = null; // If cropping for a link, store its ID
+  expandedLinkIds = new Set<string>(); // Mobile: Expandable details
 
   // Theme settings
   showThemeEditor = false;
-
-
-
-  // Icon upload helpers
-  iconUploadLinkId: string | null = null;
-  iconUploadIndex: number | null = null;
-  // Custom icon modal state
-  showCustomModal = false;
-  customModalLinkId: string | null = null;
-
-  // Mobile: Expandable details
-  expandedLinkIds = new Set<string>();
-  customModalIndex: number | null = null;
-  customModalUrl: string = "";
-  modalSelectedFile: File | null = null;
-  modalSelectedFileName: string | null = null;
-  modalPreviewUrl: string | null = null;
-
-  // Ref-trigger helper
-  triggerImageSelect(input: HTMLInputElement) {
-    input.click();
-  }
-
-  // Note: inline 'Upload' button removed; use Custom modal to upload images.
-
-  // Open custom-icon modal for a link (Upload or URL)
-  openCustomModal(linkId: string, index: number) {
-    this.customModalLinkId = linkId;
-    this.customModalIndex = index;
-    // Also pre-set upload target so upload button from modal works
-    this.iconUploadLinkId = linkId;
-    this.iconUploadIndex = index;
-    this.customModalUrl = "";
-    this.showCustomModal = true;
-  }
-
-  closeCustomModal() {
-    this.showCustomModal = false;
-    this.customModalLinkId = null;
-    this.customModalIndex = null;
-    this.customModalUrl = "";
-    // clear any modal-selected file state
-    this.modalSelectedFile = null;
-    this.modalSelectedFileName = null;
-    if (this.modalPreviewUrl) {
-      try {
-        URL.revokeObjectURL(this.modalPreviewUrl);
-      } catch (e) { }
-      this.modalPreviewUrl = null;
-    }
-  }
 
   toggleLinkDetails(linkId: string) {
     if (this.expandedLinkIds.has(linkId)) {
@@ -113,190 +65,7 @@ export class DashboardComponent implements OnInit {
     return this.expandedLinkIds.has(linkId);
   }
 
-  // Apply custom URL entered in modal
-  applyCustomUrl() {
-    const url = (this.customModalUrl || "").trim();
-    if (!url) {
-      alert("Please enter a valid image URL.");
-      return;
-    }
 
-    if (!this.customModalLinkId || this.customModalIndex === null) {
-      alert("No link selected");
-      return;
-    }
-
-    this.linksService.setLinkIcon(this.customModalLinkId, url).subscribe({
-      next: () => {
-        // Update local list and cache-bust
-        if (this.links[this.customModalIndex!]) {
-          this.links[this.customModalIndex!].iconUrl = this.cacheBustUrl(url);
-        }
-        this.closeCustomModal();
-        alert("Icon set successfully!");
-      },
-      error: (err) => {
-        console.error("Failed to set custom icon from modal:", err);
-        const serverMsg =
-          err?.error?.message || err?.error?.details || err?.message || null;
-        alert(
-          "Failed to set icon. " +
-          (serverMsg ? `Server: ${serverMsg}` : "Please try again.")
-        );
-      },
-    });
-  }
-
-  // Handle selected icon file for a link
-  onIconFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (!input.files || input.files.length === 0) return;
-    const file = input.files[0];
-    if (!this.iconUploadLinkId) return;
-
-    // Basic validation
-    if (!file.type.startsWith("image/")) {
-      alert("Please select an image file for the icon.");
-      return;
-    }
-
-    // If the custom modal is open, store the selected file and show name/preview
-    if (this.showCustomModal) {
-      this.modalSelectedFile = file;
-      this.modalSelectedFileName = file.name;
-      try {
-        this.modalPreviewUrl = URL.createObjectURL(file);
-      } catch (e) {
-        this.modalPreviewUrl = null;
-      }
-      // Leave iconUploadLinkId/index set so confirmUpload has the target
-      // Do not upload immediately from modal; wait for user to confirm
-      // Reset the input so same file can be re-selected later if removed
-      input.value = "";
-      return;
-    }
-
-    // Regular immediate upload flow (when not using modal)
-    this.linksService.uploadIcon(this.iconUploadLinkId, file).subscribe({
-      next: (res) => {
-        if (res && res.success) {
-          // Refresh links from server to get persisted state, then cache-bust the updated icon URL
-          this.linksService.getMyLinks().subscribe({
-            next: (links) => {
-              this.links = links.sort((a, b) => a.order - b.order);
-              if (
-                this.iconUploadIndex !== null &&
-                this.links[this.iconUploadIndex]
-              ) {
-                this.links[this.iconUploadIndex].iconUrl = this.cacheBustUrl(
-                  res.iconUrl
-                );
-              }
-              alert("Icon uploaded successfully!");
-            },
-            error: (err) => {
-              console.error("Failed to refresh links after upload", err);
-              // Fallback: update local list entry if available
-              if (
-                this.iconUploadIndex !== null &&
-                this.links[this.iconUploadIndex]
-              ) {
-                this.links[this.iconUploadIndex].iconUrl = this.cacheBustUrl(
-                  res.iconUrl
-                );
-              }
-              alert("Icon uploaded successfully (couldn't refresh list).");
-            },
-          });
-        }
-      },
-      error: (err) => {
-        console.error("Failed to upload icon:", err);
-        const serverMsg =
-          err?.error?.message || err?.error?.details || err?.message || null;
-        alert(
-          "Failed to upload icon. " +
-          (serverMsg ? `Server: ${serverMsg}` : "Please try again.")
-        );
-      },
-      complete: () => {
-        // Reset
-        input.value = "";
-        this.iconUploadLinkId = null;
-        this.iconUploadIndex = null;
-      },
-    });
-  }
-
-  // Confirm upload from custom modal (called when user presses Confirm)
-  confirmUpload() {
-    if (!this.modalSelectedFile) {
-      alert("No file selected to upload.");
-      return;
-    }
-    if (!this.iconUploadLinkId) {
-      alert("No link selected to attach the icon to.");
-      return;
-    }
-
-    this.linksService
-      .uploadIcon(this.iconUploadLinkId, this.modalSelectedFile)
-      .subscribe({
-        next: (res) => {
-          if (res && res.success) {
-            // Refresh links and cache-bust
-            this.linksService.getMyLinks().subscribe({
-              next: (links) => {
-                this.links = links.sort((a, b) => a.order - b.order);
-                if (
-                  this.customModalIndex !== null &&
-                  this.links[this.customModalIndex]
-                ) {
-                  this.links[this.customModalIndex].iconUrl = this.cacheBustUrl(
-                    res.iconUrl
-                  );
-                }
-                alert("Icon uploaded successfully!");
-                this.closeCustomModal();
-              },
-              error: (err) => {
-                console.error("Failed to refresh links after upload", err);
-                if (
-                  this.customModalIndex !== null &&
-                  this.links[this.customModalIndex]
-                ) {
-                  this.links[this.customModalIndex].iconUrl = this.cacheBustUrl(
-                    res.iconUrl
-                  );
-                }
-                alert("Icon uploaded successfully (could not refresh list).");
-                this.closeCustomModal();
-              },
-            });
-          }
-        },
-        error: (err) => {
-          console.error("Failed to upload icon from modal:", err);
-          const serverMsg =
-            err?.error?.message || err?.error?.details || err?.message || null;
-          alert(
-            "Failed to upload icon. " +
-            (serverMsg ? `Server: ${serverMsg}` : "Please try again.")
-          );
-        },
-      });
-  }
-
-  removeModalSelectedFile() {
-    this.modalSelectedFile = null;
-    this.modalSelectedFileName = null;
-    if (this.modalPreviewUrl) {
-      try {
-        URL.revokeObjectURL(this.modalPreviewUrl);
-      } catch (e) { }
-      this.modalPreviewUrl = null;
-    }
-  }
 
   // Append a timestamp query param to bust browser cache when replacing icons
   cacheBustUrl(url: string): string {
@@ -384,10 +153,28 @@ export class DashboardComponent implements OnInit {
     if (this.editingLink) {
       // Update existing link
       this.linksService.updateLink(this.editingLink._id!, linkData).subscribe({
-        next: () => {
-          this.loadLinks();
-          this.cancelEdit();
-          this.loading = false;
+        next: (updatedLink) => {
+          // If there is a pending icon file, upload it now
+          if (this.pendingIconFile && updatedLink._id) {
+            this.linksService.uploadIcon(updatedLink._id, this.pendingIconFile).subscribe({
+              next: () => {
+                this.loadLinks();
+                this.cancelEdit();
+                this.loading = false;
+              },
+              error: (err) => {
+                console.error("Link updated but icon upload failed", err);
+                alert("Link updated, but failed to upload icon image.");
+                this.loadLinks();
+                this.cancelEdit();
+                this.loading = false;
+              }
+            });
+          } else {
+            this.loadLinks();
+            this.cancelEdit();
+            this.loading = false;
+          }
         },
         error: (err) => {
           console.error("Failed to update link", err);
@@ -531,9 +318,13 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  onFileSelected(event: Event) {
-    this.imageChangedEvent = event;
-    this.showCropperModal = true;
+  onFileSelected(event: any, target: 'profile' | 'link' = 'profile', linkId?: string) {
+    if (event.target.files && event.target.files.length > 0) {
+      this.imageChangedEvent = event;
+      this.cropperTarget = target;
+      this.cropperLinkId = linkId || null;
+      this.showCropperModal = true;
+    }
   }
 
   imageCropped(event: ImageCroppedEvent) {
@@ -565,29 +356,48 @@ export class DashboardComponent implements OnInit {
 
   applyCrop() {
     if (this.croppedImage) {
-      this.avatarPreview = this.croppedImage;
+      if (this.cropperTarget === 'profile') {
+        this.avatarPreview = this.croppedImage; // Immediate visual update for profile
+        // --- PROFILE UPLOAD ---
+        this.profileLoading = true;
+        this.authService
+          .updateProfile({
+            displayName: this.displayName,
+            bio: this.bio,
+            avatarUrl: this.croppedImage,
+          })
+          .subscribe({
+            next: (user) => {
+              this.profileLoading = false;
+              this.currentUser = this.authService.getCurrentUser();
+              this.avatarPreview = user.avatarUrl || null;
+            },
+            error: (err) => {
+              this.profileLoading = false;
+              console.error("Failed to update profile picture", err);
+              alert("Failed to save profile picture.");
+            },
+          });
+      } else if (this.cropperTarget === 'link') {
+        // --- LINK ICON UPLOAD ---
+        // Convert Base64 (croppedImage) to Blob/File for upload
+        const base64Parts = this.croppedImage.split(',');
+        const byteString = atob(base64Parts[1]);
+        const mimeString = base64Parts[0].split(':')[1].split(';')[0];
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+        const blob = new Blob([ab], { type: mimeString });
+        const file = new File([blob], "icon.png", { type: mimeString });
 
-      // Upload to Cloudinary via backend
-      this.profileLoading = true;
-      this.authService
-        .updateProfile({
-          displayName: this.displayName,
-          bio: this.bio,
-          avatarUrl: this.croppedImage,
-        })
-        .subscribe({
-          next: (user) => {
-            this.profileLoading = false;
-            this.currentUser = this.authService.getCurrentUser();
-            // Update preview with Cloudinary URL
-            this.avatarPreview = user.avatarUrl || null;
-          },
-          error: (err) => {
-            this.profileLoading = false;
-            console.error("Failed to update profile picture", err);
-            alert("Failed to save profile picture. Please try again.");
-          },
-        });
+        // Update preview in form
+        this.formData.iconUrl = this.croppedImage;
+
+        // Stage file for saveLink() - DEFERRED UPLOAD
+        this.pendingIconFile = file;
+      }
     }
     this.showCropperModal = false;
     this.imageChangedEvent = "";
@@ -762,6 +572,8 @@ export class DashboardComponent implements OnInit {
 
   // Icon management methods
   // Auto-fetch favicon (Smart handling for Add vs Edit)
+  // Auto-fetch favicon (Smart handling for Add vs Edit)
+  // Auto-fetch favicon (Preview ONLY - saves on "Save Link")
   fetchFavicon() {
     const url = this.formData.url;
     if (!url) {
@@ -769,28 +581,14 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    // If Editing: Use existing method (saves immediately)
-    if (this.editingLink && this.editingLink._id) {
-      this.linksService.fetchFaviconForLink(this.editingLink._id).subscribe({
-        next: (result) => {
-          if (result.success) {
-            this.formData.iconUrl = this.cacheBustUrl(result.iconUrl);
-            // Also update the list view directly
-            const idx = this.links.findIndex(l => l._id === this.editingLink!._id);
-            if (idx !== -1) this.links[idx].iconUrl = this.formData.iconUrl;
-            alert("Favicon fetched!");
-          }
-        },
-        error: () => alert("Could not fetch favicon.")
-      });
-      return;
-    }
+    // Clear any pending upload so it doesn't overwrite this
+    this.pendingIconFile = null;
 
-    // If Adding (New): Use Preview endpoint
+    // Use preview endpoint for both New and Edit modes
     this.linksService.previewFavicon(url).subscribe({
       next: (res) => {
         if (res.success) {
-          this.formData.iconUrl = res.iconUrl; // Just visual preview + save string
+          this.formData.iconUrl = res.iconUrl; // Visual preview
         }
       },
       error: () => alert("Could not fetch favicon.")
@@ -798,24 +596,13 @@ export class DashboardComponent implements OnInit {
   }
 
   // Clear icon (Smart handling)
+  // Clear icon (Smart handling)
+  // Clear icon (Preview ONLY - saves on "Save Link")
   removeIcon() {
-    // If editing, clear from server
-    if (this.editingLink && this.editingLink._id) {
-      if (confirm("Remove icon?")) {
-        this.linksService.clearLinkIcon(this.editingLink._id).subscribe({
-          next: () => {
-            this.formData.iconUrl = undefined;
-            const idx = this.links.findIndex(l => l._id === this.editingLink!._id);
-            if (idx !== -1) this.links[idx].iconUrl = undefined;
-          }
-        });
-      }
-      return;
+    if (confirm("Remove icon?")) {
+      this.pendingIconFile = null;
+      this.formData.iconUrl = ""; // Clear visual preview
     }
-
-    // If adding, just clear local state
-    this.formData.iconUrl = "";
-    this.pendingIconFile = null;
   }
 
   // Handle file selection from form
