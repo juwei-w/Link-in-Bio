@@ -480,8 +480,8 @@ router.get("/analytics/overview", auth, async (req, res) => {
         const deviceType = isTablet
           ? "tablet"
           : isMobile
-          ? "mobile"
-          : "desktop";
+            ? "mobile"
+            : "desktop";
         deviceStats[deviceType] = (deviceStats[deviceType] || 0) + 1;
 
         // Platform aggregation (referrer domain)
@@ -793,6 +793,28 @@ router.post("/:id/fetch-icon", auth, async (req, res) => {
     if (faviconUrl) {
       link.iconUrl = faviconUrl;
       await link.save();
+      res.json({ success: true, iconUrl: faviconUrl });
+    } else {
+      res.status(404).json({ message: "Could not find favicon for this URL" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Preview favicon for any URL (private) - No Link ID required
+router.post("/preview-icon", auth, async (req, res) => {
+  try {
+    const { url } = req.body;
+
+    if (!url || !isValidUrl(url)) {
+      return res.status(400).json({ message: "Invalid or missing URL" });
+    }
+
+    const faviconUrl = await fetchFavicon(url);
+
+    if (faviconUrl) {
       res.json({ success: true, iconUrl: faviconUrl });
     } else {
       res.status(404).json({ message: "Could not find favicon for this URL" });

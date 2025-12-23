@@ -22,9 +22,11 @@ export class DashboardComponent implements OnInit {
   formData: Partial<Link> = {
     title: "",
     url: "",
+    iconUrl: "", // Add iconUrl to form data
     scheduledStart: undefined,
     scheduledEnd: undefined,
   };
+  pendingIconFile: File | null = null; // Staged icon for new link
   loading = false;
   profileLoading = false;
   currentUser: any;
@@ -381,11 +383,35 @@ export class DashboardComponent implements OnInit {
     } else {
       // Create new link
       linkData.order = this.links.length;
+
+      // If user manually set an icon URL (via custom URL or auto-fetch preview), it's already in linkData.iconUrl.
+      // But if there's a pending FILE, we need to create first, then upload.
+
       this.linksService.createLink(linkData).subscribe({
-        next: () => {
-          this.loadLinks();
-          this.cancelEdit();
-          this.loading = false;
+        next: (newLink) => {
+          // If there is a pending icon file, upload it now
+          if (this.pendingIconFile && newLink._id) {
+            this.linksService.uploadIcon(newLink._id, this.pendingIconFile).subscribe({
+              next: () => {
+                this.loadLinks();
+                this.cancelEdit();
+                this.loading = false;
+              },
+              error: (err) => {
+                console.error("Link created but icon upload failed", err);
+                // Still reload and close, just warn user
+                alert("Link created, but failed to upload icon image.");
+                this.loadLinks();
+                this.cancelEdit();
+                this.loading = false;
+              }
+            });
+          } else {
+            // No file to upload, just finish
+            this.loadLinks();
+            this.cancelEdit();
+            this.loading = false;
+          }
         },
         error: (err) => {
           console.error("Failed to create link", err);
@@ -401,6 +427,7 @@ export class DashboardComponent implements OnInit {
     this.formData = {
       title: link.title,
       url: link.url,
+      iconUrl: link.iconUrl,
       scheduledStart: link.scheduledStart
         ? this.formatDateTimeLocal(link.scheduledStart.toString())
         : undefined,
@@ -408,6 +435,7 @@ export class DashboardComponent implements OnInit {
         ? this.formatDateTimeLocal(link.scheduledEnd.toString())
         : undefined,
     };
+    this.pendingIconFile = null;
     this.showAddForm = false;
 
     // Scroll to edit section smoothly
@@ -597,9 +625,11 @@ export class DashboardComponent implements OnInit {
     this.formData = {
       title: "",
       url: "",
+      iconUrl: "",
       scheduledStart: undefined,
       scheduledEnd: undefined,
     };
+    this.pendingIconFile = null;
   }
 
   // Helper to format Date to datetime-local input format
@@ -716,21 +746,111 @@ export class DashboardComponent implements OnInit {
   }
 
   // Icon management methods
-  fetchFaviconForLink(linkId: string, index: number) {
-    this.linksService.fetchFaviconForLink(linkId).subscribe({
-      next: (result) => {
-        if (result.success && this.links[index]) {
-          this.links[index].iconUrl = this.cacheBustUrl(result.iconUrl);
-          alert("Favicon fetched successfully!");
+  // Auto-fetch favicon (Smart handling for Add vs Edit)
+  fetchFavicon() {
+    const url = this.formData.url;
+    if (!url) {
+      alert("Please enter a URL first.");
+      return;
+    }
+
+    // If Editing: Use existing method (saves immediately)
+    if (this.editingLink && this.editingLink._id) {
+      this.linksService.fetchFaviconForLink(this.editingLink._id).subscribe({
+        next: (result) => {
+          if (result.success) {
+            this.formData.iconUrl = this.cacheBustUrl(result.iconUrl);
+            // Also update the list view directly
+            const idx = this.links.findIndex(l => l._id === this.editingLink!._id);
+            if (idx !== -1) this.links[idx].iconUrl = this.formData.iconUrl;
+            alert("Favicon fetched!");
+          }
+        },
+        error: () => alert("Could not fetch favicon.")
+      });
+      return;
+    }
+
+    // If Adding (New): Use Preview endpoint
+    this.linksService.previewFavicon(url).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.formData.iconUrl = res.iconUrl; // Just visual preview + save string
         }
       },
-      error: (err) => {
-        console.error("Failed to fetch favicon:", err);
-        alert(
-          "Could not fetch favicon for this URL. You can upload a custom icon instead."
-        );
-      },
+      error: () => alert("Could not fetch favicon.")
     });
+  }
+
+  // Clear icon (Smart handling)
+  removeIcon() {
+    // If editing, clear from server
+    if (this.editingLink && this.editingLink._id) {
+      if (confirm("Remove icon?")) {
+        this.linksService.clearLinkIcon(this.editingLink._id).subscribe({
+          next: () => {
+            this.formData.iconUrl = undefined;
+            const idx = this.links.findIndex(l => l._id === this.editingLink!._id);
+            if (idx !== -1) this.links[idx].iconUrl = undefined;
+          }
+        });
+      }
+      return;
+    }
+
+    // If adding, just clear local state
+    this.formData.iconUrl = "";
+    this.pendingIconFile = null;
+  }
+
+  // Handle file selection from form
+  onFormIconSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+    const file = input.files[0];
+
+    // If editing, upload immediately
+    if (this.editingLink && this.editingLink._id) {
+      this.linksService.uploadIcon(this.editingLink._id, file).subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.formData.iconUrl = this.cacheBustUrl(res.iconUrl);
+            const idx = this.links.findIndex(l => l._id === this.editingLink!._id);
+            if (idx !== -1) this.links[idx].iconUrl = this.formData.iconUrl;
+          }
+        }
+      });
+      return;
+    }
+
+    // If adding, stage it
+    this.pendingIconFile = file;
+    // Create local preview
+    const reader = new FileReader();
+    reader.onload = (e: any) => this.formData.iconUrl = e.target.result;
+    reader.readAsDataURL(file);
+  }
+
+  // Use custom URL from prompt (Form version)
+  setCustomFormIcon() {
+    const url = prompt("Enter image URL:");
+    if (!url) return;
+
+    // If editing, save immediately
+    if (this.editingLink && this.editingLink._id) {
+      this.linksService.setLinkIcon(this.editingLink._id, url).subscribe({
+        next: () => {
+          this.formData.iconUrl = url;
+          const idx = this.links.findIndex(l => l._id === this.editingLink!._id);
+          if (idx !== -1) this.links[idx].iconUrl = url;
+        }
+      });
+      return;
+    }
+
+    // If adding, just update form data
+    this.formData.iconUrl = url;
+    this.pendingIconFile = null; // Clear any pending file if URL is preferred
   }
 
   fetchFaviconsForAllLinks() {

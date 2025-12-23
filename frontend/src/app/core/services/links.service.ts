@@ -33,7 +33,7 @@ export interface UserProfile {
 export class LinksService {
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Get current user profile
   getMyProfile(): Observable<UserProfile> {
@@ -118,6 +118,11 @@ export class LinksService {
   // Auto-fetch favicons for all user's links
   fetchFaviconsForAllLinks(): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/links/fetch-icons/all`, {});
+  }
+
+  // Preview favicon for a URL string (no link ID needed)
+  previewFavicon(url: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/links/preview-icon`, { url });
   }
 
   // Set custom icon URL for a link
