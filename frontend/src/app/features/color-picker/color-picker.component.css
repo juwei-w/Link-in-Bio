@@ -134,12 +134,19 @@
   margin-bottom: 24px;
 }
 
-.style-section h4 {
+/* Unified Subtitle Style for all sections */
+.style-section h4,
+.preview-section h4,
+.color-input-group label {
   margin: 0 0 12px 0;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 0.75rem;
+  /* Match info-label (12px) */
+  font-weight: 700;
+  color: #666;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  display: block;
+  /* Ensure label behaves like block for margin */
 }
 
 .btn-group {

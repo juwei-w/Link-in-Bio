@@ -58,6 +58,9 @@ export class DashboardComponent implements OnInit {
   // Custom icon modal state
   showCustomModal = false;
   customModalLinkId: string | null = null;
+
+  // Mobile: Expandable details
+  expandedLinkIds = new Set<string>();
   customModalIndex: number | null = null;
   customModalUrl: string = "";
   modalSelectedFile: File | null = null;
@@ -96,6 +99,18 @@ export class DashboardComponent implements OnInit {
       } catch (e) { }
       this.modalPreviewUrl = null;
     }
+  }
+
+  toggleLinkDetails(linkId: string) {
+    if (this.expandedLinkIds.has(linkId)) {
+      this.expandedLinkIds.delete(linkId);
+    } else {
+      this.expandedLinkIds.add(linkId);
+    }
+  }
+
+  isDetailsExpanded(linkId: string): boolean {
+    return this.expandedLinkIds.has(linkId);
   }
 
   // Apply custom URL entered in modal

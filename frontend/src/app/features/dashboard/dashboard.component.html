@@ -239,8 +239,6 @@
               style="margin-top: 0.5rem">
               Cancel
             </button>
-            <button *ngIf="editingLink" type="button" (click)="cancelEdit()" class="btn btn-secondary btn-full"
-              style="margin-top: 0.5rem;">Cancel</button>
           </form>
         </div>
       </div>
@@ -259,93 +257,100 @@
           </div>
 
           <div class="links-list" *ngIf="links.length > 0">
-            <div *ngFor="let link of links; let i = index" class="link-item" draggable="true"
-              (dragstart)="onDragStart($event, i)" (dragover)="onDragOver($event)" (drop)="onDrop($event, i)">
+            <div *ngFor="let link of links; let i = index" class="link-item"
+              [class.link-inactive]="(link.scheduledStart || link.scheduledEnd) && !isLinkScheduledActive(link)"
+              draggable="true" (dragstart)="onDragStart($event, i)" (dragover)="onDragOver($event)"
+              (drop)="onDrop($event, i)">
 
-              <!-- 1. Drag Handle (Left) -->
-              <div class="drag-handle-wrapper">
-                <svg class="drag-handle" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="9" cy="5" r="1"></circle>
-                  <circle cx="9" cy="12" r="1"></circle>
-                  <circle cx="9" cy="19" r="1"></circle>
-                  <circle cx="15" cy="5" r="1"></circle>
-                  <circle cx="15" cy="12" r="1"></circle>
-                  <circle cx="15" cy="19" r="1"></circle>
-                </svg>
-              </div>
-
-              <!-- 2. Main Content (Middle) -->
-              <div class="link-content-wrapper">
-
-                <!-- Link Icon Preview -->
-                <div class="link-icon-preview">
-                  <img *ngIf="link.iconUrl" [src]="link.iconUrl" [alt]="link.title" class="icon-img" />
-                  <div *ngIf="!link.iconUrl" class="icon-placeholder">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2">
-                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                    </svg>
-                  </div>
+              <!-- Primary Row: Always Visible, Horizontal -->
+              <div class="link-main-row">
+                <!-- 1. Drag Handle -->
+                <div class="drag-handle-wrapper">
+                  <svg class="drag-handle" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="5" r="1"></circle>
+                    <circle cx="9" cy="12" r="1"></circle>
+                    <circle cx="9" cy="19" r="1"></circle>
+                    <circle cx="15" cy="5" r="1"></circle>
+                    <circle cx="15" cy="12" r="1"></circle>
+                    <circle cx="15" cy="19" r="1"></circle>
+                  </svg>
                 </div>
 
-                <div class="link-info">
-                  <h4 class="link-title">{{ link.title }}</h4>
-                  <a [href]="link.url" target="_blank" class="link-url">{{
-                    link.url
-                    }}</a>
-                  <div class="link-meta">
-                    <p class="link-stats">{{ link.clicks || 0 }} clicks</p>
-                    <span *ngIf="link.scheduledStart || link.scheduledEnd"
-                      [class]="isLinkScheduledActive(link) ? 'status-badge status-active' : 'status-badge status-inactive'">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="5"></circle>
+                <!-- 2. Content Wrapper (Icon + Text) -->
+                <div class="link-content-wrapper">
+                  <!-- Icon -->
+                  <div class="link-icon-preview">
+                    <img *ngIf="link.iconUrl" [src]="link.iconUrl" [alt]="link.title" class="icon-img" />
+                    <div *ngIf="!link.iconUrl" class="icon-placeholder">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                       </svg>
-                      {{ isLinkScheduledActive(link) ? "Active" : "Inactive" }}
-                    </span>
-                  </div>
-                  <div class="schedule-details">
-                    <span class="schedule-info">
-                      Start:
-                      {{
-                      link.scheduledStart
-                      ? (link.scheduledStart | date : "short")
-                      : "—"
-                      }}
-                    </span>
-                    <span *ngIf="link.scheduledStart && link.scheduledEnd" class="schedule-separator">—</span>
-                    <span class="schedule-info">
-                      End:
-                      {{
-                      link.scheduledEnd
-                      ? (link.scheduledEnd | date : "short")
-                      : "—"
-                      }}
-                    </span>
+                    </div>
                   </div>
 
+                  <!-- Info (Title, URL, Meta) -->
+                  <div class="link-info">
+                    <h4 class="link-title">
+                      {{ link.title }}
+                      <!-- Status Dot for All Links -->
+                      <span class="status-dot"
+                        [class.active]="(!link.scheduledStart && !link.scheduledEnd) || isLinkScheduledActive(link)"
+                        [title]="((!link.scheduledStart && !link.scheduledEnd) || isLinkScheduledActive(link)) ? 'Active' : 'Inactive'">
+                      </span>
+                    </h4>
+                    <a [href]="link.url" target="_blank" class="link-url">{{ link.url }}</a>
+
+                    <div class="link-meta-row">
+                      <span class="link-stats">{{ link.clicks || 0 }} clicks</span>
+
+                      <!-- Toggle Button (Only if schedule exists) -->
+                      <button *ngIf="link.scheduledStart || link.scheduledEnd" type="button" class="btn-mobile-details"
+                        (click)="toggleLinkDetails(link._id!)">
+                        {{ isDetailsExpanded(link._id!) ? 'Hide Info' : 'Show Info' }}
+                      </button>
+                    </div>
+
+                    <!-- Expanded Details (Nested inside link-info) -->
+                    <div class="link-details-row" *ngIf="isDetailsExpanded(link._id!)">
+                      <div class="schedule-info-block">
+                        <span class="schedule-label">Start:</span>
+                        <span class="schedule-val">{{ link.scheduledStart ? (link.scheduledStart | date : "short") : "—"
+                          }}</span>
+                      </div>
+                      <div class="schedule-info-block">
+                        <span class="schedule-label">End:</span>
+                        <span class="schedule-val">{{ link.scheduledEnd ? (link.scheduledEnd | date : "short") : "—"
+                          }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 3. Actions (Right) -->
+                <div class="link-actions">
+                  <button (click)="editLink(link)" class="btn-icon" title="Edit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                  </button>
+                  <button (click)="deleteLink(link._id!)" class="btn-icon btn-icon-danger" title="Delete">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </button>
                 </div>
               </div>
 
-              <!-- 3. Actions (Right, inside wrapper to keep alignment if needed, or separate) -->
-              <div class="link-actions">
-                <button (click)="editLink(link)" class="btn-icon" title="Edit">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                  </svg>
-                </button>
-                <button (click)="deleteLink(link._id!)" class="btn-icon btn-icon-danger" title="Delete">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                  </svg>
-                </button>
-              </div>
+              <!-- Secondary Row: Expandable Details -->
+
+
             </div>
           </div>
         </div>
