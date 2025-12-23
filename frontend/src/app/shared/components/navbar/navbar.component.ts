@@ -14,18 +14,27 @@ import { filter } from 'rxjs/operators';
 export class NavbarComponent implements OnInit {
   currentUser: any = null;
   isAnalyticsActive = false;
+  isMenuOpen = false;
 
   constructor(
-    private authService: AuthService, 
+    private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  closeMenu() {
+    this.isMenuOpen = false;
+  }
 
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
-    
+
     // Check initial route
     this.isAnalyticsActive = this.router.url.includes('/analytics');
-    
+
     // Listen to route changes
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)

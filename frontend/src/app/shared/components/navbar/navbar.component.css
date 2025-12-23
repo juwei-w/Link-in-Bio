@@ -28,6 +28,16 @@
   margin: 0 auto;
 }
 
+@media (max-width: 768px) {
+  .nav-content {
+    padding: 0 1rem;
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+}
+
 .logo-container {
   display: flex;
   align-items: center;
@@ -205,6 +215,138 @@
   color: var(--color-text-light);
 }
 
-:host-context(body.dark-mode) .btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.1);
+/* Mobile Menu Button */
+.menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  z-index: 102;
+}
+
+.bar {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background-color: var(--color-text-light);
+  margin: 5px 0;
+  transition: all 0.3s ease;
+  border-radius: 2px;
+}
+
+:host-context(body.dark-mode) .bar {
+  background-color: white;
+}
+
+/* Hamburger Animation */
+.menu-btn.active .bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.menu-btn.active .bar:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-btn.active .bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.mobile-divider {
+  display: none;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .menu-btn {
+    display: block;
+  }
+
+  /* Nav Links Dropdown */
+  .nav-links {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem;
+    transform: translateY(-100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 101;
+    overflow-y: auto;
+  }
+
+  :host-context(body.dark-mode) .nav-links {
+    background: rgba(15, 23, 42, 0.98);
+  }
+
+  .nav-links.open {
+    transform: translateY(0);
+  }
+
+  .nav-toggle-group {
+    flex-direction: column;
+    width: 100%;
+    background: transparent;
+    gap: 0.5rem;
+  }
+
+  /* Hide the sliding background on mobile since we stack */
+  .nav-toggle-group::before {
+    display: none;
+  }
+
+  .nav-toggle-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 1rem;
+    font-size: 1.1rem;
+    background: rgba(226, 232, 240, 0.3);
+    border-radius: 12px;
+  }
+
+  :host-context(body.dark-mode) .nav-toggle-btn {
+    background: rgba(51, 65, 85, 0.3);
+  }
+
+  .nav-toggle-btn.active {
+    background: var(--gradient-primary);
+    color: white !important;
+  }
+
+  :host-context(body.dark-mode) .nav-toggle-btn.active {
+    background: var(--gradient-primary);
+    color: white !important;
+  }
+
+  .mobile-divider {
+    display: block;
+    width: 50px;
+    height: 2px;
+    background: rgba(0, 0, 0, 0.05);
+    margin: 0.5rem 0;
+  }
+
+  :host-context(body.dark-mode) .mobile-divider {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .btn-gradient {
+    width: 100%;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .btn-ghost {
+    width: 100%;
+    justify-content: center;
+    margin-top: 1rem;
+  }
 }

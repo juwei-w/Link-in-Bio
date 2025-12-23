@@ -369,6 +369,18 @@
   }
 
   .preset-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    /* Force 2 columns on small screens */
+    gap: 8px;
+  }
+
+  .preset-btn {
+    padding: 8px;
+    gap: 4px;
+  }
+
+  .color-box {
+    width: 18px;
+    height: 18px;
   }
 }
