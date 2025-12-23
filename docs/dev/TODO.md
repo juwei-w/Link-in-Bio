@@ -102,11 +102,11 @@ This TODO is derived from the PRD and broken into actionable tasks for the MVP. 
   - Requires: Testing email delivery, creating verification success page, error handling
 - [x] Password Reset Flow — Test and document forgot password → reset link → new password
   - Requires: Testing email delivery, creating reset password page, token validation, updating password
-- [ ] Share buttons — Add social sharing (Twitter, Facebook, LinkedIn)
+- [x] Share buttons — Add social sharing (Twitter, Facebook, LinkedIn)
   - Requires: Social media API integration, share URLs generation, button UI components
-- [ ] QR code generation for profile pages
+- [x] QR code generation for profile pages
   - Requires: QR code library (qrcode.js), download/copy functionality, modal UI
-- [ ] Link icons/favicons — Auto-fetch or allow users to add icons for links
+- [x] Link icons/favicons — Auto-fetch or allow users to add icons for links
   - Requires: Favicon API integration (Google, Clearbit), image upload, icon display
-- [ ] Custom profile URL — Allow users to customize their `/:username` slug
+- [x] Custom profile URL — Allow users to customize their `/:username` slug
   - Requires: URL validation, uniqueness check, redirect handling, settings UI

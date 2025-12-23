@@ -1,7 +1,18 @@
 <div class="profile-container">
   <div *ngIf="loading" class="loading">
     <div class="loading-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="48"
+        height="48"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="animate-spin"
+      >
         <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
       </svg>
     </div>
@@ -12,26 +23,325 @@
     <div class="profile-header">
       <!-- Profile Picture -->
       <div class="avatar-container">
-        <div class="avatar" [style.background-image]="profile?.avatarUrl ? 'url(' + (profile?.avatarUrl ?? '') + ')' : 'none'"
-             [class.has-image]="profile?.avatarUrl">
-          <span *ngIf="!profile?.avatarUrl">{{ (profile?.displayName || profile?.username || "U").charAt(0).toUpperCase() }}</span>
+        <div
+          class="avatar"
+          [style.background-image]="
+            profile?.avatarUrl
+              ? 'url(' + (profile?.avatarUrl ?? '') + ')'
+              : 'none'
+          "
+          [class.has-image]="profile?.avatarUrl"
+        >
+          <span *ngIf="!profile?.avatarUrl">{{
+            (profile?.displayName || profile?.username || "U")
+              .charAt(0)
+              .toUpperCase()
+          }}</span>
         </div>
       </div>
-      
+
       <!-- Display Name or Username -->
-      <h1 class="display-name">{{ profile?.displayName || '@' + profile?.username }}</h1>
-      
+      <h1 class="display-name">
+        {{ profile?.displayName || "@" + profile?.username }}
+      </h1>
+
       <!-- Bio -->
       <p *ngIf="profile?.bio" class="bio">{{ profile?.bio }}</p>
-      
+
       <!-- Edit Button for Owner -->
       <button *ngIf="isOwner" class="btn-edit" (click)="goEdit()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+          ></path>
+          <path
+            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+          ></path>
         </svg>
         Edit Profile
       </button>
+
+      <!-- Share Button and Modal -->
+      <button class="btn-share" (click)="toggleShareModal()">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
+        Share
+      </button>
+
+      <!-- Share Modal -->
+      <div
+        *ngIf="showShareModal"
+        #shareOverlay
+        class="share-modal-overlay"
+        (click)="toggleShareModal()"
+      >
+        <div class="share-modal" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3>Share Profile</h3>
+            <button class="close-btn" (click)="toggleShareModal()">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="modal-content">
+            <!-- Social Share Buttons Grid -->
+            <div class="share-grid">
+              <button
+                class="share-btn-social twitter"
+                (click)="shareOnTwitter()"
+                title="Share on X"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.657l-5.207-6.807-5.967 6.807H2.882l7.432-8.471L1.227 2.25h6.836l4.867 6.44 5.432-6.44zM16.884 19.75h1.834L7.084 4.126H5.117l11.767 15.624z"
+                  ></path>
+                </svg>
+                <span>X</span>
+              </button>
+              <button
+                class="share-btn-social facebook"
+                (click)="shareOnFacebook()"
+                title="Share on Facebook"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
+                  ></path>
+                </svg>
+                <span>Facebook</span>
+              </button>
+              <button
+                class="share-btn-social linkedin"
+                (click)="shareOnLinkedIn()"
+                title="Share on LinkedIn"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"
+                  ></path>
+                </svg>
+                <span>LinkedIn</span>
+              </button>
+              <button
+                class="share-btn-social instagram"
+                (click)="shareOnInstagram()"
+                title="Share on Instagram"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="white"
+                  stroke-width="2"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect>
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <circle cx="18" cy="6" r="1" fill="white"></circle>
+                </svg>
+                <span>Instagram</span>
+              </button>
+              <button
+                class="share-btn-social reddit"
+                (click)="shareOnReddit()"
+                title="Share on Reddit"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="white"
+                >
+                  <path
+                    d="M12 0a12 12 0 100 24 12 12 0 000-24zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 01-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 01.042.52c0 2.694-3.385 4.859-7.181 4.859-3.796 0-7.182-2.165-7.182-4.859a3.5 3.5 0 01.476-.52 1.764 1.764 0 01-.04-1.609 1.738 1.738 0 011.206-.491c.566 0 1.077.2 1.496.56.218-.265.635-.528 1.465-.528.373 0 .744.05 1.105.145.523-1.409 2.318-2.51 4.527-2.51.486 0 .952.043 1.408.127l.584-2.728c.14-.646.44-1.13.921-1.371.529-.286 1.291-.16 2.235.135zm-4.76 12.78a1.764 1.764 0 01-1.754 1.762c-.976 0-1.763-.786-1.763-1.762s.786-1.762 1.763-1.762 1.754.786 1.754 1.762zm10.313 5.356c-1.195.524-2.805.927-4.56.927-1.745 0-3.368-.403-4.561-.924-.196-.066-.315-.224-.315-.423 0-.2.119-.358.315-.423 1.193.521 2.816.924 4.561.924 1.754 0 3.365-.403 4.56-.927.196-.066.315-.224.315-.424 0-.199-.119-.357-.315-.422zm2.457-1.866c.976 0 1.763-.787 1.763-1.762s-.787-1.763-1.763-1.763-1.756.786-1.756 1.763.79 1.762 1.756 1.762z"
+                  ></path>
+                </svg>
+                <span>Reddit</span>
+              </button>
+              <button
+                class="share-btn-social whatsapp"
+                (click)="shareOnWhatsApp()"
+                title="Share on WhatsApp"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="white"
+                >
+                  <path
+                    d="M20.52 3.98C18.44 1.9 15.5 0.68 12.32 0.68c-5.97 0-10.82 4.85-10.82 10.82 0 1.9.5 3.76 1.44 5.4L1.6 23.32l5.76-1.51c1.58.86 3.36 1.32 5.19 1.32h5.01c5.98 0 10.82-4.85 10.82-10.82 0-2.89-1.13-5.6-3.18-7.65zM12.32 20.82h-5.01c-1.6 0-3.16-.43-4.54-1.24l-.33-.2-3.4.89.92-3.36-.22-.34C2.48 14.32 2 13.35 2 12.32c0-4.94 4.02-8.96 8.96-8.96 2.39 0 4.64.93 6.33 2.62 1.69 1.69 2.62 3.94 2.62 6.33 0 4.94-4.02 8.96-8.96 8.96zm4.92-6.73c-.27-.14-1.6-.79-1.85-.88-.25-.09-.43-.14-.61.14-.18.28-.7.88-.86 1.06-.16.18-.32.2-.59.07-.27-.14-1.14-.42-2.17-1.34-.8-.72-1.34-1.6-1.5-1.88-.16-.28 0-.42.12-.55.12-.12.27-.32.41-.47.14-.15.18-.27.27-.45.09-.18.05-.34-.02-.47-.07-.14-.61-1.47-.84-2.01-.22-.52-.44-.45-.61-.46-.16-.01-.34-.01-.52-.01-.18 0-.47.07-.72.34-.25.27-.95.93-.95 2.27 0 1.34.97 2.63 1.1 2.81.14.18 1.9 2.91 4.6 4.08.65.28 1.15.45 1.54.57.65.21 1.24.18 1.71.11.52-.08 1.59-.65 1.81-1.27.22-.63.22-1.17.16-1.28-.06-.09-.34-.18-.61-.31z"
+                  ></path>
+                </svg>
+                <span>WhatsApp</span>
+              </button>
+            </div>
+
+            <div class="modal-divider">or</div>
+
+            <!-- Copy Link & QR Code Options -->
+            <div class="other-options">
+              <button
+                class="other-option copy-link"
+                (click)="copyToClipboard()"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+                  ></path>
+                  <path
+                    d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                  ></path>
+                </svg>
+                <div>
+                  <div class="option-title">Copy Link</div>
+                  <div *ngIf="copySuccess" class="copy-success">Copied!</div>
+                </div>
+              </button>
+              <button
+                class="other-option qr-option"
+                (click)="showQRCodeModal()"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="4" height="4"></rect>
+                </svg>
+                <div>
+                  <div class="option-title">View QR Code</div>
+                  <div class="option-subtitle">Scan to share</div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QR Code Modal -->
+      <div
+        *ngIf="showQRModal"
+        #qrOverlay
+        class="qr-modal-overlay"
+        (click)="closeQRModal()"
+      >
+        <div class="qr-modal" (click)="$event.stopPropagation()">
+          <button class="close-btn" (click)="closeQRModal()">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+          <h3>Profile QR Code</h3>
+          <div class="qr-code-frame">
+            <div class="qr-code-container" #qrCodeElement></div>
+          </div>
+          <p class="qr-help">Scan with your phone to view profile</p>
+          <button class="btn-download-qr" (click)="downloadQRCode()">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Download QR Code
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Links Section -->
@@ -45,20 +355,76 @@
           class="profile-link"
           (click)="trackClick(link._id!)"
         >
+          <!-- Link Icon -->
+          <div class="link-icon-container">
+            <img
+              *ngIf="link.iconUrl"
+              [src]="link.iconUrl"
+              [alt]="link.title"
+              class="link-icon"
+              (error)="onIconLoadError($event)"
+            />
+            <div *ngIf="!link.iconUrl" class="link-icon-placeholder">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+                ></path>
+                <path
+                  d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                ></path>
+              </svg>
+            </div>
+          </div>
+
           <div class="link-content">
             <span class="link-title">{{ link.title }}</span>
             <span class="link-url">{{ link.url }}</span>
           </div>
-          <svg class="link-arrow" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg
+            class="link-arrow"
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <line x1="5" y1="12" x2="19" y2="12"></line>
             <polyline points="12 5 19 12 12 19"></polyline>
           </svg>
         </a>
 
         <div *ngIf="profile?.links?.length === 0" class="empty-state">
-          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+            ></path>
+            <path
+              d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+            ></path>
           </svg>
           <p>No links shared yet</p>
         </div>
@@ -72,7 +438,17 @@
 
   <div *ngIf="error" class="error-container">
     <div class="error-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="64"
+        height="64"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <circle cx="12" cy="12" r="10"></circle>
         <line x1="12" y1="8" x2="12" y2="12"></line>
         <line x1="12" y1="16" x2="12.01" y2="16"></line>

@@ -191,6 +191,7 @@ export class AuthService {
 
   // Update user profile
   updateProfile(profileData: {
+    username?: string;
     displayName?: string;
     bio?: string;
     avatarUrl?: string;
@@ -203,6 +204,26 @@ export class AuthService {
         localStorage.setItem("user", JSON.stringify(updatedUser));
         this.currentUserSubject.next(updatedUser);
       })
+    );
+  }
+
+  // Check username availability
+  checkUsernameAvailability(
+    username: string
+  ): Observable<{ available: boolean; message: string }> {
+    return this.http.get<{ available: boolean; message: string }>(
+      `${this.apiUrl}/auth/check-username?username=${encodeURIComponent(
+        username
+      )}`
+    );
+  }
+
+  // Check email availability
+  checkEmailAvailability(
+    email: string
+  ): Observable<{ available: boolean; message: string }> {
+    return this.http.get<{ available: boolean; message: string }>(
+      `${this.apiUrl}/auth/check-email?email=${encodeURIComponent(email)}`
     );
   }
 }

@@ -12,36 +12,102 @@
 
         <div class="card-content">
           <div class="profile-info">
-
             <!-- Profile Picture Upload -->
             <div class="info-group">
               <label class="form-label">Profile Picture</label>
               <div class="avatar-upload-wrapper">
+<<<<<<< HEAD
                 <div class="avatar-preview"
                   [style.background-image]="avatarPreview ? 'url(' + avatarPreview + ')' : 'none'"
                   [class.has-image]="avatarPreview" (click)="triggerImageSelect(fileInput)"
                   title="Click to upload/crop">
                   <span *ngIf="!avatarPreview">{{ (displayName || currentUser?.username || 'U').charAt(0).toUpperCase()
                     }}</span>
+=======
+                <div
+                  class="avatar-preview"
+                  [style.background-image]="
+                    avatarPreview ? 'url(' + avatarPreview + ')' : 'none'
+                  "
+                  [class.has-image]="avatarPreview"
+                  (click)="triggerImageSelect(fileInput)"
+                  title="Click to upload/crop"
+                >
+                  <span *ngIf="!avatarPreview">{{
+                    (displayName || currentUser?.username || "U")
+                      .charAt(0)
+                      .toUpperCase()
+                  }}</span>
+>>>>>>> Lai
                 </div>
                 <div class="avatar-upload-controls">
-                  <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden />
+                  <input
+                    type="file"
+                    #fileInput
+                    (change)="onFileSelected($event)"
+                    accept="image/*"
+                    hidden
+                  />
                   <div class="upload-buttons">
+<<<<<<< HEAD
                     <button type="button" class="btn btn-secondary btn-sm" (click)="fileInput.click()">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                         style="margin-right: 0.5rem;">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+=======
+                    <button
+                      type="button"
+                      class="btn btn-secondary btn-sm"
+                      (click)="fileInput.click()"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        style="margin-right: 0.5rem"
+                      >
+                        <path
+                          d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                        ></path>
+>>>>>>> Lai
                         <polyline points="17 8 12 3 7 8"></polyline>
                         <line x1="12" y1="3" x2="12" y2="15"></line>
                       </svg>
                       Choose Image
                     </button>
+<<<<<<< HEAD
                     <button type="button" *ngIf="avatarPreview || croppedImage" class="btn btn-ghost btn-sm"
                       (click)="removeAvatar()">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                         style="margin-right: 0.5rem;">
+=======
+                    <button
+                      type="button"
+                      *ngIf="avatarPreview || croppedImage"
+                      class="btn btn-ghost btn-sm"
+                      (click)="removeAvatar()"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        style="margin-right: 0.5rem"
+                      >
+>>>>>>> Lai
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                       </svg>
@@ -54,9 +120,52 @@
             </div>
 
             <div class="info-group">
-              <label class="info-label">Username</label>
-              <div class="username-display">{{ currentUser?.username }}</div>
-              <p class="info-hint">Your profile URL: {{ getProfileUrl() }}</p>
+              <label for="username" class="form-label"
+                >Profile Personalised Url</label
+              >
+              <div class="username-input-wrapper">
+                <div class="username-prefix">yoursite.com/</div>
+                <input
+                  type="text"
+                  id="username"
+                  [(ngModel)]="username"
+                  (input)="onUsernameChange()"
+                  name="username"
+                  class="form-input username-input"
+                  placeholder="username"
+                  minlength="3"
+                  maxlength="16"
+                  [class.error]="
+                    username &&
+                    !usernameAvailable &&
+                    username !== currentUser?.username
+                  "
+                />
+                <div *ngIf="checkingUsername" class="checking-spinner">⏳</div>
+              </div>
+              <p
+                *ngIf="username && username !== currentUser?.username"
+                class="info-hint"
+              >
+                Your profile URL: <strong>{{ getProfileUrl() }}</strong>
+              </p>
+              <p
+                *ngIf="usernameError && username !== currentUser?.username"
+                class="form-error"
+              >
+                {{ usernameError }}
+              </p>
+              <p
+                *ngIf="
+                  username &&
+                  username !== currentUser?.username &&
+                  usernameAvailable &&
+                  !usernameError
+                "
+                class="form-success"
+              >
+                ✓ Username available!
+              </p>
             </div>
 
             <div class="info-group">
@@ -92,8 +201,16 @@
       <!-- Add New Link Card -->
       <div class="card" id="link-form-card">
         <div class="card-header">
-          <h2 class="card-title">{{ editingLink ? 'Edit Link' : 'Add New Link' }}</h2>
-          <p class="card-description">{{ editingLink ? 'Update your link details' : 'Create a new link to share' }}</p>
+          <h2 class="card-title">
+            {{ editingLink ? "Edit Link" : "Add New Link" }}
+          </h2>
+          <p class="card-description">
+            {{
+              editingLink
+                ? "Update your link details"
+                : "Create a new link to share"
+            }}
+          </p>
         </div>
         <div class="card-content">
           <form (ngSubmit)="saveLink()">
@@ -127,7 +244,10 @@
                     class="form-input" min="2000-01-01T00:00" max="2099-12-31T23:59" />
                 </div>
               </div>
-              <p class="form-hint">Leave empty for link to be always active. Times are in your local timezone.</p>
+              <p class="form-hint">
+                Leave empty for link to be always active. Times are in your
+                local timezone.
+              </p>
             </div>
 
             <button type="submit" class="btn btn-primary btn-full" [disabled]="loading">
@@ -137,7 +257,18 @@
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
               </svg>
-              {{ loading ? 'Saving...' : (editingLink ? 'Update Link' : 'Add Link') }}
+              {{
+                loading ? "Saving..." : editingLink ? "Update Link" : "Add Link"
+              }}
+            </button>
+            <button
+              *ngIf="editingLink"
+              type="button"
+              (click)="cancelEdit()"
+              class="btn btn-secondary btn-full"
+              style="margin-top: 0.5rem"
+            >
+              Cancel
             </button>
             <button *ngIf="editingLink" type="button" (click)="cancelEdit()" class="btn btn-secondary btn-full"
               style="margin-top: 0.5rem;">Cancel</button>
@@ -149,7 +280,9 @@
       <div class="card">
         <div class="card-header">
           <h2 class="card-title">Your Links</h2>
-          <p class="card-description">{{ links.length }} link{{ links.length !== 1 ? 's' : '' }} total</p>
+          <p class="card-description">
+            {{ links.length }} link{{ links.length !== 1 ? "s" : "" }} total
+          </p>
         </div>
         <div class="card-content">
           <div *ngIf="links.length === 0" class="empty-state">
@@ -175,9 +308,40 @@
 
               <!-- 2. Main Content (Middle) -->
               <div class="link-content-wrapper">
+
+                <!-- Link Icon Preview -->
+                <div class="link-icon-preview">
+                  <img
+                    *ngIf="link.iconUrl"
+                    [src]="link.iconUrl"
+                    [alt]="link.title"
+                    class="icon-img"
+                  />
+                  <div *ngIf="!link.iconUrl" class="icon-placeholder">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+                      ></path>
+                      <path
+                        d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                      ></path>
+                    </svg>
+                  </div>
+                </div>
+
                 <div class="link-info">
                   <h4 class="link-title">{{ link.title }}</h4>
-                  <a [href]="link.url" target="_blank" class="link-url">{{ link.url }}</a>
+                  <a [href]="link.url" target="_blank" class="link-url">{{
+                    link.url
+                  }}</a>
                   <div class="link-meta">
                     <p class="link-stats">{{ link.clicks || 0 }} clicks</p>
                     <span *ngIf="link.scheduledStart || link.scheduledEnd"
@@ -186,25 +350,104 @@
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"></circle>
                       </svg>
-                      {{ isLinkScheduledActive(link) ? 'Active' : 'Inactive' }}
+                      {{ isLinkScheduledActive(link) ? "Active" : "Inactive" }}
                     </span>
                   </div>
                   <div class="schedule-details">
                     <span class="schedule-info">
-                      Start: {{ link.scheduledStart ? (link.scheduledStart | date:'short') : '—' }}
+                      Start:
+                      {{
+                        link.scheduledStart
+                          ? (link.scheduledStart | date : "short")
+                          : "—"
+                      }}
                     </span>
-                    <span *ngIf="link.scheduledStart && link.scheduledEnd" class="schedule-separator">—</span>
+                    <span
+                      *ngIf="link.scheduledStart && link.scheduledEnd"
+                      class="schedule-separator"
+                      >—</span
+                    >
                     <span class="schedule-info">
-                      End: {{ link.scheduledEnd ? (link.scheduledEnd | date:'short') : '—' }}
+                      End:
+                      {{
+                        link.scheduledEnd
+                          ? (link.scheduledEnd | date : "short")
+                          : "—"
+                      }}
                     </span>
+                  </div>
+
+                  <!-- Icon Management Section -->
+                  <div class="icon-management">
+                    <p class="icon-mgmt-label">Icon:</p>
+                    <div class="icon-buttons">
+                      <button
+                        type="button"
+                        class="btn-icon-sm"
+                        title="Auto-fetch favicon"
+                        (click)="fetchFaviconForLink(link._id!, i)"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 2.2"
+                          ></path>
+                        </svg>
+                        Auto-fetch
+                      </button>
+                      <!-- Upload button removed; use Custom modal to upload images -->
+                      <button
+                        type="button"
+                        class="btn-icon-sm"
+                        title="Custom icon (upload or URL)"
+                        (click)="openCustomModal(link._id!, i)"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path d="M12 5v14M5 12h14"></path>
+                        </svg>
+                        Custom
+                      </button>
+                      <button
+                        *ngIf="link.iconUrl"
+                        type="button"
+                        class="btn-icon-sm btn-danger"
+                        title="Clear icon"
+                        (click)="clearIcon(link._id!, i)"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                        Clear
+                      </button>
+                    </div>
                   </div>
                 </div>
 
                 <!-- 3. Actions (Right, inside wrapper to keep alignment if needed, or separate) -->
-                <!-- Let's keep actions inside the wrapper or separate? 
-                     User said: "dragable button to be on the left... and all the contents on the right"
-                     So: [Drag] [Info + Actions]
-                -->
                 <div class="link-actions">
                   <button (click)="editLink(link)" class="btn-icon" title="Edit">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -251,6 +494,90 @@
       <div class="modal-footer">
         <button class="btn btn-ghost" (click)="cancelCrop()">Cancel</button>
         <button class="btn btn-primary" (click)="applyCrop()">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Single Custom Icon Modal (global) -->
+  <div
+    *ngIf="showCustomModal"
+    class="modal-overlay custom-modal"
+    (click)="closeCustomModal()"
+  >
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Custom Icon</h3>
+        <button class="btn-close" (click)="closeCustomModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>Select how you'd like to add a custom icon for this link.</p>
+        <div class="options">
+          <div class="custom-option">
+            <label class="upload-label" style="cursor: pointer">
+              Upload Image
+              <input
+                type="file"
+                accept="image/*"
+                #modalIconFile
+                hidden
+                (change)="onIconFileSelected($event)"
+              />
+            </label>
+            <small style="color: #6b7280"
+              >Supported: JPG, PNG, GIF. Max 5MB.</small
+            >
+            <div *ngIf="modalSelectedFile" class="modal-file-selected">
+              <div class="file-preview" *ngIf="modalPreviewUrl">
+                <img [src]="modalPreviewUrl" alt="preview" />
+              </div>
+              <div class="file-meta">
+                <strong>{{ modalSelectedFileName }}</strong>
+                <div class="file-actions">
+                  <button
+                    class="btn btn-ghost btn-sm"
+                    type="button"
+                    (click)="removeModalSelectedFile()"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr />
+        <div>
+          <label class="form-label">Or use an image URL</label>
+          <input
+            type="url"
+            class="form-input"
+            [(ngModel)]="customModalUrl"
+            placeholder="https://example.com/icon.png"
+          />
+          <div style="margin-top: 0.5rem" class="custom-url-input">
+            <button
+              *ngIf="!modalSelectedFile"
+              class="btn-use-url"
+              (click)="applyCustomUrl()"
+            >
+              Use URL
+            </button>
+            <button
+              *ngIf="modalSelectedFile"
+              class="btn btn-primary"
+              (click)="confirmUpload()"
+            >
+              Confirm Upload
+            </button>
+            <button
+              class="btn btn-ghost"
+              (click)="closeCustomModal()"
+              style="margin-left: 0.5rem"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

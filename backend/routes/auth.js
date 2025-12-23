@@ -7,6 +7,11 @@ const nodemailer = require("nodemailer");
 const axios = require("axios");
 const User = require("../models/User");
 const { init } = require("../firebaseAdmin");
+const {
+  isValidUsername,
+  isValidEmail,
+  isValidPassword,
+} = require("../utils/validation");
 
 // Configure mail transporter (defaults suitable for MailHog). If SMTP_* env vars
 // are provided they will be used. Alternatively, if BREVO_API_KEY is set the
@@ -153,17 +158,49 @@ async function sendResetEmail(toEmail, resetUrl) {
 router.post("/signup", async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    if (!username || !email || !password)
-      return res.status(400).json({ message: "Missing fields" });
 
-    // simple validation done by mongoose schema
-    const existing = await User.findOne({
-      $or: [{ username: username.toLowerCase() }, { email }],
-    });
-    if (existing)
+    // Validate required fields
+    if (!username || !email || !password) {
       return res
-        .status(409)
-        .json({ message: "Username or email already taken" });
+        .status(400)
+        .json({
+          message: "Missing required fields: username, email, password",
+        });
+    }
+
+    // Validate format
+    if (!isValidUsername(username)) {
+      return res
+        .status(400)
+        .json({
+          message:
+            "Invalid username. Must be 3-16 characters (letters, numbers, - and _)",
+        });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+
+    if (!isValidPassword(password)) {
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
+    }
+
+    // Check if username or email already taken
+    const existing = await User.findOne({
+      $or: [
+        { username: username.toLowerCase() },
+        { email: email.toLowerCase() },
+      ],
+    });
+    if (existing) {
+      if (existing.username === username.toLowerCase()) {
+        return res.status(409).json({ message: "Username already taken" });
+      }
+      return res.status(409).json({ message: "Email already registered" });
+    }
 
     const saltRounds = 10;
     const hash = await bcrypt.hash(password, saltRounds);
@@ -173,8 +210,8 @@ router.post("/signup", async (req, res) => {
     const emailVerificationExpires = Date.now() + 24 * 3600 * 1000; // 24 hours
 
     const user = new User({
-      username,
-      email,
+      username: username.toLowerCase(),
+      email: email.toLowerCase(),
       passwordHash: hash,
       provider: "local",
       emailVerificationToken: verificationToken,
@@ -216,14 +253,92 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+// GET /api/auth/check-username
+// Query param: username
+// Returns: { available: boolean, message: string }
+router.get("/check-username", async (req, res) => {
+  try {
+    const { username } = req.query;
+    if (!username || username.trim().length < 3) {
+      return res.json({
+        available: false,
+        message: "Username must be at least 3 characters",
+      });
+    }
+    if (username.length > 16) {
+      return res.json({
+        available: false,
+        message: "Username must be 16 characters or less",
+      });
+    }
+    if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+      return res.json({
+        available: false,
+        message: "Username can only contain letters, numbers, - and _",
+      });
+    }
+
+    const existing = await User.findOne({ username: username.toLowerCase() });
+    if (existing) {
+      return res.json({
+        available: false,
+        message: "Username is already taken",
+      });
+    }
+
+    res.json({ available: true, message: "Username is available" });
+  } catch (err) {
+    console.error("Check username error:", err);
+    res.status(500).json({ available: false, message: "Server error" });
+  }
+});
+
+// GET /api/auth/check-email
+// Query param: email
+// Returns: { available: boolean, message: string }
+router.get("/check-email", async (req, res) => {
+  try {
+    const { email } = req.query;
+    if (!email || !email.includes("@")) {
+      return res.json({
+        available: false,
+        message: "Please enter a valid email",
+      });
+    }
+
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.json({
+        available: false,
+        message: "Email is already registered",
+      });
+    }
+
+    res.json({ available: true, message: "Email is available" });
+  } catch (err) {
+    console.error("Check email error:", err);
+    res.status(500).json({ available: false, message: "Server error" });
+  }
+});
+
 // POST /api/auth/login
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password)
-      return res.status(400).json({ message: "Missing fields" });
 
-    const user = await User.findOne({ email });
+    // Validate required fields
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Missing required fields: email, password" });
+    }
+
+    // Validate email format
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
     if (!user || !user.passwordHash)
       return res.status(401).json({ message: "Invalid credentials" });
 
@@ -255,9 +370,15 @@ router.post("/login", async (req, res) => {
 router.post("/forgot", async (req, res) => {
   try {
     const { email } = req.body;
-    if (!email) return res.status(400).json({ message: "Missing email" });
 
-    const user = await User.findOne({ email });
+    // Validate email
+    if (!email || !isValidEmail(email)) {
+      return res.json({
+        message: "If an account exists, a reset email has been sent",
+      });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
       // respond with success to avoid user enumeration
       return res.json({
@@ -601,6 +722,35 @@ router.post("/resend-verification", async (req, res) => {
     });
   } catch (err) {
     console.error("Resend verification error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Check if username is available
+router.post("/check-username", async (req, res) => {
+  try {
+    const { username } = req.body;
+
+    console.debug("[auth] check-username called with:", username);
+
+    if (!username) {
+      return res.status(400).json({ message: "Username is required" });
+    }
+
+    // Username validation regex (same as in User model)
+    const USERNAME_REGEX = /^[a-z0-9_-]{3,16}$/i;
+    if (!USERNAME_REGEX.test(username)) {
+      return res.json({ available: false });
+    }
+
+    // Check if username exists in database (excluding current user if updating)
+    const existingUser = await User.findOne({
+      username: username.toLowerCase(),
+    });
+
+    res.json({ available: !existingUser });
+  } catch (err) {
+    console.error("Check username error:", err);
     res.status(500).json({ message: "Server error" });
   }
 });

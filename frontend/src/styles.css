@@ -12,11 +12,12 @@
   --color-text-light: #0f172a;
   --color-text-dark: #f1f5f9;
   --color-text-secondary: #64748b;
-  --color-primary: #fc6158;
-  --color-primary-hover: #e5564d;
-  --color-secondary: #ff9b96;
-  --color-accent: #d946ef;
-  --color-accent-light: #fae8ff;
+  /* Orange-pink theme */
+  --color-primary: #ff6a88;
+  --color-primary-hover: #ff5470;
+  --color-secondary: #ff9a6a;
+  --color-accent: #ff77b0;
+  --color-accent-light: #ffe6f0;
   --color-border: #e2e8f0;
   --color-border-dark: #374151;
   --spacing-xs: 0.5rem;
@@ -38,11 +39,51 @@
   --transition-fast: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
-  --gradient-primary: linear-gradient(135deg, #fc6158 0%, #d946ef 100%);
-  --gradient-accent: linear-gradient(135deg, #ff9b96 0%, #fae8ff 100%);
-  --gradient-orange-pink: linear-gradient(135deg,
-      hsl(14 100% 64%),
-      hsl(330 85% 65%));
+  --gradient-primary: linear-gradient(135deg, #ff8a5c 0%, #ff5fa8 100%);
+  --gradient-accent: linear-gradient(135deg, #ffd8cc 0%, #ffe6f6 100%);
+  --gradient-orange-pink: linear-gradient(135deg, #ff8a5c 0%, #ff5fa8 100%);
+
+  /* Utility tones */
+  --btn-gradient: linear-gradient(135deg, #ff8a5c, #ff5fa8);
+}
+
+/* Unified button base styles used across the app */
+.app-btn,
+.btn-gradient,
+.btn-outline,
+.btn-ghost,
+.upload-label,
+.btn-use-url {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+/* Selected / active state: bolder and stronger shadow */
+.app-btn.active,
+.btn-gradient.active,
+.btn-outline.active,
+.btn-ghost.active {
+  font-weight: 800;
+  transform: translateY(-1px);
+}
+
+/* Small helper to visually tone down icon-only small buttons while keeping size consistent */
+.btn-icon,
+.btn-icon-sm {
+  min-height: 36px;
+  padding: 0.4rem 0.6rem;
+  border-radius: 10px;
+  font-weight: 700;
 }
 
 * {
@@ -96,7 +137,8 @@ button {
 }
 
 .container {
-  max-width: 1240px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
   padding: 0 var(--spacing-lg);
 }
