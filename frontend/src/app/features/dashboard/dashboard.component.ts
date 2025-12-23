@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -8,28 +7,13 @@ import { LinksService, Link } from '../../core/services/links.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 import { ColorPickerComponent } from '../color-picker/color-picker.component';
-=======
-import { Component, OnInit } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { FormsModule } from "@angular/forms";
-import { Router, RouterModule } from "@angular/router";
-import { AuthService } from "../../core/services/auth.service";
-import { LinksService, Link } from "../../core/services/links.service";
-import { ImageCropperComponent, ImageCroppedEvent } from "ngx-image-cropper";
->>>>>>> Lai
 
 @Component({
   selector: "app-dashboard",
   standalone: true,
-<<<<<<< HEAD
   imports: [CommonModule, FormsModule, RouterModule, ImageCropperComponent, ColorPickerComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
-=======
-  imports: [CommonModule, FormsModule, RouterModule, ImageCropperComponent],
-  templateUrl: "./dashboard.component.html",
-  styleUrls: ["./dashboard.component.css"],
->>>>>>> Lai
 })
 export class DashboardComponent implements OnInit {
   links: Link[] = [];
@@ -58,16 +42,13 @@ export class DashboardComponent implements OnInit {
 
   // Image cropper data
   showCropperModal = false;
-<<<<<<< HEAD
   imageChangedEvent: any = '';
   croppedImage: string = '';
-  
+
   // Theme settings
   showThemeEditor = false;
-  
-=======
-  imageChangedEvent: any = "";
-  croppedImage: string = "";
+
+
 
   // Icon upload helpers
   iconUploadLinkId: string | null = null;
@@ -81,7 +62,6 @@ export class DashboardComponent implements OnInit {
   modalSelectedFileName: string | null = null;
   modalPreviewUrl: string | null = null;
 
->>>>>>> Lai
   // Ref-trigger helper
   triggerImageSelect(input: HTMLInputElement) {
     input.click();
@@ -111,7 +91,7 @@ export class DashboardComponent implements OnInit {
     if (this.modalPreviewUrl) {
       try {
         URL.revokeObjectURL(this.modalPreviewUrl);
-      } catch (e) {}
+      } catch (e) { }
       this.modalPreviewUrl = null;
     }
   }
@@ -144,7 +124,7 @@ export class DashboardComponent implements OnInit {
           err?.error?.message || err?.error?.details || err?.message || null;
         alert(
           "Failed to set icon. " +
-            (serverMsg ? `Server: ${serverMsg}` : "Please try again.")
+          (serverMsg ? `Server: ${serverMsg}` : "Please try again.")
         );
       },
     });
@@ -219,7 +199,7 @@ export class DashboardComponent implements OnInit {
           err?.error?.message || err?.error?.details || err?.message || null;
         alert(
           "Failed to upload icon. " +
-            (serverMsg ? `Server: ${serverMsg}` : "Please try again.")
+          (serverMsg ? `Server: ${serverMsg}` : "Please try again.")
         );
       },
       complete: () => {
@@ -284,7 +264,7 @@ export class DashboardComponent implements OnInit {
             err?.error?.message || err?.error?.details || err?.message || null;
           alert(
             "Failed to upload icon. " +
-              (serverMsg ? `Server: ${serverMsg}` : "Please try again.")
+            (serverMsg ? `Server: ${serverMsg}` : "Please try again.")
           );
         },
       });
@@ -296,7 +276,7 @@ export class DashboardComponent implements OnInit {
     if (this.modalPreviewUrl) {
       try {
         URL.revokeObjectURL(this.modalPreviewUrl);
-      } catch (e) {}
+      } catch (e) { }
       this.modalPreviewUrl = null;
     }
   }
@@ -680,9 +660,8 @@ export class DashboardComponent implements OnInit {
 
   getProfileUrl(): string {
     if (typeof window !== "undefined") {
-      return `${window.location.origin}/${
-        this.username || this.currentUser?.username
-      }`;
+      return `${window.location.origin}/${this.username || this.currentUser?.username
+        }`;
     }
     return `/${this.username || this.currentUser?.username}`;
   }
@@ -779,10 +758,10 @@ export class DashboardComponent implements OnInit {
   setCustomIcon(linkId: string, index: number) {
     const iconUrl = prompt(
       "Enter the direct image URL:\n\n" +
-        "Examples:\n" +
-        "- https://example.com/icon.png\n" +
-        "- https://cdn.com/logo.jpg\n\n" +
-        "Note: Use direct image URLs (.png, .jpg, .gif, etc.), not webpage links."
+      "Examples:\n" +
+      "- https://example.com/icon.png\n" +
+      "- https://cdn.com/logo.jpg\n\n" +
+      "Note: Use direct image URLs (.png, .jpg, .gif, etc.), not webpage links."
     );
     if (iconUrl) {
       this.linksService.setLinkIcon(linkId, iconUrl).subscribe({
@@ -796,9 +775,9 @@ export class DashboardComponent implements OnInit {
           console.error("Failed to set icon:", err);
           alert(
             "❌ Failed to set icon.\n\n" +
-              (err.error?.message ||
-                "Make sure the URL is a direct image link (e.g., .jpg, .png, .gif), not a webpage URL.\n\n" +
-                  "Try using the auto-fetch feature first!")
+            (err.error?.message ||
+              "Make sure the URL is a direct image link (e.g., .jpg, .png, .gif), not a webpage URL.\n\n" +
+              "Try using the auto-fetch feature first!")
           );
         },
       });

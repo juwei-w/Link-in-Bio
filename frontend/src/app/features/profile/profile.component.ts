@@ -11,11 +11,8 @@ import { CommonModule } from "@angular/common";
 import { ActivatedRoute, Router } from "@angular/router";
 import { LinksService, UserProfile } from "../../core/services/links.service";
 import { AuthService } from "../../core/services/auth.service";
-<<<<<<< HEAD
 import { ThemeService } from "../../core/services/theme.service";
-=======
 import * as QRCode from "qrcode";
->>>>>>> Lai
 
 @Component({
   selector: "app-profile",
@@ -45,7 +42,7 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private authService: AuthService,
     private themeService: ThemeService
-  ) {}
+  ) { }
 
   ngOnInit() {
     const username = this.route.snapshot.paramMap.get("username");
@@ -131,9 +128,8 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   shareOnTwitter() {
-    const text = `Check out my Link-in-Bio: ${
-      this.profile?.displayName || "@" + this.profile?.username
-    }`;
+    const text = `Check out my Link-in-Bio: ${this.profile?.displayName || "@" + this.profile?.username
+      }`;
     const url = window.location.href;
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
       text
@@ -164,9 +160,8 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   shareOnReddit() {
-    const text = `Check out my Link-in-Bio: ${
-      this.profile?.displayName || "@" + this.profile?.username
-    }`;
+    const text = `Check out my Link-in-Bio: ${this.profile?.displayName || "@" + this.profile?.username
+      }`;
     const url = window.location.href;
     const redditUrl = `https://reddit.com/submit?url=${encodeURIComponent(
       url
@@ -175,9 +170,8 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   shareOnWhatsApp() {
-    const text = `Check out my Link-in-Bio: ${
-      this.profile?.displayName || "@" + this.profile?.username
-    }`;
+    const text = `Check out my Link-in-Bio: ${this.profile?.displayName || "@" + this.profile?.username
+      }`;
     const url = window.location.href;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(
       text + " " + url
