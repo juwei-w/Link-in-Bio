@@ -58,7 +58,7 @@
             <div class="info-group">
               <label for="username" class="form-label">Profile Personalised Url</label>
               <div class="username-input-wrapper">
-                <div class="username-prefix">yoursite.com/</div>
+                <div class="username-prefix">{{ frontendDisplayUrl }}/</div>
                 <input type="text" id="username" [(ngModel)]="username" (input)="onUsernameChange()" name="username"
                   class="form-input username-input" placeholder="username" minlength="3" maxlength="16" [class.error]="
                     username &&

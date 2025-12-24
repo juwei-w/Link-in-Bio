@@ -7,6 +7,7 @@ import { LinksService, Link } from '../../core/services/links.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 import { ColorPickerComponent } from '../color-picker/color-picker.component';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: "app-dashboard",
@@ -16,6 +17,8 @@ import { ColorPickerComponent } from '../color-picker/color-picker.component';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
+  frontendDisplayUrl = environment.frontendUrl || 'yoursite.com';
+
   links: Link[] = [];
   showAddForm = false;
   editingLink: Link | null = null;
