@@ -1,33 +1,19 @@
 <div class="home-container">
-  <nav class="navbar">
-    <div class="container nav-content">
-      <div class="logo-container">
-        <div class="logo-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <h1 class="logo">Link-in-Bio</h1>
-      </div>
-      <div class="nav-links">
-        <a *ngIf="!(authService.currentUser$ | async)" routerLink="/login" class="btn">Sign In</a>
-        <a *ngIf="authService.currentUser$ | async" routerLink="/dashboard" class="btn">Dashboard</a>
-        <button *ngIf="authService.currentUser$ | async" (click)="logout()" class="btn btn-secondary">Logout</button>
-      </div>
-    </div>
-  </nav>
+  <app-navbar [isHome]="true"></app-navbar>
 
   <section class="hero">
     <div class="container hero-content">
       <div class="hero-icon">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </div>
       <h1 class="hero-title">One Link for<br /><span class="gradient-text">Everything You Share</span></h1>
-      <p class="hero-subtitle">Share everything in one place. Build your personal landing page and connect your audience to all your content instantly.</p>
+      <p class="hero-subtitle">Share everything in one place. Build your personal landing page and connect your audience
+        to all your content instantly.</p>
       <div class="hero-cta">
         <a routerLink="/login" class="btn btn-large">Get Started Free</a>
         <a (click)="scrollToFeatures()" class="btn-link">Learn More</a>

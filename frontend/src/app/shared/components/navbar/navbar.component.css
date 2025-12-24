@@ -283,6 +283,20 @@
     overflow-y: auto;
   }
 
+  /* When we want nav links to just be visible inline on mobile (e.g. Sign In button on Home) */
+  .nav-links.mobile-visible {
+    position: static;
+    height: auto;
+    width: auto;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    transform: none;
+    padding: 0;
+    overflow: visible;
+    flex-direction: row;
+  }
+
   :host-context(body.dark-mode) .nav-links {
     background: rgba(15, 23, 42, 0.98);
   }
