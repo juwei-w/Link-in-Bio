@@ -209,14 +209,19 @@
               <div class="scheduling-fields">
                 <div class="form-subgroup">
                   <label for="scheduledStart" class="form-label-sm">Start Date & Time</label>
-                  <input type="datetime-local" id="scheduledStart" [(ngModel)]="formData.scheduledStart"
-                    name="scheduledStart" class="form-input" min="2000-01-01T00:00" max="2099-12-31T23:59" />
+                  <input #startPicker type="datetime-local" id="scheduledStart" [(ngModel)]="formData.scheduledStart"
+                    name="scheduledStart" class="form-input clickable-date" min="2000-01-01T00:00"
+                    [max]="formData.scheduledEnd || '2099-12-31T23:59'" (click)="startPicker.showPicker()"
+                    (keydown)="$event.preventDefault()" (change)="onScheduleChange('start')" />
                 </div>
 
                 <div class="form-subgroup">
                   <label for="scheduledEnd" class="form-label-sm">End Date & Time</label>
-                  <input type="datetime-local" id="scheduledEnd" [(ngModel)]="formData.scheduledEnd" name="scheduledEnd"
-                    class="form-input" min="2000-01-01T00:00" max="2099-12-31T23:59" />
+                  <input #endPicker type="datetime-local" id="scheduledEnd" [(ngModel)]="formData.scheduledEnd"
+                    name="scheduledEnd" class="form-input clickable-date"
+                    [min]="formData.scheduledStart || '2000-01-01T00:00'" max="2099-12-31T23:59"
+                    (click)="endPicker.showPicker()" (keydown)="$event.preventDefault()"
+                    (change)="onScheduleChange('end')" />
                 </div>
               </div>
               <p class="form-hint">

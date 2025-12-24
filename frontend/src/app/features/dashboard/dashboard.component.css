@@ -2096,13 +2096,6 @@ body.dark-mode .username-input {
   font-weight: 500;
 }
 
-/* ---------------------------------------------------------
-   Final Mobile Link List Fixes (Horizontal Layout)
-   --------------------------------------------------------- */
-/* ---------------------------------------------------------
-   Final Mobile Link List Fixes (Vertical Expansion, Fixed Top)
-   --------------------------------------------------------- */
-
 .status-dot {
   display: inline-block;
   width: 8px;

@@ -471,7 +471,6 @@ export class DashboardComponent implements OnInit {
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 
-  // Helper to check if a scheduled link is currently active
   isLinkScheduledActive(link: Link): boolean {
     const now = new Date();
 
@@ -486,6 +485,26 @@ export class DashboardComponent implements OnInit {
     }
 
     return true; // Link is currently active
+  }
+
+  onScheduleChange(changed: 'start' | 'end') {
+    if (!this.formData.scheduledStart || !this.formData.scheduledEnd) return;
+
+    const start = new Date(this.formData.scheduledStart).getTime();
+    const end = new Date(this.formData.scheduledEnd).getTime();
+
+    if (start > end) {
+      if (changed === 'start') {
+        // If start moved past end, push end to match start
+        this.formData.scheduledEnd = this.formData.scheduledStart;
+      } else {
+        // If end moved before start, pull start back to match end? 
+        // Or reset end to match start (enforce min). 
+        // Resetting end to start is safer to prevent confusion.
+        this.formData.scheduledEnd = this.formData.scheduledStart;
+        // alert("End time cannot be earlier than start time."); // Optional, might be annoying
+      }
+    }
   }
 
   onDragStart(event: DragEvent, index: number) {
