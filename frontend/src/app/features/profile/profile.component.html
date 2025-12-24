@@ -71,8 +71,8 @@
         Edit Profile
       </button>
 
-      <!-- Share Button and Modal -->
-      <button class="btn-share" (click)="toggleShareModal()">
+      <!-- Share Button and Modal (only visible to owner) -->
+      <button *ngIf="isOwner" class="btn-share" (click)="toggleShareModal()">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="18"

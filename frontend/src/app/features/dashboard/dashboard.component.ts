@@ -1,19 +1,25 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../core/services/auth.service';
-import { LinksService, Link } from '../../core/services/links.service';
-import { ThemeService } from '../../core/services/theme.service';
-import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
-import { ColorPickerComponent } from '../color-picker/color-picker.component';
+import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { Router, RouterModule } from "@angular/router";
+import { AuthService } from "../../core/services/auth.service";
+import { LinksService, Link } from "../../core/services/links.service";
+import { ThemeService } from "../../core/services/theme.service";
+import { ImageCropperComponent, ImageCroppedEvent } from "ngx-image-cropper";
+import { ColorPickerComponent } from "../color-picker/color-picker.component";
 
 @Component({
   selector: "app-dashboard",
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ImageCropperComponent, ColorPickerComponent],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    ImageCropperComponent,
+    ColorPickerComponent,
+  ],
+  templateUrl: "./dashboard.component.html",
+  styleUrls: ["./dashboard.component.css"],
 })
 export class DashboardComponent implements OnInit {
   links: Link[] = [];
@@ -31,6 +37,10 @@ export class DashboardComponent implements OnInit {
   profileLoading = false;
   currentUser: any;
   draggedIndex = -1;
+  // Auto-scroll while dragging when pointer near viewport edges
+  private lastClientY = 0;
+  private autoScrollActive = false;
+  private autoScrollRaf: any = null;
 
   // Profile data
   username: string = "";
@@ -44,9 +54,9 @@ export class DashboardComponent implements OnInit {
 
   // Image cropper data
   showCropperModal = false;
-  imageChangedEvent: any = '';
-  croppedImage: string = '';
-  cropperTarget: 'profile' | 'link' = 'profile'; // Track what we are cropping
+  imageChangedEvent: any = "";
+  croppedImage: string = "";
+  cropperTarget: "profile" | "link" = "profile"; // Track what we are cropping
   cropperLinkId: string | null = null; // If cropping for a link, store its ID
   expandedLinkIds = new Set<string>(); // Mobile: Expandable details
 
@@ -64,8 +74,6 @@ export class DashboardComponent implements OnInit {
   isDetailsExpanded(linkId: string): boolean {
     return this.expandedLinkIds.has(linkId);
   }
-
-
 
   // Append a timestamp query param to bust browser cache when replacing icons
   cacheBustUrl(url: string): string {
@@ -156,20 +164,22 @@ export class DashboardComponent implements OnInit {
         next: (updatedLink) => {
           // If there is a pending icon file, upload it now
           if (this.pendingIconFile && updatedLink._id) {
-            this.linksService.uploadIcon(updatedLink._id, this.pendingIconFile).subscribe({
-              next: () => {
-                this.loadLinks();
-                this.cancelEdit();
-                this.loading = false;
-              },
-              error: (err) => {
-                console.error("Link updated but icon upload failed", err);
-                alert("Link updated, but failed to upload icon image.");
-                this.loadLinks();
-                this.cancelEdit();
-                this.loading = false;
-              }
-            });
+            this.linksService
+              .uploadIcon(updatedLink._id, this.pendingIconFile)
+              .subscribe({
+                next: () => {
+                  this.loadLinks();
+                  this.cancelEdit();
+                  this.loading = false;
+                },
+                error: (err) => {
+                  console.error("Link updated but icon upload failed", err);
+                  alert("Link updated, but failed to upload icon image.");
+                  this.loadLinks();
+                  this.cancelEdit();
+                  this.loading = false;
+                },
+              });
           } else {
             this.loadLinks();
             this.cancelEdit();
@@ -193,21 +203,23 @@ export class DashboardComponent implements OnInit {
         next: (newLink) => {
           // If there is a pending icon file, upload it now
           if (this.pendingIconFile && newLink._id) {
-            this.linksService.uploadIcon(newLink._id, this.pendingIconFile).subscribe({
-              next: () => {
-                this.loadLinks();
-                this.cancelEdit();
-                this.loading = false;
-              },
-              error: (err) => {
-                console.error("Link created but icon upload failed", err);
-                // Still reload and close, just warn user
-                alert("Link created, but failed to upload icon image.");
-                this.loadLinks();
-                this.cancelEdit();
-                this.loading = false;
-              }
-            });
+            this.linksService
+              .uploadIcon(newLink._id, this.pendingIconFile)
+              .subscribe({
+                next: () => {
+                  this.loadLinks();
+                  this.cancelEdit();
+                  this.loading = false;
+                },
+                error: (err) => {
+                  console.error("Link created but icon upload failed", err);
+                  // Still reload and close, just warn user
+                  alert("Link created, but failed to upload icon image.");
+                  this.loadLinks();
+                  this.cancelEdit();
+                  this.loading = false;
+                },
+              });
           } else {
             // No file to upload, just finish
             this.loadLinks();
@@ -318,7 +330,11 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  onFileSelected(event: any, target: 'profile' | 'link' = 'profile', linkId?: string) {
+  onFileSelected(
+    event: any,
+    target: "profile" | "link" = "profile",
+    linkId?: string
+  ) {
     if (event.target.files && event.target.files.length > 0) {
       this.imageChangedEvent = event;
       this.cropperTarget = target;
@@ -356,7 +372,7 @@ export class DashboardComponent implements OnInit {
 
   applyCrop() {
     if (this.croppedImage) {
-      if (this.cropperTarget === 'profile') {
+      if (this.cropperTarget === "profile") {
         this.avatarPreview = this.croppedImage; // Immediate visual update for profile
         // --- PROFILE UPLOAD ---
         this.profileLoading = true;
@@ -378,12 +394,12 @@ export class DashboardComponent implements OnInit {
               alert("Failed to save profile picture.");
             },
           });
-      } else if (this.cropperTarget === 'link') {
+      } else if (this.cropperTarget === "link") {
         // --- LINK ICON UPLOAD ---
         // Convert Base64 (croppedImage) to Blob/File for upload
-        const base64Parts = this.croppedImage.split(',');
+        const base64Parts = this.croppedImage.split(",");
         const byteString = atob(base64Parts[1]);
-        const mimeString = base64Parts[0].split(':')[1].split(';')[0];
+        const mimeString = base64Parts[0].split(":")[1].split(";")[0];
         const ab = new ArrayBuffer(byteString.length);
         const ia = new Uint8Array(ab);
         for (let i = 0; i < byteString.length; i++) {
@@ -488,11 +504,22 @@ export class DashboardComponent implements OnInit {
   onDragStart(event: DragEvent, index: number) {
     this.draggedIndex = index;
     event.dataTransfer!.effectAllowed = "move";
+    // initialize pointer position for auto-scroll
+    if (event.clientY) this.lastClientY = event.clientY;
+    if (!this.autoScrollActive) this.startAutoScroll();
   }
 
   onDragOver(event: DragEvent) {
     event.preventDefault();
     event.dataTransfer!.dropEffect = "move";
+    // update pointer position for auto-scroll
+    if (event.clientY) this.lastClientY = event.clientY;
+  }
+
+  onDragEnd(event: DragEvent) {
+    // stop any auto-scroll activity and reset
+    this.stopAutoScroll();
+    this.draggedIndex = -1;
   }
 
   onDrop(event: DragEvent, dropIndex: number) {
@@ -511,12 +538,51 @@ export class DashboardComponent implements OnInit {
     }
 
     this.draggedIndex = -1;
+    this.stopAutoScroll();
+  }
+
+  private startAutoScroll() {
+    if (this.autoScrollActive) return;
+    this.autoScrollActive = true;
+    const loop = () => {
+      if (!this.autoScrollActive) return;
+      const y = this.lastClientY || window.innerHeight / 2;
+      const margin = Math.min(
+        120,
+        Math.max(48, Math.floor(window.innerHeight * 0.08))
+      );
+      let dy = 0;
+      if (y < margin) {
+        dy = -Math.ceil((margin - y) / 8);
+      } else if (y > window.innerHeight - margin) {
+        dy = Math.ceil((y - (window.innerHeight - margin)) / 8);
+      }
+      if (dy !== 0) {
+        try {
+          window.scrollBy({ top: dy, left: 0, behavior: "auto" });
+        } catch (e) {
+          // fallback
+          window.scrollBy(0, dy);
+        }
+      }
+      this.autoScrollRaf = requestAnimationFrame(loop);
+    };
+    this.autoScrollRaf = requestAnimationFrame(loop);
+  }
+
+  private stopAutoScroll() {
+    this.autoScrollActive = false;
+    if (this.autoScrollRaf) {
+      cancelAnimationFrame(this.autoScrollRaf);
+      this.autoScrollRaf = null;
+    }
   }
 
   getProfileUrl(): string {
     if (typeof window !== "undefined") {
-      return `${window.location.origin}/${this.username || this.currentUser?.username
-        }`;
+      return `${window.location.origin}/${
+        this.username || this.currentUser?.username
+      }`;
     }
     return `/${this.username || this.currentUser?.username}`;
   }
@@ -591,7 +657,7 @@ export class DashboardComponent implements OnInit {
           this.formData.iconUrl = res.iconUrl; // Visual preview
         }
       },
-      error: () => alert("Could not fetch favicon.")
+      error: () => alert("Could not fetch favicon."),
     });
   }
 
@@ -617,10 +683,12 @@ export class DashboardComponent implements OnInit {
         next: (res) => {
           if (res.success) {
             this.formData.iconUrl = this.cacheBustUrl(res.iconUrl);
-            const idx = this.links.findIndex(l => l._id === this.editingLink!._id);
+            const idx = this.links.findIndex(
+              (l) => l._id === this.editingLink!._id
+            );
             if (idx !== -1) this.links[idx].iconUrl = this.formData.iconUrl;
           }
-        }
+        },
       });
       return;
     }
@@ -629,7 +697,7 @@ export class DashboardComponent implements OnInit {
     this.pendingIconFile = file;
     // Create local preview
     const reader = new FileReader();
-    reader.onload = (e: any) => this.formData.iconUrl = e.target.result;
+    reader.onload = (e: any) => (this.formData.iconUrl = e.target.result);
     reader.readAsDataURL(file);
   }
 
@@ -643,9 +711,11 @@ export class DashboardComponent implements OnInit {
       this.linksService.setLinkIcon(this.editingLink._id, url).subscribe({
         next: () => {
           this.formData.iconUrl = url;
-          const idx = this.links.findIndex(l => l._id === this.editingLink!._id);
+          const idx = this.links.findIndex(
+            (l) => l._id === this.editingLink!._id
+          );
           if (idx !== -1) this.links[idx].iconUrl = url;
-        }
+        },
       });
       return;
     }
@@ -680,10 +750,10 @@ export class DashboardComponent implements OnInit {
   setCustomIcon(linkId: string, index: number) {
     const iconUrl = prompt(
       "Enter the direct image URL:\n\n" +
-      "Examples:\n" +
-      "- https://example.com/icon.png\n" +
-      "- https://cdn.com/logo.jpg\n\n" +
-      "Note: Use direct image URLs (.png, .jpg, .gif, etc.), not webpage links."
+        "Examples:\n" +
+        "- https://example.com/icon.png\n" +
+        "- https://cdn.com/logo.jpg\n\n" +
+        "Note: Use direct image URLs (.png, .jpg, .gif, etc.), not webpage links."
     );
     if (iconUrl) {
       this.linksService.setLinkIcon(linkId, iconUrl).subscribe({
@@ -697,9 +767,9 @@ export class DashboardComponent implements OnInit {
           console.error("Failed to set icon:", err);
           alert(
             "❌ Failed to set icon.\n\n" +
-            (err.error?.message ||
-              "Make sure the URL is a direct image link (e.g., .jpg, .png, .gif), not a webpage URL.\n\n" +
-              "Try using the auto-fetch feature first!")
+              (err.error?.message ||
+                "Make sure the URL is a direct image link (e.g., .jpg, .png, .gif), not a webpage URL.\n\n" +
+                  "Try using the auto-fetch feature first!")
           );
         },
       });

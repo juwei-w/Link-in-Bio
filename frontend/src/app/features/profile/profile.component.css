@@ -4,7 +4,16 @@
   flex-direction: column;
   align-items: center;
   padding: 3rem 1.5rem;
-  background: linear-gradient(135deg, var(--bg-color) 0%, color-mix(in srgb, var(--primary-color) var(--theme-intensity, 5%), var(--bg-color)) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--bg-color) 0%,
+    color-mix(
+        in srgb,
+        var(--primary-color) var(--theme-intensity, 5%),
+        var(--bg-color)
+      )
+      100%
+  );
   color: var(--text-color);
   position: relative;
   overflow: hidden;
@@ -13,7 +22,16 @@
 }
 
 body.dark-mode .profile-container {
-  background: linear-gradient(135deg, var(--bg-color) 0%, color-mix(in srgb, var(--primary-color) var(--theme-intensity, 10%), var(--bg-color)) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--bg-color) 0%,
+    color-mix(
+        in srgb,
+        var(--primary-color) var(--theme-intensity, 10%),
+        var(--bg-color)
+      )
+      100%
+  );
 }
 
 .profile-container::before {
@@ -21,7 +39,11 @@ body.dark-mode .profile-container {
   position: absolute;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--primary-color) 20%, transparent) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--primary-color) 20%, transparent) 0%,
+    transparent 70%
+  );
   border-radius: 50%;
   top: -200px;
   right: -200px;
@@ -34,7 +56,11 @@ body.dark-mode .profile-container {
   position: absolute;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--secondary-color) 15%, transparent) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--secondary-color) 15%, transparent) 0%,
+    transparent 70%
+  );
   border-radius: 50%;
   bottom: -200px;
   left: -200px;
@@ -44,7 +70,6 @@ body.dark-mode .profile-container {
 }
 
 @keyframes float {
-
   0%,
   100% {
     transform: translate(0, 0) rotate(0deg);
@@ -84,9 +109,11 @@ body.dark-mode .profile-container {
   justify-content: center;
   padding: 4rem;
   color: var(--color-text-light);
-  background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.08) 0%,
-      rgba(255, 140, 105, 0.04) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 140, 105, 0.04) 100%
+  );
   border: 1.5px solid rgba(255, 140, 105, 0.16);
   border-radius: 1.5rem;
   cursor: pointer;
@@ -122,26 +149,32 @@ body.dark-mode .profile-container {
   -webkit-backdrop-filter: blur(30px);
   border-radius: 2rem;
   border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
   color: var(--text-color);
   position: relative;
   overflow: hidden;
 }
 
 .profile-header::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  background: linear-gradient(
+    90deg,
+    var(--primary-color) 0%,
+    var(--secondary-color) 100%
+  );
 }
 
 body.dark-mode .profile-header {
   background: rgba(30, 41, 59, 0.8);
   border-color: color-mix(in srgb, var(--primary-color) 30%, transparent);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .avatar-container {
@@ -160,7 +193,8 @@ body.dark-mode .profile-header {
   justify-content: center;
   font-size: 3.75rem;
   font-weight: 700;
-  box-shadow: 0 0 50px color-mix(in srgb, var(--primary-color) 40%, transparent), 0 20px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 50px color-mix(in srgb, var(--primary-color) 40%, transparent),
+    0 20px 40px rgba(0, 0, 0, 0.2);
   border: 5px solid var(--bg-color);
   background-size: cover;
   background-position: center;
@@ -173,7 +207,11 @@ body.dark-mode .profile-header {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--secondary-color) 100%
+  );
   border-radius: 50%;
   z-index: 0;
 }
@@ -199,7 +237,11 @@ body.dark-mode .avatar {
   font-weight: 800;
   letter-spacing: -0.03em;
   color: var(--primary-color);
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--secondary-color) 100%
+  );
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -233,7 +275,11 @@ body.dark-mode .username {
   gap: 0.5rem;
   margin-top: 1.5rem;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--secondary-color) 100%
+  );
   color: white;
   border: none;
   border-radius: 9999px;
@@ -255,7 +301,11 @@ body.dark-mode .username {
   align-items: center;
   gap: 0.5rem;
   padding: 0.625rem 1.25rem;
-  background: linear-gradient(135deg, hsl(14 100% 64%), hsl(330 85% 65%));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--primary-color) 80%, var(--secondary-color) 20%),
+    var(--primary-color)
+  );
   color: white;
   border: none;
   border-radius: 9999px;
@@ -278,6 +328,11 @@ body.dark-mode .username {
 
 body.dark-mode .btn-share {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--primary-color) 40%, #111 60%),
+    hsl(220 13% 20%)
+  );
 }
 
 /* Share Modal */
@@ -289,9 +344,11 @@ body.dark-mode .btn-share {
   bottom: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg,
-      rgba(10, 15, 20, 0.88) 0%,
-      rgba(15, 20, 30, 0.92) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(10, 15, 20, 0.88) 0%,
+    rgba(15, 20, 30, 0.92) 100%
+  );
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   display: flex;
@@ -314,24 +371,24 @@ body.dark-mode .btn-share {
 }
 
 .share-modal {
-  /* Orange -> Pink premium gradient */
-  background: linear-gradient(135deg, #ff9a66 0%, #ff5c7a 45%, #ff2db2 100%);
   border-radius: 3.5rem;
-  box-shadow: 0 0 100px rgba(255, 92, 72, 0.45),
-    0 40px 80px -20px rgba(0, 0, 0, 0.88),
-    0 100px 200px -40px rgba(0, 0, 0, 0.94),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--primary-color) 12%, transparent) 0%,
+    var(--bg-color) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.24);
   width: 95%;
   max-width: 1250px;
   height: auto;
   max-height: 88vh;
-  min-height: 65vh;
+  min-height: 55vh;
   animation: slideUpScale 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
   position: relative;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border: 2.5px solid rgba(255, 99, 71, 0.32);
   transform-origin: center;
   margin: auto;
 }
@@ -398,10 +455,21 @@ body.dark-mode .btn-share {
 }
 
 body.dark-mode .share-modal {
-  background: linear-gradient(150deg,
-      hsl(220, 13%, 18%) 0%,
-      hsl(220, 13%, 15%) 100%);
+  background: linear-gradient(
+    150deg,
+    hsl(220, 13%, 18%) 0%,
+    hsl(220, 13%, 15%) 100%
+  );
   border: 1px solid hsl(220, 13%, 25%);
+}
+
+/* Sync overlay with theme */
+body.dark-mode .share-modal-overlay {
+  background: linear-gradient(
+    135deg,
+    rgba(6, 10, 18, 0.88) 0%,
+    rgba(10, 14, 20, 0.9) 100%
+  );
 }
 
 .modal-header h3 {
@@ -428,9 +496,11 @@ body.dark-mode .modal-header {
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
-  background: linear-gradient(180deg,
-      rgba(255, 99, 71, 0.06) 0%,
-      transparent 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 99, 71, 0.06) 0%,
+    transparent 100%
+  );
 }
 
 @media (max-width: 768px) {
@@ -555,9 +625,11 @@ body.dark-mode .close-btn:hover {
   justify-content: center;
   gap: 1.2rem;
   padding: 2.5rem 1.5rem;
-  background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.12) 0%,
-      rgba(59, 130, 246, 0.05) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(59, 130, 246, 0.05) 100%
+  );
   border: 1.5px solid rgba(59, 130, 246, 0.25);
   border-radius: 1.5rem;
   cursor: pointer;
@@ -600,9 +672,11 @@ body.dark-mode .share-btn-social {
 
 .share-btn-social:hover {
   transform: translateY(-10px) scale(1.04);
-  background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.18) 0%,
-      rgba(59, 130, 246, 0.12) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(59, 130, 246, 0.12) 100%
+  );
   border-color: rgba(59, 130, 246, 0.4);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 30px rgba(59, 130, 246, 0.2);
 }
@@ -673,10 +747,12 @@ body.dark-mode .modal-divider {
   position: absolute;
   top: 50%;
   height: 1px;
-  background: linear-gradient(90deg,
-      transparent,
-      rgba(59, 130, 246, 0.3),
-      transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(59, 130, 246, 0.3),
+    transparent
+  );
   width: calc(50% - 4rem);
 }
 
@@ -707,9 +783,11 @@ body.dark-mode .modal-divider::after {
   gap: 1.25rem;
   /* match the larger social button sizing */
   padding: 2.2rem 1.6rem;
-  background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.06) 0%,
-      rgba(0, 0, 0, 0.06) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(0, 0, 0, 0.06) 100%
+  );
   border: 1.5px solid rgba(255, 255, 255, 0.06);
   border-radius: 1.25rem;
   cursor: pointer;
@@ -732,9 +810,11 @@ body.dark-mode .other-option {
 
 .other-option:hover {
   transform: translateY(-10px) scale(1.02);
-  background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.12) 0%,
-      rgba(0, 0, 0, 0.06) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(0, 0, 0, 0.06) 100%
+  );
   border-color: rgba(255, 99, 71, 0.22);
   box-shadow: 0 28px 80px rgba(0, 0, 0, 0.48), 0 0 48px rgba(255, 99, 71, 0.08);
 }
@@ -764,9 +844,11 @@ body.dark-mode .other-option {
 /* Brand accent for Reddit + WhatsApp in social grid */
 .share-btn-social.reddit {
   border-color: rgba(255, 120, 40, 0.14);
-  background: linear-gradient(135deg,
-      rgba(255, 122, 50, 0.04),
-      rgba(255, 80, 40, 0.02));
+  background: linear-gradient(
+    135deg,
+    rgba(255, 122, 50, 0.04),
+    rgba(255, 80, 40, 0.02)
+  );
 }
 
 .share-btn-social.reddit svg {
@@ -786,9 +868,11 @@ body.dark-mode .other-option {
 
 .share-btn-social.whatsapp {
   border-color: rgba(37, 211, 102, 0.12);
-  background: linear-gradient(135deg,
-      rgba(37, 211, 102, 0.04),
-      rgba(18, 150, 80, 0.02));
+  background: linear-gradient(
+    135deg,
+    rgba(37, 211, 102, 0.04),
+    rgba(18, 150, 80, 0.02)
+  );
 }
 
 .share-btn-social.whatsapp svg {
@@ -1166,19 +1250,29 @@ body.dark-mode .link-url {
   justify-content: center;
   text-align: center;
   padding: 4rem 2rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, color-mix(in srgb, var(--primary-color) 2%, white) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    color-mix(in srgb, var(--primary-color) 2%, white) 100%
+  );
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 1.5rem;
   border: 2px dashed color-mix(in srgb, var(--primary-color) 30%, transparent);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
   gap: 1rem;
 }
 
 body.dark-mode .empty-state {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, color-mix(in srgb, var(--primary-color) 3%, rgba(30, 41, 59, 0.9)) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(30, 41, 59, 0.9) 0%,
+    color-mix(in srgb, var(--primary-color) 3%, rgba(30, 41, 59, 0.9)) 100%
+  );
   border-color: color-mix(in srgb, var(--primary-color) 40%, transparent);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .empty-state svg {
@@ -1211,19 +1305,25 @@ body.dark-mode .empty-state svg {
   -webkit-backdrop-filter: blur(20px);
   border-radius: 1.25rem;
   border: 1px solid color-mix(in srgb, var(--primary-color) 15%, transparent);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
   font-weight: 500;
 }
 
 body.dark-mode .profile-footer {
   background: rgba(30, 41, 59, 0.5);
   border-color: color-mix(in srgb, var(--primary-color) 25%, transparent);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
   color: rgba(255, 255, 255, 0.6);
 }
 
 .profile-footer strong {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--secondary-color) 100%
+  );
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1240,7 +1340,8 @@ body.dark-mode .profile-footer {
   backdrop-filter: blur(30px);
   border-radius: 2rem;
   border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
   max-width: 480px;
   gap: 1.5rem;
 }
@@ -1248,12 +1349,15 @@ body.dark-mode .profile-footer {
 body.dark-mode .error-container {
   background: rgba(30, 41, 59, 0.95);
   border-color: color-mix(in srgb, var(--primary-color) 30%, transparent);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .error-icon svg {
   color: var(--primary-color);
-  filter: drop-shadow(0 0 15px color-mix(in srgb, var(--primary-color) 50%, transparent));
+  filter: drop-shadow(
+    0 0 15px color-mix(in srgb, var(--primary-color) 50%, transparent)
+  );
 }
 
 .error-container h2 {
@@ -1278,7 +1382,11 @@ body.dark-mode .error-container h2 {
   display: inline-flex;
   align-items: center;
   padding: 0.875rem 1.75rem;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--secondary-color) 100%
+  );
   color: white;
   text-decoration: none;
   border-radius: 0.875rem;
