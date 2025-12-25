@@ -48,50 +48,48 @@
       <!-- Bio -->
       <p *ngIf="profile?.bio" class="bio">{{ profile?.bio }}</p>
 
-      <!-- Edit Button for Owner -->
-      <button *ngIf="isOwner" class="btn-edit" (click)="goEdit()">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path
-            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-          ></path>
-          <path
-            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-          ></path>
-        </svg>
-        Edit Profile
-      </button>
+      <!-- Actions: Edit (top) and Share (below) - mobile-first stacked -->
+      <div class="profile-actions">
+        <button *ngIf="isOwner" class="btn-edit" (click)="goEdit()">
+          <!-- modern pencil icon -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+            />
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+          </svg>
+          Edit Profile
+        </button>
 
-      <!-- Share Button and Modal (only visible to owner) -->
-      <button *ngIf="isOwner" class="btn-share" (click)="toggleShareModal()">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <circle cx="18" cy="5" r="3"></circle>
-          <circle cx="6" cy="12" r="3"></circle>
-          <circle cx="18" cy="19" r="3"></circle>
-          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-        </svg>
-        Share
-      </button>
+        <button *ngIf="isOwner" class="btn-share" (click)="toggleShareModal()">
+          <!-- paper aeroplane icon -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M22 2L11 13" />
+            <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+          </svg>
+          Share
+        </button>
+      </div>
 
       <!-- Share Modal -->
       <div

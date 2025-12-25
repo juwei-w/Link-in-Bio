@@ -16,7 +16,7 @@
   );
   color: var(--text-color);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   width: 100%;
   max-width: 100%;
 }
@@ -153,7 +153,7 @@ body.dark-mode .profile-container {
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
   color: var(--text-color);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .profile-header::before {
@@ -245,7 +245,13 @@ body.dark-mode .avatar {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  line-height: 1.2;
+  /* Give a bit more vertical room so descenders (g, y, p) aren't clipped */
+  line-height: 1.25;
+  /* Ensure the username displays in full on one line when possible */
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+  max-width: 100%;
 }
 
 .username {
@@ -269,52 +275,120 @@ body.dark-mode .username {
   font-weight: 400;
 }
 
+/* Primary action button (Edit) */
 .btn-edit {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 1.5rem;
-  padding: 0.75rem 1.5rem;
+  margin-top: 0;
+  padding: 0.75rem 1rem;
   background: linear-gradient(
     135deg,
-    var(--primary-color) 0%,
-    var(--secondary-color) 100%
+    color-mix(in srgb, var(--primary-color) 85%, black 15%) 0%,
+    color-mix(in srgb, var(--secondary-color) 75%, black 25%) 100%
   );
-  color: white;
-  border: none;
-  border-radius: 9999px;
-  font-weight: 600;
-  font-size: 0.938rem;
+  color: #fff;
+  border: 1px solid color-mix(in srgb, var(--primary-color) 18%, transparent);
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
   cursor: pointer;
-  transition: var(--transition);
-  box-shadow: 0 0 20px var(--primary-color), 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 180ms ease, box-shadow 180ms ease, opacity 120ms ease;
+  box-shadow: 0 8px 24px
+    color-mix(in srgb, var(--primary-color) 18%, rgba(0, 0, 0, 0.12));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
 .btn-edit:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 48px
+    color-mix(in srgb, var(--primary-color) 14%, rgba(0, 0, 0, 0.18));
 }
 
-/* Share Button */
+.btn-edit:active {
+  transform: translateY(0);
+}
+.btn-edit:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary-color) 28%, transparent);
+  outline-offset: 3px;
+}
 .btn-share {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
+  padding: 0.625rem 1rem;
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--primary-color) 80%, var(--secondary-color) 20%),
+    color-mix(in srgb, var(--primary-color) 78%, var(--secondary-color) 22%),
     var(--primary-color)
   );
-  color: white;
-  border: none;
-  border-radius: 9999px;
+  color: #fff;
+  border: 1px solid color-mix(in srgb, var(--primary-color) 12%, transparent);
+  border-radius: 12px;
   font-weight: 600;
-  font-size: 0.938rem;
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: all 220ms cubic-bezier(0.2, 0, 0, 1);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
-  margin-top: 1.5rem;
+  transition: transform 180ms ease, box-shadow 180ms ease, opacity 120ms ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  margin-top: 0;
+}
+
+.btn-share:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.16);
+}
+
+.btn-share:active {
+  transform: translateY(0);
+}
+.btn-share:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
+  outline-offset: 3px;
+}
+
+body.dark-mode .btn-share {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--primary-color) 40%, #111 60%),
+    hsl(220 13% 20%)
+  );
+}
+
+/* Ensure SVG icons use current text color and are sized consistently */
+.profile-actions svg {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+}
+.profile-actions svg path,
+.profile-actions svg circle,
+.profile-actions svg rect,
+.profile-actions svg line {
+  stroke: currentColor;
+  fill: currentColor;
+}
+
+/* On larger screens restore inline pill-style buttons */
+@media (min-width: 769px) {
+  .profile-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    justify-content: center;
+    padding: 0;
+    margin-top: 1.5rem;
+  }
+
+  .profile-actions .btn-edit,
+  .profile-actions .btn-share {
+    width: auto;
+    border-radius: 9999px;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
 }
 
 .btn-share:hover {
