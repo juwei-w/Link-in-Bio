@@ -492,8 +492,8 @@
                   <!-- Icon -->
                   <div class="link-icon-preview">
                     <img
-                      *ngIf="link.iconUrl"
-                      [src]="link.iconUrl"
+                      *ngIf="getIconUrl(link)"
+                      [src]="getIconUrl(link)"
                       [alt]="link.title"
                       class="icon-img"
                     />

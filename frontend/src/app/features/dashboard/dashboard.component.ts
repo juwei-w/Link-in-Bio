@@ -651,7 +651,13 @@ export class DashboardComponent implements OnInit {
     this.pendingIconFile = null;
 
     // Use preview endpoint for both New and Edit modes
-    this.linksService.previewFavicon(url).subscribe({
+    // Normalize URL: ensure it includes a protocol so backend `new URL()` validation accepts it.
+    let normalized = String(url || "").trim();
+    if (!/^https?:\/\//i.test(normalized)) {
+      normalized = `https://${normalized}`;
+    }
+
+    this.linksService.previewFavicon(normalized).subscribe({
       next: (res) => {
         if (res.success) {
           this.formData.iconUrl = res.iconUrl; // Visual preview
@@ -659,6 +665,25 @@ export class DashboardComponent implements OnInit {
       },
       error: () => alert("Could not fetch favicon."),
     });
+  }
+
+  // Return icon URL for dashboard preview. Force Reddit links to use app icon asset.
+  getIconUrl(link: any): string | undefined {
+    try {
+      const url = (link && link.url) || "";
+      const icon = (link && link.iconUrl) || "";
+      try {
+        const hostname = new URL(url).hostname || "";
+        if (/\breddit\./i.test(hostname) || /(^|\.)reddit$/i.test(hostname)) {
+          return "assets/favicon.svg";
+        }
+      } catch (e) {
+        // ignore
+      }
+      return icon || undefined;
+    } catch (e) {
+      return undefined;
+    }
   }
 
   // Clear icon (Smart handling)
