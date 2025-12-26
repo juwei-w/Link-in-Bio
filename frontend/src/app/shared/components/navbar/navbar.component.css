@@ -361,3 +361,44 @@
     margin-top: 1rem;
   }
 }
+
+/* Theme Toggle specific styling for seamless look */
+.theme-toggle {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--color-text-secondary);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+  margin-left: 0.5rem;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .theme-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--color-text-primary);
+    transform: rotate(30deg);
+  }
+
+  :host-context(body.dark-mode) .theme-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+  }
+}
+
+:host-context(body.dark-mode) .theme-toggle {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Ensure SVG inside is sized correctly */
+.theme-toggle svg {
+  width: 20px;
+  height: 20px;
+}

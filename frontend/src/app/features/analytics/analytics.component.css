@@ -5,8 +5,8 @@
   position: relative;
 }
 
-body.dark-mode .analytics-container {
-  background: linear-gradient(135deg, hsl(222 47% 11%) 0%, hsl(14 50% 8%) 50%, hsl(330 50% 10%) 100%);
+:host-context(body.dark-mode) .analytics-container {
+  background: transparent;
 }
 
 /* Date Filter */
@@ -21,6 +21,11 @@ body.dark-mode .analytics-container {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
+:host-context(body.dark-mode) .date-filter {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(51, 65, 85, 0.4);
+}
+
 .date-filter label {
   font-size: 0.875rem;
   font-weight: 600;
@@ -28,8 +33,8 @@ body.dark-mode .analytics-container {
   white-space: nowrap;
 }
 
-body.dark-mode .date-filter label {
-  color: rgba(255, 255, 255, 0.7);
+:host-context(body.dark-mode) .date-filter label {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .days-select {
@@ -44,10 +49,10 @@ body.dark-mode .date-filter label {
   transition: var(--transition);
 }
 
-body.dark-mode .days-select {
+:host-context(body.dark-mode) .days-select {
   background: rgba(30, 41, 59, 0.8);
   border-color: rgba(51, 65, 85, 0.8);
-  color: rgba(255, 255, 255, 0.9);
+  color: white;
 }
 
 .days-select:focus {
@@ -596,8 +601,8 @@ body.dark-mode .empty-state {
   transition: var(--transition);
 }
 
-body.dark-mode .link-item {
-  background: rgba(30, 41, 59, 0.4);
+:host-context(body.dark-mode) .link-item {
+  background: rgba(15, 23, 42, 0.6);
   border-color: rgba(51, 65, 85, 0.6);
 }
 
@@ -607,8 +612,8 @@ body.dark-mode .link-item {
   transform: translateX(4px);
 }
 
-body.dark-mode .link-item:hover {
-  background: rgba(30, 41, 59, 0.6);
+:host-context(body.dark-mode) .link-item:hover {
+  background: rgba(30, 41, 59, 0.8);
   border-color: rgba(252, 97, 88, 0.4);
 }
 

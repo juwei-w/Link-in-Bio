@@ -449,21 +449,3 @@ body.dark-mode .profile-link .link-url {
 [data-card-style="solid"] .profile-link::after {
   display: none;
 }
-
-
-
-/* Dashboard Dark Mode Fail-Safes (Global) */
-/* These ensure that even if component encapsulation fails, the dark mode styling applies */
-body.dark-mode .link-item {
-  background: linear-gradient(135deg, rgba(51, 65, 85, 0.4) 0%, rgba(30, 41, 59, 0.4) 100%) !important;
-  border-color: rgba(51, 65, 85, 0.6) !important;
-}
-
-body.dark-mode .link-title {
-  color: #f1f5f9 !important;
-}
-
-body.dark-mode .navbar {
-  background: rgba(15, 23, 42, 0.95) !important;
-  border-bottom: 1px solid rgba(51, 65, 85, 0.3) !important;
-}

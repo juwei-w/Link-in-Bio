@@ -109,4 +109,21 @@ export class ThemeService {
   getCurrentTheme(): Theme {
     return this.themeSubject.value;
   }
+
+  get currentThemeValue(): Theme {
+    return this.themeSubject.value;
+  }
+
+  toggleTheme(): void {
+    const current = this.currentThemeValue;
+    const newTheme = current.theme === 'dark' ? 'light' : 'dark';
+
+    // Create updated theme object
+    const updatedTheme: Partial<Theme> = {
+      theme: newTheme
+    };
+
+    // We call updateTheme to persist it
+    this.updateTheme(updatedTheme).subscribe();
+  }
 }

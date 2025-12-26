@@ -184,24 +184,24 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-:global(.dark-mode) .btn-group {
-  background: #2A2A3E;
-  border-color: #333;
+:host-context(body.dark-mode) .btn-group {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(51, 65, 85, 0.6);
 }
 
-:global(.dark-mode) .btn-group button {
-  color: #999;
+:host-context(body.dark-mode) .btn-group button {
+  color: #94a3b8;
 }
 
-:global(.dark-mode) .btn-group button:hover {
+:host-context(body.dark-mode) .btn-group button:hover {
   background: rgba(255, 255, 255, 0.05);
-  color: #E0E0E0;
+  color: white;
 }
 
-:global(.dark-mode) .btn-group button.active {
-  background: #3E3E55;
+:host-context(body.dark-mode) .btn-group button.active {
+  background: rgba(30, 41, 59, 1);
   color: var(--primary-color, #FF6B6B);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Preset Themes */
@@ -322,38 +322,39 @@
 }
 
 /* Dark Mode Styles */
-:global(.dark-mode) .color-picker-container {
-  background: #1E1E2E;
+:host-context(body.dark-mode) .color-picker-container {
+  background: transparent;
   color: #E0E0E0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: none;
 }
 
-:global(.dark-mode) .color-input-group input[type="color"] {
+:host-context(body.dark-mode) .color-input-group input[type="color"] {
   border-color: #333;
   background: #2A2A3E;
 }
 
-:global(.dark-mode) .preset-btn {
-  background: #2A2A3E;
-  border-color: #333;
+:host-context(body.dark-mode) .preset-btn {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(51, 65, 85, 0.6);
   color: #E0E0E0;
 }
 
-:global(.dark-mode) .preset-btn:hover {
+:host-context(body.dark-mode) .preset-btn:hover {
   background: rgba(255, 107, 107, 0.15);
 }
 
-:global(.dark-mode) .color-value {
+:host-context(body.dark-mode) .color-value {
   color: #999;
 }
 
-:global(.dark-mode) .btn-secondary {
-  background: #333;
-  color: #E0E0E0;
+:host-context(body.dark-mode) .btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-:global(.dark-mode) .btn-secondary:hover {
-  background: #444;
+:host-context(body.dark-mode) .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 @media (max-width: 768px) {

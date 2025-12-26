@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { ThemeService, Theme } from '../../../core/services/theme.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -19,8 +20,17 @@ export class NavbarComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private themeService: ThemeService,
     private router: Router
   ) { }
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
+  }
+
+  get isDarkMode(): boolean {
+    return this.themeService.currentThemeValue?.theme === 'dark';
+  }
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
