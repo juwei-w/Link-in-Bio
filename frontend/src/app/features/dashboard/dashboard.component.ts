@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { AuthService } from '../../core/services/auth.service';
 import { LinksService, Link } from '../../core/services/links.service';
 import { ThemeService } from '../../core/services/theme.service';
@@ -12,7 +13,7 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: "app-dashboard",
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ImageCropperComponent, ColorPickerComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ImageCropperComponent, ColorPickerComponent, DragDropModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -33,7 +34,20 @@ export class DashboardComponent implements OnInit {
   loading = false;
   profileLoading = false;
   currentUser: any;
-  draggedIndex = -1;
+  isMobile = false;
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.checkMobile();
+  }
+
+  checkMobile() {
+    if (typeof window !== 'undefined') {
+      this.isMobile = window.innerWidth <= 768;
+    }
+  }
+
+
 
   // Profile data
   username: string = "";
@@ -81,7 +95,9 @@ export class DashboardComponent implements OnInit {
     private authService: AuthService,
     private linksService: LinksService,
     private themeService: ThemeService,
-    private router: Router
+    private router: Router,
+    private elementRef: ElementRef,
+    private changeDetectorRef: ChangeDetectorRef
   ) {
     this.currentUser = this.authService.getCurrentUser();
   }
@@ -89,6 +105,7 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     this.loadLinks();
     this.loadUserProfile();
+    this.checkMobile();
   }
 
   loadUserProfile() {
@@ -507,32 +524,22 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  onDragStart(event: DragEvent, index: number) {
-    this.draggedIndex = index;
-    event.dataTransfer!.effectAllowed = "move";
+  // TrackBy to maintain DOM identity during reorder
+  trackByLinkId(index: number, link: Link): string {
+    return link._id!;
   }
 
-  onDragOver(event: DragEvent) {
-    event.preventDefault();
-    event.dataTransfer!.dropEffect = "move";
-  }
+  drop(event: CdkDragDrop<Link[]>) {
+    moveItemInArray(this.links, event.previousIndex, event.currentIndex);
 
-  onDrop(event: DragEvent, dropIndex: number) {
-    event.preventDefault();
-
-    if (this.draggedIndex !== dropIndex) {
-      const draggedLink = this.links[this.draggedIndex];
-      this.links.splice(this.draggedIndex, 1);
-      this.links.splice(dropIndex, 0, draggedLink);
-
-      // Update order
-      this.linksService.reorderLinks(this.links).subscribe({
-        next: () => this.loadLinks(),
-        error: (err) => console.error("Failed to reorder links", err),
-      });
-    }
-
-    this.draggedIndex = -1;
+    // Save the new order to the backend
+    this.linksService.reorderLinks(this.links).subscribe({
+      next: () => {
+        // Optional: reload to sync any server-side sanitization
+        // this.loadLinks(); 
+      },
+      error: (err) => console.error("Failed to reorder links", err),
+    });
   }
 
   getProfileUrl(): string {

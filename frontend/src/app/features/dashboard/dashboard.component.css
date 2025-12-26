@@ -2291,3 +2291,102 @@ body.dark-mode .username-input {
     /* Restore standard spacing */
   }
 }
+
+/* =========================================
+   CDK Drag & Drop Styles
+   ========================================= */
+.cdk-drag-preview {
+  /* HIDE PREVIEW as per user request (User only wants to see the placeholder moving) */
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+
+  box-sizing: border-box;
+  border-radius: 1rem;
+  /* Keep dimensions logic if needed by CDK, but hide visual */
+  box-shadow: none;
+  background: transparent;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  max-width: 100%;
+  /* Prevent overflow if container is narrow */
+
+  /* CRITICAL: No transitions on the dragged element itself, otherwise it lags behind mouse */
+  transition: none !important;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Ensure preview inner content matches sizing */
+.cdk-drag-preview .link-main-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  width: 100%;
+}
+
+.cdk-drag-preview .link-content-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+
+/* Dark Mode Preview */
+:host-context(body.dark-mode) .cdk-drag-preview {
+  background-color: rgba(15, 23, 42, 0.9);
+  border-color: rgba(51, 65, 85, 0.6);
+  color: white;
+}
+
+/* Placeholder (the empty space stays clean functionality-wise, we style the content inside) */
+.cdk-drag-placeholder {
+  opacity: 1;
+  /* Make container visible so inner ghost is seen */
+  background: transparent;
+  border: none;
+  border-radius: 1rem;
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.link-ghost {
+  opacity: 0.4;
+  filter: grayscale(1);
+  background: white;
+  border: 1px dashed rgba(148, 163, 184, 0.8);
+  box-shadow: none !important;
+}
+
+:host-context(body.dark-mode) .link-ghost {
+  background: rgba(30, 41, 59, 0.4);
+  border-color: rgba(148, 163, 184, 0.4);
+}
+
+
+
+/* Smooth Animation */
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.links-list.cdk-drop-list-dragging .link-item:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Enhancements for Mobile Long Press */
+.link-item {
+  /* Allow vertical scroll but prevent horizontal swipe interfering with potential drag logic if needed. 
+     CDK usually handles this, but pan-y suggests vertical scroll is allowed. */
+  touch-action: pan-y;
+  /* Prevent text selection which can annoy during long press */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+
+  /* Ensure no conflicting transition by default on transform */
+  transform: translate3d(0, 0, 0);
+}

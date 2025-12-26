@@ -262,16 +262,75 @@
             <p>No links yet. Add your first link above!</p>
           </div>
 
-          <div class="links-list" *ngIf="links.length > 0">
+          <div class="links-list" *ngIf="links.length > 0" cdkDropList (cdkDropListDropped)="drop($event)">
             <div *ngFor="let link of links; let i = index" class="link-item"
-              [class.link-inactive]="(link.scheduledStart || link.scheduledEnd) && !isLinkScheduledActive(link)"
-              draggable="true" (dragstart)="onDragStart($event, i)" (dragover)="onDragOver($event)"
-              (drop)="onDrop($event, i)">
+              [class.link-inactive]="(link.scheduledStart || link.scheduledEnd) && !isLinkScheduledActive(link)" cdkDrag
+              [cdkDragStartDelay]="isMobile ? 500 : 0">
+
+              <!-- Custom Drag Preview (Optional: for better visual control) -->
+              <div *cdkDragPreview class="link-item link-item-preview">
+                <div class="link-main-row">
+                  <!-- Preview content same as main row, or simplified -->
+                  <div class="link-content-wrapper">
+                    <div class="link-icon-preview">
+                      <img *ngIf="link.iconUrl" [src]="link.iconUrl" class="icon-img" />
+                      <div *ngIf="!link.iconUrl" class="icon-placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2">
+                          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="link-info">
+                      <h4 class="link-title">{{ link.title }}</h4>
+                      <span class="link-url">{{ link.url }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Custom Placeholder (Ghost) -->
+              <div *cdkDragPlaceholder class="link-item link-ghost">
+                <div class="link-main-row">
+                  <!-- 1. Drag Handle (Ghost) -->
+                  <div class="drag-handle-wrapper" *ngIf="!isMobile">
+                    <svg class="drag-handle" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <circle cx="9" cy="5" r="1"></circle>
+                      <circle cx="9" cy="12" r="1"></circle>
+                      <circle cx="9" cy="19" r="1"></circle>
+                      <circle cx="15" cy="5" r="1"></circle>
+                      <circle cx="15" cy="12" r="1"></circle>
+                      <circle cx="15" cy="19" r="1"></circle>
+                    </svg>
+                  </div>
+
+                  <!-- 2. Content Wrapper (Ghost) -->
+                  <div class="link-content-wrapper">
+                    <div class="link-icon-preview">
+                      <img *ngIf="link.iconUrl" [src]="link.iconUrl" class="icon-img" />
+                      <div *ngIf="!link.iconUrl" class="icon-placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2">
+                          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="link-info">
+                      <h4 class="link-title">{{ link.title }}</h4>
+                      <span class="link-url">{{ link.url }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               <!-- Primary Row: Always Visible, Horizontal -->
               <div class="link-main-row">
                 <!-- 1. Drag Handle -->
-                <div class="drag-handle-wrapper">
+                <div class="drag-handle-wrapper" cdkDragHandle *ngIf="!isMobile">
                   <svg class="drag-handle" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="9" cy="5" r="1"></circle>
