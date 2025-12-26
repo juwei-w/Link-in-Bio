@@ -84,7 +84,7 @@ router.put("/", auth, async (req, res) => {
       user.vibrancy = vibrancy;
     }
 
-    if (cardStyle && ["glass", "solid", "gradient"].includes(cardStyle)) {
+    if (cardStyle && ["glass", "solid", "retro"].includes(cardStyle)) {
       user.cardStyle = cardStyle;
     }
 

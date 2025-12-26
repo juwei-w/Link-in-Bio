@@ -32,7 +32,7 @@ const UserSchema = new Schema({
   },
   cardStyle: {
     type: String,
-    enum: ["glass", "solid", "gradient"],
+    enum: ["glass", "solid", "retro"],
     default: "glass",
   },
   provider: {

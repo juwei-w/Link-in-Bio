@@ -15,7 +15,7 @@ export interface Theme {
   theme: 'light' | 'dark';
   themeColors: ThemeColors;
   vibrancy?: 'subtle' | 'medium' | 'high';
-  cardStyle?: 'glass' | 'solid' | 'gradient';
+  cardStyle?: 'glass' | 'solid' | 'retro';
 }
 
 @Injectable({

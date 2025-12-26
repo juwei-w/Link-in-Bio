@@ -117,31 +117,25 @@ body.dark-mode .profile-container {
   text-align: center;
   margin-bottom: 3rem;
   padding: 2.5rem 2rem;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   border-radius: 2rem;
-  border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  border: none;
+  box-shadow: none;
   color: var(--text-color);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .profile-header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  display: none;
 }
 
 body.dark-mode .profile-header {
-  background: rgba(30, 41, 59, 0.8);
-  border-color: color-mix(in srgb, var(--primary-color) 30%, transparent);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
 }
 
 .avatar-container {
@@ -1010,7 +1004,7 @@ body.dark-mode .btn-download-qr {
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.5rem;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   text-decoration: none;
@@ -1044,8 +1038,8 @@ body.dark-mode .profile-link {
 
 .profile-link:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15), 0 0 24px hsla(14, 100%, 70%, 0.2);
-  border-color: hsla(14, 100%, 70%, 0.3);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15), 0 0 24px color-mix(in srgb, var(--primary-color) 20%, transparent);
+  border-color: color-mix(in srgb, var(--primary-color) 30%, transparent);
 }
 
 body.dark-mode .profile-link:hover {
@@ -1205,20 +1199,28 @@ body.dark-mode .empty-state svg {
   color: color-mix(in srgb, var(--text-color) 70%, transparent);
   margin-top: 4rem;
   font-size: 0.9375rem;
-  padding: 2rem 1.5rem;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  padding: 1.5rem 1.5rem;
+
+  /* Inherit shared styles from whatever active theme class might be applied, 
+     but since footer is separate, we manually match the default glass or override below */
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: 1.25rem;
-  border: 1px solid color-mix(in srgb, var(--primary-color) 15%, transparent);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   font-weight: 500;
+
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  justify-content: center;
 }
 
 body.dark-mode .profile-footer {
-  background: rgba(30, 41, 59, 0.5);
-  border-color: color-mix(in srgb, var(--primary-color) 25%, transparent);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  background: rgba(30, 41, 59, 0.3);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: none;
   color: rgba(255, 255, 255, 0.6);
 }
 

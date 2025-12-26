@@ -298,26 +298,27 @@ body.dark-mode .card {
 }
 
 /* Global Link Styles (Theme Sync Fix) */
-
-/* Default Glass Style */
-.profile-link {
+/* Shared Selector for Link and Footer to ensure they match */
+.profile-link,
+.profile-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   /* Padding managed by specific components if needed, but defaults: */
   padding: 1.5rem 1.75rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, color-mix(in srgb, var(--primary-color) 3%, white) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   text-decoration: none;
   color: var(--text-color);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 1.25rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  border: 2px solid var(--primary-color);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
   position: relative;
   overflow: hidden;
 }
+
 
 .profile-link::after {
   content: '';
@@ -331,8 +332,10 @@ body.dark-mode .card {
 
 .profile-link:hover {
   transform: translateY(-6px);
-  box-shadow: 0 20px 50px color-mix(in srgb, var(--primary-color) 30%, transparent), 0 0 30px color-mix(in srgb, var(--primary-color) 20%, transparent);
-  border-color: var(--secondary-color);
+  /* Use Primary Color for shadow */
+  box-shadow: 0 20px 50px color-mix(in srgb, var(--primary-color) 30%, transparent),
+    0 0 30px color-mix(in srgb, var(--primary-color) 20%, transparent);
+  border-color: var(--primary-color);
 }
 
 .profile-link:hover::after {
@@ -340,14 +343,16 @@ body.dark-mode .card {
 }
 
 /* Dark Mode Glass Style */
-body.dark-mode .profile-link {
+body.dark-mode .profile-link,
+body.dark-mode .profile-footer {
   background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, color-mix(in srgb, var(--primary-color) 5%, rgba(30, 41, 59, 0.95)) 100%);
   border-color: var(--primary-color);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 body.dark-mode .profile-link:hover {
-  box-shadow: 0 20px 50px color-mix(in srgb, var(--primary-color) 40%, transparent), 0 0 30px color-mix(in srgb, var(--primary-color) 25%, transparent);
+  box-shadow: 0 20px 50px color-mix(in srgb, var(--primary-color) 40%, transparent),
+    0 0 30px color-mix(in srgb, var(--primary-color) 25%, transparent);
 }
 
 /* Child Elements Global Colors */
@@ -385,40 +390,67 @@ body.dark-mode .profile-link .link-url {
   color: var(--secondary-color);
 }
 
-/* Solid Style */
-[data-card-style="solid"] .profile-link {
+/* Retro Style (Neo-Brutalist) */
+[data-card-style="retro"] .profile-link,
+[data-card-style="retro"] .profile-footer {
   background: var(--bg-color) !important;
   border: 2px solid var(--text-color) !important;
   box-shadow: 4px 4px 0 var(--text-color) !important;
   border-radius: 8px !important;
+  color: var(--text-color) !important;
+}
+
+[data-card-style="retro"] .profile-link:hover {
+  transform: translate(-2px, -2px);
+  /* Use Primary Color for hover shadow in Retro? Or keep text color/black? 
+     Request said "theme colour shadow" - let's try primary color for hover shadow */
+  box-shadow: 6px 6px 0 var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+[data-card-style="retro"] .profile-link::after {
+  display: none;
+}
+
+/* Solid Style (Filled) */
+[data-card-style="solid"] .profile-link,
+[data-card-style="solid"] .profile-footer {
+  background: var(--primary-color) !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 12px !important;
+  color: white !important;
+}
+
+[data-card-style="solid"] .profile-link .link-title,
+[data-card-style="solid"] .profile-link .link-url,
+[data-card-style="solid"] .profile-link .link-arrow {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+[data-card-style="solid"] .profile-link .link-url {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+[data-card-style="solid"] .profile-footer strong {
+  color: white !important;
+  background: none !important;
+  -webkit-text-fill-color: initial !important;
 }
 
 [data-card-style="solid"] .profile-link:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--text-color) !important;
+  transform: translateY(-2px);
+  /* Solid style usually glows the same color or darker. 
+     Using primary color shadow might get lost against the button itself if it's the exact same, 
+     but let's do a spread shadow */
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--primary-color) 40%, transparent) !important;
 }
 
 [data-card-style="solid"] .profile-link::after {
   display: none;
 }
 
-/* Gradient Style */
-[data-card-style="gradient"] .profile-link {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
-  border: none !important;
-  box-shadow: 0 10px 20px color-mix(in srgb, var(--primary-color) 40%, transparent) !important;
-}
 
-[data-card-style="gradient"] .profile-link .link-title,
-[data-card-style="gradient"] .profile-link .link-url,
-[data-card-style="gradient"] .profile-link .link-arrow {
-  color: white !important;
-}
-
-[data-card-style="gradient"] .profile-link:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 15px 30px color-mix(in srgb, var(--primary-color) 50%, transparent) !important;
-}
 
 /* Dashboard Dark Mode Fail-Safes (Global) */
 /* These ensure that even if component encapsulation fails, the dark mode styling applies */

@@ -32,7 +32,7 @@ export class ColorPickerComponent implements OnInit {
     text: '#000000',
   };
   vibrancy: 'subtle' | 'medium' | 'high' = 'subtle';
-  cardStyle: 'glass' | 'solid' | 'gradient' = 'glass';
+  cardStyle: 'glass' | 'solid' | 'retro' = 'glass';
 
   presets: { name: string; colors: ThemeColors; theme: 'light' | 'dark' }[] = [
     {
@@ -129,7 +129,7 @@ export class ColorPickerComponent implements OnInit {
     this.themeService.applyTheme(this.currentTheme);
   }
 
-  updateCardStyle(style: 'glass' | 'solid' | 'gradient') {
+  updateCardStyle(style: 'glass' | 'solid' | 'retro') {
     this.cardStyle = style;
     this.currentTheme.cardStyle = style;
     this.themeService.applyTheme(this.currentTheme);
