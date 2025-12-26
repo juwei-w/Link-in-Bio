@@ -304,9 +304,10 @@ router.get("/:id/analytics", auth, async (req, res) => {
 
     // Validate days parameter
     const parsedDays = parseInt(days, 10);
-    if (isNaN(parsedDays) || parsedDays < 1 || parsedDays > 365) {
+    // Allow 0 (All Time) or 1-365
+    if (isNaN(parsedDays) || (parsedDays !== 0 && (parsedDays < 1 || parsedDays > 365))) {
       return res.status(400).json({
-        message: "Invalid days parameter. Must be between 1 and 365",
+        message: "Invalid days parameter. Must be 0 (All Time) or between 1 and 365",
       });
     }
 
@@ -319,7 +320,11 @@ router.get("/:id/analytics", auth, async (req, res) => {
 
     // Get date range
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - parsedDays);
+    if (parsedDays === 0) {
+      startDate.setTime(0);
+    } else {
+      startDate.setDate(startDate.getDate() - parsedDays);
+    }
 
     // Filter click events by date range
     const recentClicks =
@@ -336,14 +341,20 @@ router.get("/:id/analytics", auth, async (req, res) => {
 
     // Fill missing dates with 0
     const timeSeriesData = [];
-    for (let i = parseInt(days) - 1; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split("T")[0];
-      timeSeriesData.push({
-        date: dateStr,
-        clicks: dailyData[dateStr] || 0,
+    if (parsedDays === 0) {
+      Object.keys(dailyData).sort().forEach(date => {
+        timeSeriesData.push({ date, clicks: dailyData[date] });
       });
+    } else {
+      for (let i = parsedDays - 1; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split("T")[0];
+        timeSeriesData.push({
+          date: dateStr,
+          clicks: dailyData[dateStr] || 0,
+        });
+      }
     }
 
     // Calculate referrer stats
@@ -437,13 +448,20 @@ router.get("/analytics/overview", auth, async (req, res) => {
 
     const links = await Link.find({ userId: req.user.id });
 
+    const daysInt = parseInt(days);
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - parseInt(days));
+
+    if (daysInt === 0) {
+      startDate.setTime(0); // Epoch
+    } else {
+      startDate.setDate(startDate.getDate() - daysInt);
+    }
 
     let totalClicks = 0;
     const dailyData = {};
     const referrerStats = {};
     const countryStats = {};
+    const cityStats = {};
     const deviceStats = {};
     const platformStats = {};
     const hourlyClicks = Array.from({ length: 24 }, (_, h) => ({
@@ -452,12 +470,14 @@ router.get("/analytics/overview", auth, async (req, res) => {
     }));
 
     links.forEach((link) => {
-      totalClicks += link.clicks || 0;
-
+      // Filter recent clicks first
       const recentClicks =
         link.clickEvents?.filter(
           (click) => new Date(click.timestamp) >= startDate
         ) || [];
+
+      // Sum only recent clicks
+      totalClicks += recentClicks.length;
 
       recentClicks.forEach((click) => {
         // Daily aggregation
@@ -471,6 +491,11 @@ router.get("/analytics/overview", auth, async (req, res) => {
         // Country aggregation
         if (click.country) {
           countryStats[click.country] = (countryStats[click.country] || 0) + 1;
+        }
+
+        // City aggregation
+        if (click.city) {
+          cityStats[click.city] = (cityStats[click.city] || 0) + 1;
         }
 
         // Device aggregation
@@ -497,14 +522,21 @@ router.get("/analytics/overview", auth, async (req, res) => {
 
     // Format time series
     const timeSeriesData = [];
-    for (let i = parseInt(days) - 1; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split("T")[0];
-      timeSeriesData.push({
-        date: dateStr,
-        clicks: dailyData[dateStr] || 0,
+    if (daysInt === 0) {
+      // For all time, sort available dates
+      Object.keys(dailyData).sort().forEach(date => {
+        timeSeriesData.push({ date, clicks: dailyData[date] });
       });
+    } else {
+      for (let i = daysInt - 1; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split("T")[0];
+        timeSeriesData.push({
+          date: dateStr,
+          clicks: dailyData[dateStr] || 0,
+        });
+      }
     }
 
     const topReferrers = Object.entries(referrerStats)
@@ -516,6 +548,10 @@ router.get("/analytics/overview", auth, async (req, res) => {
       .map(([country, count]) => ({ country, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
+    const topCities = Object.entries(cityStats)
+      .map(([city, count]) => ({ city, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
     const devices = Object.entries(deviceStats)
       .map(([type, count]) => ({ type, count }))
       .sort((a, b) => b.count - a.count);
@@ -523,6 +559,19 @@ router.get("/analytics/overview", auth, async (req, res) => {
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 12);
+
+    // Calculate per-link stats for the range
+    let linkStats = [];
+    try {
+      linkStats = links.map(link => {
+        const recent = (link.clickEvents || []).filter(
+          (click) => new Date(click.timestamp) >= startDate
+        );
+        return { id: link._id, clicks: recent.length };
+      });
+    } catch (e) {
+      console.error("Link stats error", e);
+    }
 
     res.json({
       totalClicks,
@@ -532,9 +581,11 @@ router.get("/analytics/overview", auth, async (req, res) => {
       timeSeries: timeSeriesData,
       topReferrers,
       topCountries,
+      topCities, // Added topCities for chart if needed
       devices,
       platforms,
       hourlyClicks,
+      linkStats, // Return filtered specific link counts
       topPerformers: links
         .map((l) => ({ id: l._id, title: l.title, clicks: l.clicks }))
         .sort((a, b) => b.clicks - a.clicks)

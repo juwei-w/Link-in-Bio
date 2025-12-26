@@ -40,20 +40,32 @@ export class AnalyticsComponent implements OnInit, AfterViewInit {
   overview: any = null;
   profileViewsTotal: number = 0;
   days = 30;
-  dateRanges = [7, 14, 30, 60, 90];
+  dateRanges = [7, 14, 30, 60, 90, 0];
 
   // Chart references
   @ViewChild('timeSeriesCanvas') timeSeriesCanvas?: ElementRef<HTMLCanvasElement>;
+  @ViewChild('platformsCanvas') platformsCanvas?: ElementRef<HTMLCanvasElement>; // For Referrers
   @ViewChild('devicesCanvas') devicesCanvas?: ElementRef<HTMLCanvasElement>;
-  @ViewChild('platformsCanvas') platformsCanvas?: ElementRef<HTMLCanvasElement>;
-  @ViewChild('hourlyCanvas') hourlyCanvas?: ElementRef<HTMLCanvasElement>;
+  @ViewChild('locationsCanvas') locationsCanvas?: ElementRef<HTMLCanvasElement>;
 
   private timeSeriesChart?: Chart;
   private devicesChart?: Chart;
-  private platformsChart?: Chart;
+  private referrersChart?: Chart;
+  private locationsChart?: Chart;
   private hourlyChart?: Chart;
 
-  constructor(private linksService: LinksService, private authService: AuthService) {}
+  // Drill down state
+  expandedLinkId: string | null = null;
+  linkAnalytics: any = null;
+  loadingLinkAnalytics = false;
+
+  // Computed insights
+  peakTimeDisplay: string = 'N/A';
+  peakTimeDayParts: string = ''; // e.g., "Afternoon"
+  topCountry: string = '-';
+  topCity: string = '-';
+
+  constructor(private linksService: LinksService, private authService: AuthService) { }
 
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
@@ -73,27 +85,41 @@ export class AnalyticsComponent implements OnInit, AfterViewInit {
     this.loading = true;
     // Fetch links, overview, and profile
     this.linksService.getMyLinks().subscribe({
-      next: (links) => {
-        this.links = links.sort((a, b) => (b.clicks || 0) - (a.clicks || 0));
+      next: (initialLinks) => {
+        // We will update these links with filtered data from overview
         this.linksService.getAnalyticsOverview(this.days).subscribe({
           next: (ov) => {
             this.overview = ov;
+
+            // Map filtered clicks to links
+            const statsMap = new Map(ov.linkStats?.map((s: any) => [s.id, s.clicks]) || []);
+            this.links = initialLinks.map(link => ({
+              ...link,
+              clicks: (statsMap.get(link._id!) as number) || 0 // Override with filtered count
+            }));
+
+            // Sort by new click counts
+            this.links.sort((a, b) => (b.clicks || 0) - (a.clicks || 0));
+
+            this.processInsights(); // Calculate peak time, etc.
+
             this.authService.getProfile().subscribe({
               next: (profile) => {
                 this.profileViewsTotal = (profile as any).totalProfileViews || 0;
-                this.calculateSummary();
+                this.calculateSummary(); // Recalculate summary with new data
                 this.loading = false;
-                setTimeout(() => this.renderCharts(), 100);
+                setTimeout(() => this.renderCharts(), 300);
               },
               error: () => {
                 this.calculateSummary();
                 this.loading = false;
-                setTimeout(() => this.renderCharts(), 100);
+                setTimeout(() => this.renderCharts(), 300);
               }
             });
           },
           error: (err) => {
             console.error('Failed to load overview', err);
+            this.links = initialLinks; // Fallback
             this.calculateSummary();
             this.loading = false;
           }
@@ -108,9 +134,13 @@ export class AnalyticsComponent implements OnInit, AfterViewInit {
 
   calculateSummary() {
     this.summary.totalLinks = this.links.length;
-    this.summary.totalClicks = this.links.reduce((sum, link) => sum + (link.clicks || 0), 0);
-    this.summary.avgClicksPerLink = this.summary.totalLinks > 0 
-      ? Math.round(this.summary.totalClicks / this.summary.totalLinks) 
+    // Use the filtered total from overview if available, else sum the (now filtered) links
+    this.summary.totalClicks = this.overview?.totalClicks !== undefined
+      ? this.overview.totalClicks
+      : this.links.reduce((sum, link) => sum + (link.clicks || 0), 0);
+
+    this.summary.avgClicksPerLink = this.summary.totalLinks > 0
+      ? Math.round(this.summary.totalClicks / this.summary.totalLinks)
       : 0;
     this.summary.mostClickedLink = this.links.length > 0 ? this.links[0] : null;
     // CTR = total clicks / total profile views
@@ -154,30 +184,158 @@ export class AnalyticsComponent implements OnInit, AfterViewInit {
     return Math.round((mobile?.count || 0) / total * 100);
   }
 
-  getPeakHour(): string {
-    if (!this.overview?.hourlyClicks || this.overview.hourlyClicks.length === 0) return 'N/A';
-    const maxHour = this.overview.hourlyClicks.reduce((max: any, current: any) => 
-      (current.count || 0) > (max.count || 0) ? current : max
-    , { hour: 0, count: 0 });
-    if (maxHour.count === 0) return 'N/A';
-    return `${maxHour.hour}:00`;
+  getLinkCtr(clicks: number = 0): number {
+    if (this.profileViewsTotal === 0) return 0;
+    // Cap at 100% just in case clicks > views (possible due to bots or multiple clicks per session)
+    const ctr = (clicks / this.profileViewsTotal) * 100;
+    return Math.round(Math.min(ctr, 100));
+  }
+
+  processInsights() {
+    // 1. Peak Time
+    if (this.overview?.hourlyClicks?.length) {
+      const maxHour = this.overview.hourlyClicks.reduce((max: any, current: any) =>
+        (current.count || 0) > (max.count || 0) ? current : max
+        , { hour: 0, count: 0 });
+
+      if (maxHour.count > 0) {
+        const h = maxHour.hour;
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const displayH = h % 12 || 12; // Convert 0 to 12
+        this.peakTimeDisplay = `${displayH}:00 ${ampm}`;
+
+        if (h >= 5 && h < 12) this.peakTimeDayParts = 'Morning';
+        else if (h >= 12 && h < 17) this.peakTimeDayParts = 'Afternoon';
+        else if (h >= 17 && h < 21) this.peakTimeDayParts = 'Evening';
+        else this.peakTimeDayParts = 'Night';
+      } else {
+        this.peakTimeDisplay = 'N/A';
+        this.peakTimeDayParts = '';
+      }
+    }
+
+    // 2. Top Location
+    if (this.overview?.topCountries?.length) {
+      this.topCountry = this.overview.topCountries[0].country || '-';
+    }
+    if (this.overview?.topCities?.length) {
+      this.topCity = this.overview.topCities[0].city || '-';
+    }
+  }
+
+  toggleLinkDetails(linkId: string) {
+    if (this.expandedLinkId === linkId) {
+      this.expandedLinkId = null;
+      this.linkAnalytics = null;
+    } else {
+      this.expandedLinkId = linkId;
+      this.loadLinkDetails(linkId);
+    }
+  }
+
+  loadLinkDetails(linkId: string) {
+    this.loadingLinkAnalytics = true;
+    this.linkAnalytics = null;
+
+    this.linksService.getLinkAnalytics(linkId, this.days).subscribe({
+      next: (data) => {
+        this.linkAnalytics = data;
+        this.loadingLinkAnalytics = false;
+      },
+      error: (err) => {
+        console.error("Failed link details", err);
+        this.loadingLinkAnalytics = false;
+      }
+    });
   }
 
   renderCharts() {
+    console.log('Metrics: renderCharts triggered. Overview present:', !!this.overview);
     if (!this.overview) return;
+
     this.renderTimeSeriesChart();
+    this.renderReferrersChart();
+    this.renderLocationsChart();
     this.renderDevicesChart();
-    this.renderPlatformsChart();
-    this.renderHourlyChart();
+  }
+
+  renderLocationsChart() {
+    // Fallback ID: locationsCanvas
+    let canvasEl: HTMLCanvasElement | undefined = this.locationsCanvas?.nativeElement;
+    if (!canvasEl) {
+      const el = document.getElementById('locationsCanvas');
+      if (el) canvasEl = el as HTMLCanvasElement;
+    }
+
+    if (!canvasEl || !this.overview?.topCountries?.length) return;
+
+    if (this.locationsChart) this.locationsChart.destroy();
+
+    const ctx = canvasEl.getContext('2d');
+    if (!ctx) return;
+
+    const data = this.overview.topCountries.slice(0, 5);
+    const labels = data.map((c: any) => c.country || 'Unknown');
+    const values = data.map((c: any) => c.count);
+
+    this.locationsChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Clicks',
+          data: values,
+          backgroundColor: 'rgba(59, 130, 246, 0.7)',
+          borderRadius: 4,
+          barThickness: 20
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            padding: 8
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0,0,0,0.05)' },
+            ticks: { precision: 0 }
+          },
+          y: {
+            grid: { display: false }
+          }
+        }
+      }
+    });
   }
 
   renderTimeSeriesChart() {
-    if (!this.timeSeriesCanvas || !this.overview?.timeSeries) return;
-    
+    // Try to get element from ViewChild, or fallback to native ID
+    let canvasEl: HTMLCanvasElement | undefined = this.timeSeriesCanvas?.nativeElement;
+    if (!canvasEl) {
+      console.warn('Metrics: ViewChild TS Canvas missing, trying getElementById');
+      const el = document.getElementById('timeSeriesCanvas');
+      if (el) canvasEl = el as HTMLCanvasElement;
+    }
+
+    if (!canvasEl || !this.overview?.timeSeries) {
+      console.warn('Metrics: Missing TS Canvas or Data even after fallback');
+      return;
+    }
+
     if (this.timeSeriesChart) this.timeSeriesChart.destroy();
 
-    const ctx = this.timeSeriesCanvas.nativeElement.getContext('2d');
-    if (!ctx) return;
+    const ctx = canvasEl.getContext('2d');
+    if (!ctx) {
+      console.error('Metrics: Failed to get 2d context for TS chart');
+      return;
+    }
 
     const data = this.overview.timeSeries;
     const labels = data.map((d: any) => {
@@ -226,12 +384,21 @@ export class AnalyticsComponent implements OnInit, AfterViewInit {
     });
   }
 
+
+
   renderDevicesChart() {
-    if (!this.devicesCanvas || !this.overview?.devices?.length) return;
-    
+    // Fallback ID: devicesCanvas
+    let canvasEl: HTMLCanvasElement | undefined = this.devicesCanvas?.nativeElement;
+    if (!canvasEl) {
+      const el = document.getElementById('devicesCanvas');
+      if (el) canvasEl = el as HTMLCanvasElement;
+    }
+
+    if (!canvasEl || !this.overview?.devices?.length) return;
+
     if (this.devicesChart) this.devicesChart.destroy();
 
-    const ctx = this.devicesCanvas.nativeElement.getContext('2d');
+    const ctx = canvasEl.getContext('2d');
     if (!ctx) return;
 
     const labels = this.overview.devices.map((d: any) => d.type);
@@ -269,114 +436,67 @@ export class AnalyticsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  renderPlatformsChart() {
-    if (!this.platformsCanvas || !this.overview?.platforms?.length) return;
-    
-    if (this.platformsChart) this.platformsChart.destroy();
+  renderReferrersChart() {
+    // Try to get element from ViewChild, or fallback to native ID
+    let canvasEl: HTMLCanvasElement | undefined = this.platformsCanvas?.nativeElement;
+    if (!canvasEl) {
+      // fallback
+      const el = document.getElementById('referrersCanvas');
+      if (el) canvasEl = el as HTMLCanvasElement;
+    }
 
-    const ctx = this.platformsCanvas.nativeElement.getContext('2d');
+    if (!canvasEl || !this.overview?.topReferrers?.length) return;
+
+    if (this.referrersChart) this.referrersChart.destroy();
+
+    const ctx = canvasEl.getContext('2d');
     if (!ctx) return;
 
-    const topPlatforms = this.overview.platforms.slice(0, 8);
-    const labels = topPlatforms.map((p: any) => p.name);
-    const values = topPlatforms.map((p: any) => p.count);
+    const topRefs = this.overview.topReferrers.slice(0, 5);
+    const labels = topRefs.map((p: any) => p.source === 'direct' ? 'Direct / Unknown' : p.source);
+    const values = topRefs.map((p: any) => p.count);
 
-    this.platformsChart = new Chart(ctx, {
-      type: 'bar',
+    this.referrersChart = new Chart(ctx, {
+      type: 'doughnut',
       data: {
         labels,
         datasets: [{
-          label: 'Clicks',
           data: values,
-          backgroundColor: 'rgba(252, 97, 88, 0.7)',
-          borderRadius: 8,
-          maxBarThickness: 60
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        indexAxis: 'y',
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            padding: 12,
-            cornerRadius: 8
-          }
-        },
-        scales: {
-          x: {
-            beginAtZero: true,
-            ticks: { precision: 0 },
-            grid: { color: 'rgba(0, 0, 0, 0.05)' }
-          },
-          y: {
-            grid: { display: false }
-          }
-        }
-      }
-    });
-  }
-
-  renderHourlyChart() {
-    if (!this.hourlyCanvas || !this.overview?.hourlyClicks?.length) return;
-    
-    if (this.hourlyChart) this.hourlyChart.destroy();
-
-    const ctx = this.hourlyCanvas.nativeElement.getContext('2d');
-    if (!ctx) return;
-
-    // Ensure all 24 hours are present
-    const hourlyData = Array.from({ length: 24 }, (_, i) => {
-      const found = this.overview.hourlyClicks.find((h: any) => h.hour === i);
-      return found ? found.count : 0;
-    });
-    const labels = Array.from({ length: 24 }, (_, i) => `${i}:00`);
-
-    this.hourlyChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Clicks',
-          data: hourlyData,
-          backgroundColor: 'rgba(217, 70, 239, 0.7)',
-          borderRadius: 6,
-          maxBarThickness: 40
+          backgroundColor: [
+            'rgba(59, 130, 246, 0.8)', // Blue
+            'rgba(16, 185, 129, 0.8)', // Emerald
+            'rgba(245, 158, 11, 0.8)', // Amber
+            'rgba(239, 68, 68, 0.8)',  // Red
+            'rgba(107, 114, 128, 0.8)' // Gray
+          ],
+          borderWidth: 0,
+          hoverOffset: 4
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { display: false },
+          legend: {
+            position: 'right',
+            labels: { usePointStyle: true, boxWidth: 8 }
+          },
           tooltip: {
             backgroundColor: 'rgba(0, 0, 0, 0.8)',
             padding: 12,
             cornerRadius: 8
           }
         },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: { precision: 0 },
-            grid: { color: 'rgba(0, 0, 0, 0.05)' }
-          },
-          x: {
-            grid: { display: false },
-            ticks: { maxRotation: 45, minRotation: 45 }
-          }
-        }
+        cutout: '65%' // Thinner doughnut
       }
     });
   }
 
   ngOnDestroy() {
     if (this.timeSeriesChart) this.timeSeriesChart.destroy();
+    if (this.referrersChart) this.referrersChart.destroy();
+    if (this.locationsChart) this.locationsChart.destroy();
     if (this.devicesChart) this.devicesChart.destroy();
-    if (this.platformsChart) this.platformsChart.destroy();
-    if (this.hourlyChart) this.hourlyChart.destroy();
   }
 
   logout() {

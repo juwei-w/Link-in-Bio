@@ -14,6 +14,7 @@ export interface Link {
   createdAt?: Date;
   scheduledStart?: string | Date;
   scheduledEnd?: string | Date;
+  lastClickedAt?: Date | string;
 }
 
 export interface UserProfile {
@@ -56,8 +57,9 @@ export class LinksService {
   }
 
   // Get public profile by username
-  getPublicProfile(username: string): Observable<UserProfile> {
-    return this.http.get<UserProfile>(`${this.apiUrl}/profile/${username}`);
+  getPublicProfile(username: string, trackView: boolean = false): Observable<UserProfile> {
+    const url = `${this.apiUrl}/profile/${username}${trackView ? '?trackView=1' : ''}`;
+    return this.http.get<UserProfile>(url);
   }
 
   // Create a new link

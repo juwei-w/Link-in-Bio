@@ -86,7 +86,7 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   loadProfile(username: string) {
-    this.linksService.getPublicProfile(username).subscribe({
+    this.linksService.getPublicProfile(username, true).subscribe({
       next: (profile) => {
         this.profile = profile;
         const currentUser = this.authService.getCurrentUser();
