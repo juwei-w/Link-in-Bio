@@ -4,34 +4,25 @@
   flex-direction: column;
   align-items: center;
   padding: 3rem 1.5rem;
-  background: linear-gradient(
-    135deg,
-    var(--bg-color) 0%,
-    color-mix(
-        in srgb,
+  background: linear-gradient(135deg,
+      var(--bg-color) 0%,
+      color-mix(in srgb,
         var(--primary-color) var(--theme-intensity, 5%),
-        var(--bg-color)
-      )
-      100%
-  );
+        var(--bg-color)) 100%);
   color: var(--text-color);
   position: relative;
   overflow: visible;
   width: 100%;
   max-width: 100%;
+  overflow: hidden;
 }
 
 body.dark-mode .profile-container {
-  background: linear-gradient(
-    135deg,
-    var(--bg-color) 0%,
-    color-mix(
-        in srgb,
+  background: linear-gradient(135deg,
+      var(--bg-color) 0%,
+      color-mix(in srgb,
         var(--primary-color) var(--theme-intensity, 10%),
-        var(--bg-color)
-      )
-      100%
-  );
+        var(--bg-color)) 100%);
 }
 
 .profile-container::before {
@@ -39,11 +30,9 @@ body.dark-mode .profile-container {
   position: absolute;
   width: 600px;
   height: 600px;
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--primary-color) 20%, transparent) 0%,
-    transparent 70%
-  );
+  background: radial-gradient(circle,
+      color-mix(in srgb, var(--primary-color) 20%, transparent) 0%,
+      transparent 70%);
   border-radius: 50%;
   top: -200px;
   right: -200px;
@@ -56,11 +45,9 @@ body.dark-mode .profile-container {
   position: absolute;
   width: 500px;
   height: 500px;
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--secondary-color) 15%, transparent) 0%,
-    transparent 70%
-  );
+  background: radial-gradient(circle,
+      color-mix(in srgb, var(--secondary-color) 15%, transparent) 0%,
+      transparent 70%);
   border-radius: 50%;
   bottom: -200px;
   left: -200px;
@@ -70,6 +57,7 @@ body.dark-mode .profile-container {
 }
 
 @keyframes float {
+
   0%,
   100% {
     transform: translate(0, 0) rotate(0deg);
@@ -109,11 +97,9 @@ body.dark-mode .profile-container {
   justify-content: center;
   padding: 4rem;
   color: var(--color-text-light);
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.08) 0%,
-    rgba(255, 140, 105, 0.04) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 140, 105, 0.04) 100%);
   border: 1.5px solid rgba(255, 140, 105, 0.16);
   border-radius: 1.5rem;
   cursor: pointer;
@@ -195,11 +181,9 @@ body.dark-mode .profile-header {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    135deg,
-    var(--primary-color) 0%,
-    var(--secondary-color) 100%
-  );
+  background: linear-gradient(135deg,
+      var(--primary-color) 0%,
+      var(--secondary-color) 100%);
   border-radius: 50%;
   z-index: 0;
 }
@@ -225,11 +209,9 @@ body.dark-mode .avatar {
   font-weight: 800;
   letter-spacing: -0.03em;
   color: var(--primary-color);
-  background: linear-gradient(
-    135deg,
-    var(--primary-color) 0%,
-    var(--secondary-color) 100%
-  );
+  background: linear-gradient(135deg,
+      var(--primary-color) 0%,
+      var(--secondary-color) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -270,11 +252,9 @@ body.dark-mode .username {
   gap: 0.5rem;
   margin-top: 0;
   padding: 0.75rem 1rem;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--primary-color) 85%, black 15%) 0%,
-    color-mix(in srgb, var(--secondary-color) 75%, black 25%) 100%
-  );
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--primary-color) 85%, black 15%) 0%,
+      color-mix(in srgb, var(--secondary-color) 75%, black 25%) 100%);
   color: #fff;
   border: 1px solid color-mix(in srgb, var(--primary-color) 18%, transparent);
   border-radius: 12px;
@@ -283,66 +263,64 @@ body.dark-mode .username {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
   cursor: pointer;
   transition: transform 180ms ease, box-shadow 180ms ease, opacity 120ms ease;
-  box-shadow: 0 8px 24px
-    color-mix(in srgb, var(--primary-color) 18%, rgba(0, 0, 0, 0.12));
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--primary-color) 18%, rgba(0, 0, 0, 0.12));
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
 
 .btn-edit:hover {
   transform: translateY(-3px);
-  box-shadow: 0 18px 48px
-    color-mix(in srgb, var(--primary-color) 14%, rgba(0, 0, 0, 0.18));
+  box-shadow: 0 18px 48px color-mix(in srgb, var(--primary-color) 14%, rgba(0, 0, 0, 0.18));
 }
 
 .btn-edit:active {
   transform: translateY(0);
 }
+
 .btn-edit:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--primary-color) 28%, transparent);
   outline-offset: 3px;
 }
+
 .btn-share {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.625rem 1rem;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--primary-color) 78%, var(--secondary-color) 22%),
-    var(--primary-color)
-  );
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--primary-color) 85%, black 15%) 0%,
+      color-mix(in srgb, var(--secondary-color) 75%, black 25%) 100%);
   color: #fff;
-  border: 1px solid color-mix(in srgb, var(--primary-color) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary-color) 18%, transparent);
   border-radius: 12px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.95rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
   cursor: pointer;
   transition: transform 180ms ease, box-shadow 180ms ease, opacity 120ms ease;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--primary-color) 18%, rgba(0, 0, 0, 0.12));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   margin-top: 0;
 }
 
 .btn-share:hover {
   transform: translateY(-3px);
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 18px 48px color-mix(in srgb, var(--primary-color) 14%, rgba(0, 0, 0, 0.18));
 }
 
 .btn-share:active {
   transform: translateY(0);
 }
+
 .btn-share:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--primary-color) 28%, transparent);
   outline-offset: 3px;
 }
 
 body.dark-mode .btn-share {
+  /* Inherit the same dark mode override logic if needed, or stick to the gradient which looks good in dark mode too */
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--primary-color) 40%, #111 60%),
-    hsl(220 13% 20%)
-  );
 }
 
 /* Ensure SVG icons use current text color and are sized consistently */
@@ -351,6 +329,7 @@ body.dark-mode .btn-share {
   height: 18px;
   display: inline-block;
 }
+
 .profile-actions svg path,
 .profile-actions svg circle,
 .profile-actions svg rect,
@@ -379,23 +358,7 @@ body.dark-mode .btn-share {
   }
 }
 
-.btn-share:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-}
 
-.btn-share:active {
-  transform: translateY(0);
-}
-
-body.dark-mode .btn-share {
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--primary-color) 40%, #111 60%),
-    hsl(220 13% 20%)
-  );
-}
 
 /* Share Modal */
 .share-modal-overlay {
@@ -406,11 +369,9 @@ body.dark-mode .btn-share {
   bottom: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--bg-color) 92%, black 8%) 0%,
-    color-mix(in srgb, var(--bg-color) 88%, black 12%) 100%
-  );
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--bg-color) 92%, black 8%) 0%,
+      color-mix(in srgb, var(--bg-color) 88%, black 12%) 100%);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   display: flex;
@@ -434,14 +395,11 @@ body.dark-mode .btn-share {
 
 .share-modal {
   border-radius: 3.5rem;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--primary-color) 12%, transparent) 0%,
-    var(--bg-color) 100%
-  );
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--primary-color) 12%, transparent) 0%,
+      var(--bg-color) 100%);
   border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
-  box-shadow: 0 20px 60px
-    color-mix(in srgb, var(--primary-color) 12%, rgba(0, 0, 0, 0.24));
+  box-shadow: 0 20px 60px color-mix(in srgb, var(--primary-color) 12%, rgba(0, 0, 0, 0.24));
   width: 95%;
   max-width: 1200px;
   height: auto;
@@ -517,23 +475,18 @@ body.dark-mode .btn-share {
 }
 
 body.dark-mode .share-modal {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--primary-color) 8%, var(--bg-color) 92%) 0%,
-    color-mix(in srgb, var(--bg-color) 95%, var(--secondary-color) 5%) 100%
-  );
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--primary-color) 8%, var(--bg-color) 92%) 0%,
+      color-mix(in srgb, var(--bg-color) 95%, var(--secondary-color) 5%) 100%);
   border: 1px solid color-mix(in srgb, var(--primary-color) 22%, transparent);
-  box-shadow: 0 20px 60px
-    color-mix(in srgb, var(--primary-color) 10%, rgba(0, 0, 0, 0.32));
+  box-shadow: 0 20px 60px color-mix(in srgb, var(--primary-color) 10%, rgba(0, 0, 0, 0.32));
 }
 
 /* Sync overlay with theme */
 body.dark-mode .share-modal-overlay {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--bg-color) 90%, black 10%) 0%,
-    color-mix(in srgb, var(--bg-color) 86%, black 14%) 100%
-  );
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--bg-color) 90%, black 10%) 0%,
+      color-mix(in srgb, var(--bg-color) 86%, black 14%) 100%);
 }
 
 .modal-header {
@@ -543,11 +496,9 @@ body.dark-mode .share-modal-overlay {
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 99, 71, 0.06) 0%,
-    transparent 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(255, 99, 71, 0.06) 0%,
+      transparent 100%);
 }
 
 .modal-header h3 {
@@ -555,11 +506,9 @@ body.dark-mode .share-modal-overlay {
   font-size: 1.8rem;
   font-weight: 800;
   color: var(--text-color);
-  background: linear-gradient(
-    135deg,
-    var(--primary-color) 0%,
-    var(--secondary-color) 100%
-  );
+  background: linear-gradient(135deg,
+      var(--primary-color) 0%,
+      var(--secondary-color) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -600,8 +549,7 @@ body.dark-mode .close-btn:hover {
   align-items: center;
   gap: 2rem;
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--primary-color) 40%, transparent)
-    transparent;
+  scrollbar-color: color-mix(in srgb, var(--primary-color) 40%, transparent) transparent;
   color: var(--text-color);
 }
 
@@ -666,11 +614,9 @@ body.dark-mode .close-btn:hover {
   justify-content: center;
   gap: 0.75rem;
   padding: 1.5rem 1rem;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--primary-color) 10%, var(--bg-color) 90%) 0%,
-    color-mix(in srgb, var(--secondary-color) 5%, var(--bg-color) 95%) 100%
-  );
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--primary-color) 10%, var(--bg-color) 90%) 0%,
+      color-mix(in srgb, var(--secondary-color) 5%, var(--bg-color) 95%) 100%);
   border: 1.5px solid color-mix(in srgb, var(--primary-color) 25%, transparent);
   border-radius: 1.2rem;
   cursor: pointer;
@@ -685,8 +631,7 @@ body.dark-mode .close-btn:hover {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   min-height: 110px;
-  box-shadow: 0 8px 24px
-    color-mix(in srgb, var(--primary-color) 12%, rgba(0, 0, 0, 0.2));
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--primary-color) 12%, rgba(0, 0, 0, 0.2));
 }
 
 @media (max-width: 768px) {
@@ -708,25 +653,20 @@ body.dark-mode .close-btn:hover {
 }
 
 body.dark-mode .share-btn-social {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--primary-color) 8%, var(--bg-color) 92%) 0%,
-    color-mix(in srgb, var(--secondary-color) 4%, var(--bg-color) 96%) 100%
-  );
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--primary-color) 8%, var(--bg-color) 92%) 0%,
+      color-mix(in srgb, var(--secondary-color) 4%, var(--bg-color) 96%) 100%);
   border-color: color-mix(in srgb, var(--primary-color) 28%, transparent);
   color: var(--text-color);
 }
 
 .share-btn-social:hover {
   transform: translateY(-10px) scale(1.04);
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--primary-color) 20%, var(--bg-color) 80%) 0%,
-    color-mix(in srgb, var(--secondary-color) 15%, var(--bg-color) 85%) 100%
-  );
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--primary-color) 20%, var(--bg-color) 80%) 0%,
+      color-mix(in srgb, var(--secondary-color) 15%, var(--bg-color) 85%) 100%);
   border-color: color-mix(in srgb, var(--primary-color) 40%, transparent);
-  box-shadow: 0 20px 60px
-      color-mix(in srgb, var(--primary-color) 20%, rgba(0, 0, 0, 0.4)),
+  box-shadow: 0 20px 60px color-mix(in srgb, var(--primary-color) 20%, rgba(0, 0, 0, 0.4)),
     0 0 30px color-mix(in srgb, var(--primary-color) 12%, transparent);
 }
 
@@ -826,23 +766,19 @@ body.dark-mode .modal-divider {
   position: absolute;
   top: 50%;
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(59, 130, 246, 0.3),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(59, 130, 246, 0.3),
+      transparent);
   width: calc(50% - 4rem);
 }
 
 body.dark-mode .modal-divider::before,
 body.dark-mode .modal-divider::after {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--primary-color) 20%, var(--bg-color) 80%),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      color-mix(in srgb, var(--primary-color) 20%, var(--bg-color) 80%),
+      transparent);
 }
 
 .modal-divider::before {
@@ -867,11 +803,9 @@ body.dark-mode .modal-divider::after {
   gap: 0.9rem;
   /* match the larger social button sizing */
   padding: 1.4rem 1.2rem;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--primary-color) 8%, var(--bg-color) 92%) 0%,
-    color-mix(in srgb, var(--secondary-color) 4%, var(--bg-color) 96%) 100%
-  );
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--primary-color) 8%, var(--bg-color) 92%) 0%,
+      color-mix(in srgb, var(--secondary-color) 4%, var(--bg-color) 96%) 100%);
   border: 1.5px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
   border-radius: 1rem;
   cursor: pointer;
@@ -881,33 +815,27 @@ body.dark-mode .modal-divider::after {
   font-weight: 700;
   font-family: inherit;
   text-align: left;
-  box-shadow: 0 12px 40px
-    color-mix(in srgb, var(--primary-color) 12%, rgba(0, 0, 0, 0.36));
+  box-shadow: 0 12px 40px color-mix(in srgb, var(--primary-color) 12%, rgba(0, 0, 0, 0.36));
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   min-height: 110px;
 }
 
 body.dark-mode .other-option {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--primary-color) 8%, var(--bg-color) 92%),
-    color-mix(in srgb, var(--secondary-color) 4%, var(--bg-color) 96%)
-  );
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--primary-color) 8%, var(--bg-color) 92%),
+      color-mix(in srgb, var(--secondary-color) 4%, var(--bg-color) 96%));
   border-color: color-mix(in srgb, var(--primary-color) 20%, transparent);
   color: var(--text-color);
 }
 
 .other-option:hover {
   transform: translateY(-10px) scale(1.02);
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--primary-color) 15%, var(--bg-color) 85%),
-    color-mix(in srgb, var(--secondary-color) 10%, var(--bg-color) 90%)
-  );
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--primary-color) 15%, var(--bg-color) 85%),
+      color-mix(in srgb, var(--secondary-color) 10%, var(--bg-color) 90%));
   border-color: color-mix(in srgb, var(--primary-color) 35%, transparent);
-  box-shadow: 0 28px 80px
-      color-mix(in srgb, var(--primary-color) 15%, rgba(0, 0, 0, 0.48)),
+  box-shadow: 0 28px 80px color-mix(in srgb, var(--primary-color) 15%, rgba(0, 0, 0, 0.48)),
     0 0 48px color-mix(in srgb, var(--primary-color) 8%, transparent);
 }
 
@@ -924,33 +852,25 @@ body.dark-mode .other-option {
 
 /* Brand accents for the two options */
 .other-option.copy-link svg {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--primary-color) 80%, #ff9a66 20%),
-    color-mix(in srgb, var(--secondary-color) 70%, #ff5c7a 30%)
-  );
-  box-shadow: 0 10px 26px
-    color-mix(in srgb, var(--primary-color) 25%, rgba(0, 0, 0, 0.16));
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--primary-color) 80%, #ff9a66 20%),
+      color-mix(in srgb, var(--secondary-color) 70%, #ff5c7a 30%));
+  box-shadow: 0 10px 26px color-mix(in srgb, var(--primary-color) 25%, rgba(0, 0, 0, 0.16));
 }
 
 .other-option.qr-option svg {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--secondary-color) 75%, #ff5c7a 25%),
-    color-mix(in srgb, var(--primary-color) 65%, #ff2db2 35%)
-  );
-  box-shadow: 0 10px 26px
-    color-mix(in srgb, var(--secondary-color) 25%, rgba(0, 0, 0, 0.16));
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--secondary-color) 75%, #ff5c7a 25%),
+      color-mix(in srgb, var(--primary-color) 65%, #ff2db2 35%));
+  box-shadow: 0 10px 26px color-mix(in srgb, var(--secondary-color) 25%, rgba(0, 0, 0, 0.16));
 }
 
 /* Brand accent for Reddit + WhatsApp in social grid */
 .share-btn-social.reddit {
   border-color: rgba(255, 120, 40, 0.14);
-  background: linear-gradient(
-    135deg,
-    rgba(255, 122, 50, 0.04),
-    rgba(255, 80, 40, 0.02)
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 122, 50, 0.04),
+      rgba(255, 80, 40, 0.02));
 }
 
 .share-btn-social.reddit svg {
@@ -970,11 +890,9 @@ body.dark-mode .other-option {
 
 .share-btn-social.whatsapp {
   border-color: rgba(37, 211, 102, 0.12);
-  background: linear-gradient(
-    135deg,
-    rgba(37, 211, 102, 0.04),
-    rgba(18, 150, 80, 0.02)
-  );
+  background: linear-gradient(135deg,
+      rgba(37, 211, 102, 0.04),
+      rgba(18, 150, 80, 0.02));
 }
 
 .share-btn-social.whatsapp svg {
@@ -1051,8 +969,7 @@ body.dark-mode .option-subtitle {
 .qr-modal {
   background: var(--bg-color);
   border-radius: 20px;
-  box-shadow: 0 25px 50px
-    color-mix(in srgb, var(--primary-color) 12%, rgba(0, 0, 0, 0.2));
+  box-shadow: 0 25px 50px color-mix(in srgb, var(--primary-color) 12%, rgba(0, 0, 0, 0.2));
   width: 98vw;
   max-width: 600px;
   max-height: 90vh;
@@ -1070,8 +987,7 @@ body.dark-mode .option-subtitle {
 
 body.dark-mode .qr-modal {
   background: var(--bg-color);
-  box-shadow: 0 25px 50px
-    color-mix(in srgb, var(--primary-color) 15%, rgba(0, 0, 0, 0.6));
+  box-shadow: 0 25px 50px color-mix(in srgb, var(--primary-color) 15%, rgba(0, 0, 0, 0.6));
 }
 
 @keyframes slideUp {
@@ -1116,11 +1032,9 @@ body.dark-mode .qr-modal h3 {
 
 body.dark-mode .qr-code-frame {
   background: var(--bg-color);
-  border-color: color-mix(
-    in srgb,
-    var(--primary-color) 25%,
-    var(--bg-color) 75%
-  );
+  border-color: color-mix(in srgb,
+      var(--primary-color) 25%,
+      var(--bg-color) 75%);
 }
 
 .qr-code-container {
@@ -1159,11 +1073,9 @@ body.dark-mode .qr-help {
   justify-content: center;
   gap: 0.75rem;
   padding: 0.875rem 1.75rem;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--primary-color) 85%, #ff5c4a 15%),
-    color-mix(in srgb, var(--secondary-color) 80%, #ff5c9f 20%)
-  );
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--primary-color) 85%, #ff5c4a 15%),
+      color-mix(in srgb, var(--secondary-color) 80%, #ff5c9f 20%));
   color: var(--text-color);
   border: none;
   border-radius: 9999px;
@@ -1171,15 +1083,13 @@ body.dark-mode .qr-help {
   font-size: 1rem;
   cursor: pointer;
   transition: all 220ms cubic-bezier(0.2, 0, 0, 1);
-  box-shadow: 0 4px 14px
-    color-mix(in srgb, var(--primary-color) 20%, rgba(0, 0, 0, 0.3));
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--primary-color) 20%, rgba(0, 0, 0, 0.3));
   font-family: inherit;
 }
 
 .btn-download-qr:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px
-    color-mix(in srgb, var(--primary-color) 25%, rgba(0, 0, 0, 0.4));
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--primary-color) 25%, rgba(0, 0, 0, 0.4));
 }
 
 .btn-download-qr:active {
@@ -1348,11 +1258,9 @@ body.dark-mode .link-url {
   justify-content: center;
   text-align: center;
   padding: 4rem 2rem;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.9) 0%,
-    color-mix(in srgb, var(--primary-color) 2%, white) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.9) 0%,
+      color-mix(in srgb, var(--primary-color) 2%, white) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 1.5rem;
@@ -1363,11 +1271,9 @@ body.dark-mode .link-url {
 }
 
 body.dark-mode .empty-state {
-  background: linear-gradient(
-    135deg,
-    rgba(30, 41, 59, 0.9) 0%,
-    color-mix(in srgb, var(--primary-color) 3%, rgba(30, 41, 59, 0.9)) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(30, 41, 59, 0.9) 0%,
+      color-mix(in srgb, var(--primary-color) 3%, rgba(30, 41, 59, 0.9)) 100%);
   border-color: color-mix(in srgb, var(--primary-color) 40%, transparent);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -1423,11 +1329,9 @@ body.dark-mode .profile-footer {
 }
 
 .profile-footer strong {
-  background: linear-gradient(
-    135deg,
-    var(--primary-color) 0%,
-    var(--secondary-color) 100%
-  );
+  background: linear-gradient(135deg,
+      var(--primary-color) 0%,
+      var(--secondary-color) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1459,9 +1363,7 @@ body.dark-mode .error-container {
 
 .error-icon svg {
   color: var(--primary-color);
-  filter: drop-shadow(
-    0 0 15px color-mix(in srgb, var(--primary-color) 50%, transparent)
-  );
+  filter: drop-shadow(0 0 15px color-mix(in srgb, var(--primary-color) 50%, transparent));
 }
 
 .error-container h2 {
@@ -1486,11 +1388,9 @@ body.dark-mode .error-container h2 {
   display: inline-flex;
   align-items: center;
   padding: 0.875rem 1.75rem;
-  background: linear-gradient(
-    135deg,
-    var(--primary-color) 0%,
-    var(--secondary-color) 100%
-  );
+  background: linear-gradient(135deg,
+      var(--primary-color) 0%,
+      var(--secondary-color) 100%);
   color: white;
   text-decoration: none;
   border-radius: 0.875rem;
