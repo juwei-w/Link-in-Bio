@@ -42,7 +42,7 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private authService: AuthService,
     private themeService: ThemeService
-  ) { }
+  ) {}
 
   ngOnInit() {
     const username = this.route.snapshot.paramMap.get("username");
@@ -112,8 +112,8 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       },
       error: (err) => {
-        console.log('Failed to load user theme, using default');
-      }
+        console.log("Failed to load user theme, using default");
+      },
     });
   }
 
@@ -128,8 +128,9 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   shareOnTwitter() {
-    const text = `Check out my Link-in-Bio: ${this.profile?.displayName || "@" + this.profile?.username
-      }`;
+    const text = `Check out my Link-in-Bio: ${
+      this.profile?.displayName || "@" + this.profile?.username
+    }`;
     const url = window.location.href;
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
       text
@@ -160,8 +161,9 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   shareOnReddit() {
-    const text = `Check out my Link-in-Bio: ${this.profile?.displayName || "@" + this.profile?.username
-      }`;
+    const text = `Check out my Link-in-Bio: ${
+      this.profile?.displayName || "@" + this.profile?.username
+    }`;
     const url = window.location.href;
     const redditUrl = `https://reddit.com/submit?url=${encodeURIComponent(
       url
@@ -170,8 +172,9 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   shareOnWhatsApp() {
-    const text = `Check out my Link-in-Bio: ${this.profile?.displayName || "@" + this.profile?.username
-      }`;
+    const text = `Check out my Link-in-Bio: ${
+      this.profile?.displayName || "@" + this.profile?.username
+    }`;
     const url = window.location.href;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(
       text + " " + url
@@ -322,5 +325,33 @@ export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
     // Handle broken icon images by hiding them
     event.target.style.display = "none";
     event.target.parentElement?.classList.add("icon-load-failed");
+  }
+
+  // Return the URL to use for the link icon in the UI.
+  // Swap Reddit favicons to the app's main icon so they match the app branding.
+  getIconUrl(link: any): string | undefined {
+    try {
+      const url = (link && link.url) || "";
+      const icon = (link && link.iconUrl) || "";
+
+      // If the target URL is reddit (any subdomain), force the app icon.
+      try {
+        const hostname = new URL(url).hostname || "";
+        if (/\breddit\./i.test(hostname) || /(^|\.)reddit$/i.test(hostname)) {
+          return "assets/favicon.svg";
+        }
+      } catch (e) {
+        // ignore parse errors
+      }
+
+      // If the explicit icon is present and doesn't look like a reddit-supplied favicon, use it.
+      if (icon && !/reddit\./i.test(icon)) return icon;
+
+      // If icon exists but comes from a generic provider (google/clearbit) and we couldn't detect reddit by hostname,
+      // prefer the icon (fallback) — otherwise return undefined.
+      return icon || undefined;
+    } catch (e) {
+      return undefined;
+    }
   }
 }

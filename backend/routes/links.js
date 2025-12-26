@@ -10,7 +10,7 @@ const {
   extractReferrerDomain,
   getClientIP,
 } = require("../utils/geolocation");
-const { fetchFavicon, isValidImageUrl } = require("../utils/faviconFetch");
+const { fetchFavicon, isValidImageUrl } = require("../utils/faviconFetch_new");
 const {
   isValidTitle,
   isValidUrl,
@@ -46,6 +46,46 @@ const isLinkActive = (link) => {
 
   return true;
 };
+
+// Generate a high-resolution SVG favicon as data URL for domains without good icons
+function generateSvgFaviconDataUrl(targetUrl) {
+  try {
+    const urlObj = new URL(targetUrl);
+    const domain = urlObj.hostname.replace(/^www\./, "");
+    const label = (domain.split(".")[0] || domain).charAt(0).toUpperCase();
+
+    // Simple deterministic hue from domain
+    let hash = 0;
+    for (let i = 0; i < domain.length; i++) {
+      hash = (hash << 5) - hash + domain.charCodeAt(i);
+      hash |= 0;
+    }
+    const hue = Math.abs(hash) % 360;
+
+    const svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'>
+  <defs>
+    <linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+      <stop offset='0' stop-color='hsl(${hue} 85% 60%)'/>
+      <stop offset='1' stop-color='hsl(${(hue + 40) % 360} 80% 50%)'/>
+    </linearGradient>
+    <filter id='s' x='-20%' y='-20%' width='140%' height='140%'>
+      <feDropShadow dx='0' dy='6' stdDeviation='18' flood-color='rgba(0,0,0,0.25)'/>
+    </filter>
+  </defs>
+  <rect width='100%' height='100%' rx='96' ry='96' fill='url(#g)' filter='url(#s)' />
+  <g transform='translate(0,0)'>
+    <text x='50%' y='54%' font-family='Segoe UI, Roboto, Helvetica, Arial, sans-serif' font-size='260' font-weight='700' fill='white' text-anchor='middle' dominant-baseline='middle'>${label}</text>
+  </g>
+</svg>`;
+
+    const b64 = Buffer.from(svg).toString("base64");
+    return `data:image/svg+xml;base64,${b64}`;
+  } catch (err) {
+    console.error("Failed to generate svg favicon:", err && err.message);
+    return null;
+  }
+}
 
 // Get current user's links (private)
 router.get("/", auth, async (req, res) => {
@@ -505,8 +545,8 @@ router.get("/analytics/overview", auth, async (req, res) => {
         const deviceType = isTablet
           ? "tablet"
           : isMobile
-            ? "mobile"
-            : "desktop";
+          ? "mobile"
+          : "desktop";
         deviceStats[deviceType] = (deviceStats[deviceType] || 0) + 1;
 
         // Platform aggregation (referrer domain)
@@ -839,7 +879,17 @@ router.post("/:id/fetch-icon", auth, async (req, res) => {
       return res.status(404).json({ message: "Not found or not authorized" });
 
     // Fetch favicon for the link's URL
-    const faviconUrl = await fetchFavicon(link.url);
+    let faviconUrl = await fetchFavicon(link.url);
+
+    // If provider returned a low-quality source (Google s2 / DuckDuckGo / .ico), generate SVG placeholder
+    const lowQualityPattern =
+      /google\.com\/s2\/favicons|icons\.duckduckgo\.com|\.ico($|\?)/i;
+    if (!faviconUrl || lowQualityPattern.test(faviconUrl)) {
+      const svgDataUrl = generateSvgFaviconDataUrl(link.url);
+      if (svgDataUrl) {
+        faviconUrl = svgDataUrl;
+      }
+    }
 
     if (faviconUrl) {
       link.iconUrl = faviconUrl;
@@ -863,7 +913,17 @@ router.post("/preview-icon", auth, async (req, res) => {
       return res.status(400).json({ message: "Invalid or missing URL" });
     }
 
-    const faviconUrl = await fetchFavicon(url);
+    let faviconUrl = await fetchFavicon(url);
+
+    // Treat common small/placeholder providers as low-quality and substitute with SVG
+    const lowQualityPattern =
+      /google\.com\/s2\/favicons|icons\.duckduckgo\.com|\.ico($|\?)/i;
+    if (!faviconUrl || lowQualityPattern.test(faviconUrl)) {
+      const svgDataUrl = generateSvgFaviconDataUrl(url);
+      if (svgDataUrl) {
+        faviconUrl = svgDataUrl;
+      }
+    }
 
     if (faviconUrl) {
       res.json({ success: true, iconUrl: faviconUrl });
@@ -967,7 +1027,13 @@ router.post("/fetch-icons/all", auth, async (req, res) => {
       try {
         if (!link.iconUrl) {
           // Only fetch if no icon already set
-          const faviconUrl = await fetchFavicon(link.url);
+          let faviconUrl = await fetchFavicon(link.url);
+          const lowQualityPattern =
+            /google\.com\/s2\/favicons|icons\.duckduckgo\.com|\.ico($|\?)/i;
+          if (!faviconUrl || lowQualityPattern.test(faviconUrl)) {
+            const svgDataUrl = generateSvgFaviconDataUrl(link.url);
+            if (svgDataUrl) faviconUrl = svgDataUrl;
+          }
           if (faviconUrl) {
             link.iconUrl = faviconUrl;
             await link.save();
