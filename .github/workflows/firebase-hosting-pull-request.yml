@@ -29,11 +29,17 @@ jobs:
           export const environment = {
             production: false,
             apiUrl: "https://localhost:4200/api",
+            frontendUrl: "http://localhost:4200",
             firebase: ${ENV_PROD_JSON}
           };
           EOF
           cat > ./frontend/src/environments/environment.prod.ts << EOF
-          export const environment = ${ENV_PROD_JSON};
+          export const environment = {
+            production: true,
+            apiUrl: "https://link-in-bio-platform.onrender.com/api",
+            frontendUrl: "https://link-in-bio-platform.web.app/",
+            firebase: ${ENV_PROD_JSON}
+          };
           EOF
       - name: Build
         working-directory: ./frontend
