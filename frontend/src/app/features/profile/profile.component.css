@@ -1217,20 +1217,14 @@ body.dark-mode .modal-divider::after {
   gap: 0.5rem;
 }
 
-:host-context(.dark-mode) .link-title {
-  color: rgba(255, 255, 255, 0.95);
-}
+/* Dark mode overrides removed to allow theme variables to control text color */
 
 .link-url {
   font-size: 0.875rem;
-  color: var(--color-text-secondary);
+  color: color-mix(in srgb, var(--text-color) 70%, transparent);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-:host-context(.dark-mode) .link-url {
-  color: rgba(255, 255, 255, 0.6);
 }
 
 .link-arrow {

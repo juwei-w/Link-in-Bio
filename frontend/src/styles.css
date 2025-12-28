@@ -370,16 +370,9 @@ body.dark-mode .profile-link:hover {
   color: var(--text-color);
 }
 
-body.dark-mode .profile-link .link-title {
-  color: rgba(255, 255, 255, 0.95);
-}
-
+/* Global link styles use var(--text-color) from theme */
 .profile-link .link-url {
-  color: var(--color-text-secondary);
-}
-
-body.dark-mode .profile-link .link-url {
-  color: rgba(255, 255, 255, 0.6);
+  color: color-mix(in srgb, var(--text-color) 70%, transparent);
 }
 
 .profile-link .link-arrow {
