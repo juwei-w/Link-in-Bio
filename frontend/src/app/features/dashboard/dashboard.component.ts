@@ -18,7 +18,7 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  frontendDisplayUrl = environment.frontendUrl || 'yoursite.com';
+  frontendDisplayUrl = (environment as any).frontendUrl || 'yoursite.com';
 
   links: Link[] = [];
   showAddForm = false;
@@ -550,9 +550,8 @@ export class DashboardComponent implements OnInit {
 
   getProfileUrl(): string {
     if (typeof window !== "undefined") {
-      return `${window.location.origin}/${
-        this.username || this.currentUser?.username
-      }`;
+      return `${window.location.origin}/${this.username || this.currentUser?.username
+        }`;
     }
     return `/${this.username || this.currentUser?.username}`;
   }
@@ -745,10 +744,10 @@ export class DashboardComponent implements OnInit {
   setCustomIcon(linkId: string, index: number) {
     const iconUrl = prompt(
       "Enter the direct image URL:\n\n" +
-        "Examples:\n" +
-        "- https://example.com/icon.png\n" +
-        "- https://cdn.com/logo.jpg\n\n" +
-        "Note: Use direct image URLs (.png, .jpg, .gif, etc.), not webpage links."
+      "Examples:\n" +
+      "- https://example.com/icon.png\n" +
+      "- https://cdn.com/logo.jpg\n\n" +
+      "Note: Use direct image URLs (.png, .jpg, .gif, etc.), not webpage links."
     );
     if (iconUrl) {
       this.linksService.setLinkIcon(linkId, iconUrl).subscribe({
@@ -762,9 +761,9 @@ export class DashboardComponent implements OnInit {
           console.error("Failed to set icon:", err);
           alert(
             "❌ Failed to set icon.\n\n" +
-              (err.error?.message ||
-                "Make sure the URL is a direct image link (e.g., .jpg, .png, .gif), not a webpage URL.\n\n" +
-                  "Try using the auto-fetch feature first!")
+            (err.error?.message ||
+              "Make sure the URL is a direct image link (e.g., .jpg, .png, .gif), not a webpage URL.\n\n" +
+              "Try using the auto-fetch feature first!")
           );
         },
       });
