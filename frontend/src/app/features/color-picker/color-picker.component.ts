@@ -34,66 +34,54 @@ export class ColorPickerComponent implements OnInit {
   vibrancy: 'subtle' | 'medium' | 'high' = 'subtle';
   cardStyle: 'glass' | 'solid' | 'retro' = 'glass';
 
-  presets: { name: string; colors: ThemeColors; theme: 'light' | 'dark' }[] = [
+  presets: { name: string; colors: ThemeColors;  }[] = [
     {
       name: 'Sunset Blaze',
       colors: { primary: '#FF5F45', secondary: '#FF59A1', background: '#FFF5F5', text: '#2D3436' },
-      theme: 'light'
     },
     {
       name: 'Coral Breeze',
       colors: { primary: '#FF6B6B', secondary: '#4ECDC4', background: '#FFFFFF', text: '#333333' },
-      theme: 'light'
     },
     {
       name: 'Ocean Vibes',
       colors: { primary: '#2E86AB', secondary: '#A23B72', background: '#F8F9F9', text: '#1A202C' },
-      theme: 'light'
     },
     {
       name: 'Forest Green',
       colors: { primary: '#2D6A4F', secondary: '#52B788', background: '#F1FAEE', text: '#1B4332' },
-      theme: 'light'
     },
     {
       name: 'Sunset Gold',
       colors: { primary: '#F77F00', secondary: '#FCBF49', background: '#FFFBF0', text: '#423F34' },
-      theme: 'light'
     },
     {
       name: 'Purple Dream',
       colors: { primary: '#7209B7', secondary: '#C72BFF', background: '#F8F7FF', text: '#240046' },
-      theme: 'light'
     },
     {
       name: 'Midnight Neo',
       colors: { primary: '#6C5CE7', secondary: '#A29BFE', background: '#2D3436', text: '#DFE6E9' },
-      theme: 'dark'
     },
     {
       name: 'Cherry Blossom',
       colors: { primary: '#FF7675', secondary: '#E84393', background: '#FFF5F5', text: '#2D3436' },
-      theme: 'light'
     },
     {
       name: 'Cyber Lime',
       colors: { primary: '#00B894', secondary: '#55EFC4', background: '#1E272E', text: '#F1F2F6' },
-      theme: 'dark'
     },
     {
       name: 'Slate Minimal',
       colors: { primary: '#607D8B', secondary: '#90A4AE', background: '#ECEFF1', text: '#263238' },
-      theme: 'light'
     },
     {
       name: 'Mint Breeze',
       colors: { primary: '#00B894', secondary: '#81ECEC', background: '#F0FFF4', text: '#2D3436' },
-      theme: 'light'
     },
     {
       name: 'Royal Velvet',
       colors: { primary: '#FFD700', secondary: '#FFA500', background: '#2C003E', text: '#F8F9FA' },
-      theme: 'dark'
     },
   ];
 
