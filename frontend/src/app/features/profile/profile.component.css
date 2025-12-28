@@ -128,7 +128,7 @@
 
 .profile-header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
   padding: 2.5rem 2rem;
   background: transparent;
   backdrop-filter: none;
@@ -246,12 +246,18 @@
 }
 
 /* Primary action button (Edit) */
+.btn-share,
 .btn-edit {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   margin-top: 0;
-  padding: 0.75rem 1rem;
+  height: 44px;
+  /* Fixed height for consistency */
+  padding: 0 1.25rem;
+  /* Adjust padding for fixed height centering */
+  line-height: 1;
+  /* Reset line height for flex alignment */
   background: linear-gradient(135deg,
       color-mix(in srgb, var(--primary-color) 85%, black 15%) 0%,
       color-mix(in srgb, var(--secondary-color) 75%, black 25%) 100%);
@@ -286,7 +292,11 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1rem;
+  margin-top: 0;
+  height: 44px;
+  /* Fixed height for consistency */
+  padding: 0 1.25rem;
+  line-height: 1;
   background: linear-gradient(135deg,
       color-mix(in srgb, var(--primary-color) 85%, black 15%) 0%,
       color-mix(in srgb, var(--secondary-color) 75%, black 25%) 100%);
@@ -301,7 +311,6 @@
   box-shadow: 0 8px 24px color-mix(in srgb, var(--primary-color) 18%, rgba(0, 0, 0, 0.12));
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  margin-top: 0;
 }
 
 .btn-share:hover {
@@ -321,6 +330,27 @@
 :host-context(.dark-mode) .btn-share {
   /* Inherit the same dark mode override logic if needed, or stick to the gradient which looks good in dark mode too */
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+}
+
+/* Base Layout (Mobile First) - Side by Side Buttons */
+.profile-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 2rem;
+  justify-content: center;
+  /* Center the buttons */
+  flex-wrap: wrap;
+  /* efficient wrapping on very small screens */
+}
+
+.profile-actions .btn-edit,
+.profile-actions .btn-share {
+  width: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  justify-content: center;
 }
 
 /* Ensure SVG icons use current text color and are sized consistently */
@@ -355,6 +385,7 @@
     border-radius: 9999px;
     padding-left: 1.25rem;
     padding-right: 1.25rem;
+    margin-top: 0;
   }
 }
 
@@ -438,7 +469,7 @@
 
   .profile-header {
     padding: 2rem 1.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     border-radius: 1.5rem;
   }
 
