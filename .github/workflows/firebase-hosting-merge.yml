@@ -23,21 +23,22 @@ jobs:
           ENV_PROD_JSON: ${{ secrets.ENVIRONMENT_PROD_JSON }}
         run: |
           mkdir -p ./frontend/src/environments
+          # Parse the secret which contains the FULL environment object
+          # We need to extract just the 'firebase' property for the dev environment
+          FIREBASE_CONFIG=$(node -e "try { const env = JSON.parse(process.env.ENV_PROD_JSON); console.log(JSON.stringify(env.firebase)); } catch(e) { console.log('{}'); }")
+          
           cat > ./frontend/src/environments/environment.ts << EOF
           export const environment = {
             production: false,
             apiUrl: "https://localhost:4200/api",
             frontendUrl: "http://localhost:4200",
-            firebase: ${ENV_PROD_JSON}
+            firebase: ${FIREBASE_CONFIG}
           };
           EOF
+          
+          # Write environment.prod.ts (Prod) - Using the FULL secret directly
           cat > ./frontend/src/environments/environment.prod.ts << EOF
-          export const environment = {
-            production: true,
-            apiUrl: "https://link-in-bio-platform.onrender.com/api",
-            frontendUrl: "https://link-in-bio-platform.web.app/",
-            firebase: ${ENV_PROD_JSON}
-          };
+          export const environment = ${ENV_PROD_JSON};
           EOF
       - name: Build
         working-directory: ./frontend
