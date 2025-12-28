@@ -1,24 +1,15 @@
 <div class="auth-container">
+  <div class="dark-overlay"></div>
   <div class="auth-card card">
     <h1>Welcome</h1>
     <p class="subtitle">Sign in or create a new account to get started</p>
 
     <!-- Toggle Buttons -->
     <div class="auth-toggle">
-      <button
-        type="button"
-        class="toggle-option"
-        [class.active]="!isSignUp"
-        (click)="isSignUp = false; error = ''"
-      >
+      <button type="button" class="toggle-option" [class.active]="!isSignUp" (click)="isSignUp = false; error = ''">
         Sign In
       </button>
-      <button
-        type="button"
-        class="toggle-option"
-        [class.active]="isSignUp"
-        (click)="isSignUp = true; error = ''"
-      >
+      <button type="button" class="toggle-option" [class.active]="isSignUp" (click)="isSignUp = true; error = ''">
         Sign Up
       </button>
     </div>
@@ -27,54 +18,31 @@
       <!-- Username field - only for sign up -->
       <div class="form-group" *ngIf="isSignUp">
         <label for="username">Username</label>
-        <input
-          type="text"
-          id="username"
-          [(ngModel)]="username"
-          (input)="onUsernameChange()"
-          name="username"
-          [required]="isSignUp"
-          class="form-input"
-          [class.error]="username && usernameError"
-          [class.success]="username && usernameAvailable"
-          placeholder="Enter your username"
-        />
+        <input type="text" id="username" [(ngModel)]="username" (input)="onUsernameChange()" name="username"
+          [required]="isSignUp" class="form-input" [class.error]="username && usernameError"
+          [class.success]="username && usernameAvailable" placeholder="Enter your username" />
         <div *ngIf="checkingUsername" class="checking-spinner">
           ⏳ Checking...
         </div>
         <p *ngIf="usernameError" class="form-error">{{ usernameError }}</p>
-        <p
-          *ngIf="username && usernameAvailable && !checkingUsername"
-          class="form-success"
-        >
+        <p *ngIf="username && usernameAvailable && !checkingUsername" class="form-success">
           ✓ Username available
         </p>
       </div>
 
       <div class="form-group">
         <label for="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          [(ngModel)]="email"
-          (input)="isSignUp && onEmailChange()"
-          name="email"
-          required
-          class="form-input"
-          [class.error]="email && isSignUp && emailError"
+        <input type="email" id="email" [(ngModel)]="email" (input)="isSignUp && onEmailChange()" name="email" required
+          class="form-input" [class.error]="email && isSignUp && emailError"
           [class.success]="email && isSignUp && emailAvailable"
-          [placeholder]="isSignUp ? 'Enter your email' : 'your@email.com'"
-        />
+          [placeholder]="isSignUp ? 'Enter your email' : 'your@email.com'" />
         <div *ngIf="isSignUp && checkingEmail" class="checking-spinner">
           ⏳ Checking...
         </div>
         <p *ngIf="isSignUp && emailError" class="form-error">
           {{ emailError }}
         </p>
-        <p
-          *ngIf="isSignUp && email && emailAvailable && !checkingEmail"
-          class="form-success"
-        >
+        <p *ngIf="isSignUp && email && emailAvailable && !checkingEmail" class="form-success">
           ✓ Email available
         </p>
       </div>
@@ -82,72 +50,27 @@
       <div class="form-group">
         <label for="password">Password</label>
         <div class="input-with-toggle">
-          <input
-            [type]="showPassword ? 'text' : 'password'"
-            id="password"
-            [(ngModel)]="password"
-            name="password"
-            required
-            class="form-input"
-            [placeholder]="isSignUp ? 'Minimum 6 characters' : '••••••'"
-            [minlength]="isSignUp ? 6 : 0"
-          />
-          <button
-            type="button"
-            class="toggle-btn"
-            (click)="togglePasswordVisibility()"
-            [attr.aria-pressed]="showPassword"
-            aria-label="Toggle password visibility"
-          >
+          <input [type]="showPassword ? 'text' : 'password'" id="password" [(ngModel)]="password" name="password"
+            required class="form-input" [placeholder]="isSignUp ? 'Minimum 6 characters' : '••••••'"
+            [minlength]="isSignUp ? 6 : 0" />
+          <button type="button" class="toggle-btn" (click)="togglePasswordVisibility()"
+            [attr.aria-pressed]="showPassword" aria-label="Toggle password visibility">
             <!-- Eye closed (password hidden) -->
-            <svg
-              *ngIf="!showPassword"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M3 3l18 18M10.584 10.587a2 2 0 0 0 2.828 2.83"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
+            <svg *ngIf="!showPassword" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 3l18 18M10.584 10.587a2 2 0 0 0 2.828 2.83" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" />
               <path
                 d="M9.363 5.365A9.466 9.466 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.363 2.077M6.637 6.637A9.466 9.466 0 0 0 2 12s3 7 10 7a9.466 9.466 0 0 1 5.363-1.363"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
             <!-- Eye open (password visible) -->
-            <svg
-              *ngIf="showPassword"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M1 12s3-7 11-7 11 7 11 7-3 7-11 7-11-7-11-7z"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <circle
-                cx="12"
-                cy="12"
-                r="3"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
+            <svg *ngIf="showPassword" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 12s3-7 11-7 11 7 11 7-3 7-11 7-11-7-11-7z" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" />
+              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
           </button>
         </div>
@@ -163,31 +86,25 @@
         <p class="verification-title">Email Verification Required</p>
         <p class="verification-text">
           We sent a verification link to
-          <strong>{{ emailNotVerifiedEmail }}</strong
-          >.
+          <strong>{{ emailNotVerifiedEmail }}</strong>.
         </p>
         <p class="verification-text">
           Click the link in your email to verify your account and log in.
         </p>
-        <button
-          type="button"
-          class="btn btn-secondary"
-          (click)="resendVerificationEmail()"
-          [disabled]="loading"
-        >
+        <button type="button" class="btn btn-secondary" (click)="resendVerificationEmail()" [disabled]="loading">
           Resend Verification Email
         </button>
       </div>
 
       <button type="submit" class="btn btn-full" [disabled]="loading">
         {{
-          loading
-            ? isSignUp
-              ? "Creating account..."
-              : "Signing in..."
-            : isSignUp
-            ? "Sign Up"
-            : "Sign In"
+        loading
+        ? isSignUp
+        ? "Creating account..."
+        : "Signing in..."
+        : isSignUp
+        ? "Sign Up"
+        : "Sign In"
         }}
       </button>
     </form>
@@ -201,20 +118,16 @@
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path
             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-            fill="#4285F4"
-          />
+            fill="#4285F4" />
           <path
             d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-            fill="#34A853"
-          />
+            fill="#34A853" />
           <path
             d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-            fill="#FBBC05"
-          />
+            fill="#FBBC05" />
           <path
             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-            fill="#EA4335"
-          />
+            fill="#EA4335" />
         </svg>
         Continue with Google
       </button>

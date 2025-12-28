@@ -10,11 +10,9 @@
   position: absolute;
   width: 600px;
   height: 600px;
-  background: radial-gradient(
-    circle,
-    rgba(99, 102, 241, 0.08) 0%,
-    transparent 70%
-  );
+  background: radial-gradient(circle,
+      rgba(99, 102, 241, 0.08) 0%,
+      transparent 70%);
   border-radius: 50%;
   top: -200px;
   right: -200px;
@@ -27,11 +25,9 @@
   position: absolute;
   width: 500px;
   height: 500px;
-  background: radial-gradient(
-    circle,
-    rgba(139, 92, 246, 0.06) 0%,
-    transparent 70%
-  );
+  background: radial-gradient(circle,
+      rgba(139, 92, 246, 0.06) 0%,
+      transparent 70%);
   border-radius: 50%;
   bottom: -150px;
   left: -150px;
@@ -99,21 +95,25 @@ body.dark-mode .navbar {
 }
 
 @keyframes pulse {
+
   0%,
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.8;
   }
 }
 
 @keyframes pulseGlow {
+
   0%,
   100% {
     transform: scale(1);
     box-shadow: 0 0 15px hsl(14 100% 70% / 0.4);
   }
+
   50% {
     transform: scale(1.1);
     box-shadow: 0 0 25px hsl(14 100% 70% / 0.6);
@@ -143,9 +143,28 @@ body.dark-mode .navbar {
   border: none;
   border-radius: 15px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Sync with body background transition */
+  transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
   overflow: hidden;
+  /* Prepare for stacking */
+  z-index: 0;
+}
+
+/* Dark Mode Overlay for smooth transition */
+.dark-mode-toggle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  opacity: 0;
+  /* Sync with body background transition */
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+:host-context(body.dark-mode) .dark-mode-toggle::after {
+  opacity: 1;
 }
 
 .dark-mode-toggle:hover {
@@ -162,8 +181,10 @@ body.dark-mode .navbar {
   height: 24px;
   background: white;
   border-radius: 50%;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+  /* Ensure knob is above the overlay */
 }
 
 .icon-light,
@@ -172,7 +193,9 @@ body.dark-mode .navbar {
   top: 50%;
   transform: translateY(-50%);
   font-size: 0.875rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
+  z-index: 2;
+  /* Ensure icons are above the overlay */
 }
 
 .icon-light {
@@ -187,7 +210,8 @@ body.dark-mode .navbar {
 
 /* Dark Mode Active State */
 body.dark-mode .dark-mode-toggle {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  /* Remove direct background change to prevent snap, handled by ::after now */
+  /* background: linear-gradient(135deg, #1e293b 0%, #334155 100%); */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
@@ -417,21 +441,17 @@ body.dark-mode .icon-dark {
 /* CTA Section */
 .cta-section {
   padding: 6rem var(--spacing-2xl) 8rem;
-  background: linear-gradient(
-    135deg,
-    rgba(252, 97, 88, 0.05) 0%,
-    rgba(217, 70, 239, 0.05) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(252, 97, 88, 0.05) 0%,
+      rgba(217, 70, 239, 0.05) 100%);
   position: relative;
   overflow: hidden;
 }
 
 body.dark-mode .cta-section {
-  background: linear-gradient(
-    135deg,
-    rgba(252, 97, 88, 0.08) 0%,
-    rgba(217, 70, 239, 0.08) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(252, 97, 88, 0.08) 0%,
+      rgba(217, 70, 239, 0.08) 100%);
 }
 
 .cta-content {
