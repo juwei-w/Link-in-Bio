@@ -118,12 +118,27 @@ export class ThemeService {
     const current = this.currentThemeValue;
     const newTheme = current.theme === 'dark' ? 'light' : 'dark';
 
-    // Create updated theme object
-    const updatedTheme: Partial<Theme> = {
+    // 1. Optimistic Update: Update local state immediately
+    const optimisticUpdate: Theme = {
+      ...current,
       theme: newTheme
     };
 
-    // We call updateTheme to persist it
-    this.updateTheme(updatedTheme).subscribe();
+    this.themeSubject.next(optimisticUpdate);
+    this.applyTheme(optimisticUpdate);
+    localStorage.setItem('theme', newTheme);
+    
+    // 2. Persist to backend (fire and forget / validation)
+    // If this fails (e.g. 401 unauthenticated), the local change remains valid for the session.
+    this.updateTheme({ theme: newTheme }).subscribe({
+      next: (serverTheme) => {
+        // Optional: Re-sync with server response if it returns different data (e.g. specific colors)
+        // The updateTheme tap() already handles updating the subject/storage if successful.
+      },
+      error: (err) => {
+        // Silently fail for auth errors, effectively allowing "guest" theme toggling
+        console.debug('Theme save failed (likely guest/offline)', err);
+      }
+    });
   }
 }
