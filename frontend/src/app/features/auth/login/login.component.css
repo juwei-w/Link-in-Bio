@@ -523,3 +523,89 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Dark Mode Overrides */
+:host-context(.dark-mode) .auth-card {
+  background: rgba(30, 41, 59, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+:host-context(.dark-mode) .auth-card h1 {
+  color: #fff;
+}
+
+:host-context(.dark-mode) .subtitle {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+:host-context(.dark-mode) .auth-toggle {
+  background: rgba(15, 23, 42, 0.6);
+}
+
+:host-context(.dark-mode) .toggle-option {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+:host-context(.dark-mode) .toggle-option:hover:not(.active) {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+:host-context(.dark-mode) .toggle-option.active {
+  background: rgba(45, 55, 72, 0.8);
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+:host-context(.dark-mode) .form-group label {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+:host-context(.dark-mode) .form-input {
+  background-color: rgba(15, 23, 42, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+:host-context(.dark-mode) .form-input:focus {
+  background-color: rgba(15, 23, 42, 0.8);
+  border-color: hsl(14 100% 64%);
+}
+
+:host-context(.dark-mode) .toggle-btn svg {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+:host-context(.dark-mode) .toggle-btn:hover svg {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+:host-context(.dark-mode) .divider span {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+:host-context(.dark-mode) .btn-social {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+:host-context(.dark-mode) .btn-social:hover {
+  background: rgba(45, 55, 72, 0.9);
+}
+
+:host-context(.dark-mode) .auth-switch {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Autofill Overrides for Dark Mode */
+:host-context(.dark-mode) .form-input:-webkit-autofill,
+:host-context(.dark-mode) .form-input:-webkit-autofill:hover,
+:host-context(.dark-mode) .form-input:-webkit-autofill:focus,
+:host-context(.dark-mode) .form-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px rgba(15, 23, 42, 0.8) inset !important;
+  -webkit-text-fill-color: white !important;
+  caret-color: white;
+  transition: background-color 5000s ease-in-out 0s;
+}
