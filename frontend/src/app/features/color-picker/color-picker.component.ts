@@ -34,7 +34,7 @@ export class ColorPickerComponent implements OnInit {
   vibrancy: 'subtle' | 'medium' | 'high' = 'subtle';
   cardStyle: 'glass' | 'solid' | 'retro' = 'glass';
 
-  presets: { name: string; colors: ThemeColors;  }[] = [
+  presets: { name: string; colors: ThemeColors; }[] = [
     {
       name: 'Sunset Blaze',
       colors: { primary: '#FF5F45', secondary: '#FF59A1', background: '#FFF5F5', text: '#2D3436' },
@@ -87,6 +87,7 @@ export class ColorPickerComponent implements OnInit {
 
   saving = false;
   saveMessage = '';
+  selectedPresetName: string | null = null;
 
   constructor(private themeService: ThemeService) { }
 
@@ -96,18 +97,37 @@ export class ColorPickerComponent implements OnInit {
       this.initialColors = { ...theme.themeColors };
       this.vibrancy = theme.vibrancy || 'subtle';
       this.cardStyle = theme.cardStyle || 'glass';
+      this.checkSelectedPreset();
     });
+  }
+
+  checkSelectedPreset() {
+    this.selectedPresetName = null;
+    for (const preset of this.presets) {
+      if (
+        preset.colors.primary === this.currentTheme.themeColors.primary &&
+        preset.colors.secondary === this.currentTheme.themeColors.secondary &&
+        preset.colors.background === this.currentTheme.themeColors.background &&
+        preset.colors.text === this.currentTheme.themeColors.text
+      ) {
+        this.selectedPresetName = preset.name;
+        break;
+      }
+    }
   }
 
   applyPreset(preset: any) {
     this.currentTheme.themeColors = { ...preset.colors };
-    this.currentTheme.theme = preset.theme; // Apply theme mode (light/dark)
+    // Preserve current light/dark mode when swapping colors
+    // this.currentTheme.theme = preset.theme; 
+    this.selectedPresetName = preset.name;
     this.themeService.applyTheme(this.currentTheme);
   }
 
   updateColor(key: keyof ThemeColors, event: Event) {
     const input = event.target as HTMLInputElement;
     this.currentTheme.themeColors[key] = input.value;
+    this.selectedPresetName = null; // Colors modified, no longer matching preset
     this.themeService.applyTheme(this.currentTheme);
   }
 
