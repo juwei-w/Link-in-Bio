@@ -137,6 +137,7 @@
 /* Unified Subtitle Style for all sections */
 .style-section h4,
 .preview-section h4,
+.preset-section h4,
 .color-input-group label {
   margin: 0 0 12px 0;
   font-size: 0.75rem;
@@ -209,14 +210,6 @@
   margin-bottom: 24px;
 }
 
-.preset-section h4 {
-  margin: 0 0 12px 0;
-  font-size: 14px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
 .preset-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -258,6 +251,7 @@
   font-size: 12px;
   font-weight: 600;
   text-align: center;
+  color: #333; /* Fixed color for light mode */
 }
 
 /* Action Buttons */
@@ -298,7 +292,7 @@
 
 .btn-secondary {
   background: #E0E0E0;
-  color: var(--text-color, #000000);
+  color: #333; /* Fixed color for light mode */
 }
 
 .btn-secondary:hover {
@@ -336,7 +330,10 @@
 :host-context(body.dark-mode) .preset-btn {
   background: rgba(15, 23, 42, 0.6);
   border-color: rgba(51, 65, 85, 0.6);
-  color: #E0E0E0;
+}
+
+:host-context(body.dark-mode) .preset-btn span {
+  color: #E0E0E0; /* Fixed color for dark mode */
 }
 
 :host-context(body.dark-mode) .preset-btn:hover {

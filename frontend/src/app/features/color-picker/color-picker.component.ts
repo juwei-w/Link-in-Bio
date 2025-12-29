@@ -68,7 +68,7 @@ export class ColorPickerComponent implements OnInit {
     {
       name: 'Midnight Neo',
       colors: { primary: '#6C5CE7', secondary: '#A29BFE', background: '#2D3436', text: '#DFE6E9' },
-      theme: 'dark'
+      theme: 'light'
     },
     {
       name: 'Cherry Blossom',
@@ -78,7 +78,7 @@ export class ColorPickerComponent implements OnInit {
     {
       name: 'Cyber Lime',
       colors: { primary: '#00B894', secondary: '#55EFC4', background: '#1E272E', text: '#F1F2F6' },
-      theme: 'dark'
+      theme: 'light'
     },
     {
       name: 'Slate Minimal',
@@ -93,7 +93,7 @@ export class ColorPickerComponent implements OnInit {
     {
       name: 'Royal Velvet',
       colors: { primary: '#FFD700', secondary: '#FFA500', background: '#2C003E', text: '#F8F9FA' },
-      theme: 'dark'
+      theme: 'light'
     },
   ];
 
@@ -113,7 +113,7 @@ export class ColorPickerComponent implements OnInit {
 
   applyPreset(preset: any) {
     this.currentTheme.themeColors = { ...preset.colors };
-    this.currentTheme.theme = preset.theme; // Apply theme mode (light/dark)
+    // Don't change theme mode - only the navbar toggle should control dark/light mode
     this.themeService.applyTheme(this.currentTheme);
   }
 
