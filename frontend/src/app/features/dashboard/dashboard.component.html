@@ -98,26 +98,22 @@
               <label for="username" class="form-label"
                 >Profile Personalised Url</label
               >
-              <div class="username-input-wrapper">
-                <div class="username-prefix">yoursite.com/</div>
-                <input
-                  type="text"
-                  id="username"
-                  [(ngModel)]="username"
-                  (input)="onUsernameChange()"
-                  name="username"
-                  class="form-input username-input"
-                  placeholder="username"
-                  minlength="3"
-                  maxlength="16"
-                  [class.error]="
-                    username &&
-                    !usernameAvailable &&
-                    username !== currentUser?.username
-                  "
-                />
-                <div *ngIf="checkingUsername" class="checking-spinner">⏳</div>
-              </div>
+              <input
+                type="text"
+                id="username"
+                [(ngModel)]="username"
+                (input)="onUsernameChange()"
+                name="username"
+                class="form-input"
+                placeholder="username"
+                minlength="3"
+                maxlength="16"
+                [class.error]="
+                  username &&
+                  !usernameAvailable &&
+                  username !== currentUser?.username
+                "
+              />
               <p
                 *ngIf="username && username !== currentUser?.username"
                 class="info-hint"
