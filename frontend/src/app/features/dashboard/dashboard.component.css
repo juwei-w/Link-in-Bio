@@ -816,16 +816,16 @@ body.dark-mode .avatar-preview {
 
 .form-input:focus {
   outline: none;
-  border-color: var(--color-primary);
+  border-color: var(--color-primary) !important;
   background-color: white;
-  box-shadow: 0 0 0 4px hsla(14, 100%, 70%, 0.15),
+  box-shadow: 0 0 0 4px rgba(255, 106, 136, 0.15),
     0 2px 8px 0 rgba(0, 0, 0, 0.08);
   transform: translateY(-1px);
 }
 
 :host-context(body.dark-mode) .form-input:focus {
   background: rgba(15, 23, 42, 0.8);
-  border-color: var(--primary-color);
+  border-color: var(--color-primary) !important;
 }
 
 .form-input::placeholder {
@@ -855,16 +855,16 @@ body.dark-mode .avatar-preview {
 
 .form-textarea:focus {
   outline: none;
-  border-color: var(--color-primary);
+  border-color: var(--color-primary) !important;
   background-color: white;
-  box-shadow: 0 0 0 4px hsla(14, 100%, 70%, 0.15),
+  box-shadow: 0 0 0 4px rgba(255, 106, 136, 0.15),
     0 2px 8px 0 rgba(0, 0, 0, 0.08);
   transform: translateY(-1px);
 }
 
 :host-context(body.dark-mode) .form-textarea:focus {
   background: rgba(15, 23, 42, 0.8);
-  border-color: var(--primary-color);
+  border-color: var(--color-primary) !important;
 }
 
 .form-textarea::placeholder {
@@ -1945,29 +1945,30 @@ body.dark-mode .link-icon-preview {
   align-items: center;
   gap: 0;
   position: relative;
-  background: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.8);
   border: 2px solid rgba(226, 232, 240, 0.8);
   border-radius: 0.875rem;
-  padding: 0.25rem 1rem;
+  padding: 0 1rem;
   transition: var(--transition);
   box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.04);
 }
 
 body.dark-mode .username-input-wrapper {
-  background: rgba(30, 41, 59, 0.6);
-  border-color: rgba(51, 65, 85, 0.8);
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(51, 65, 85, 0.6);
 }
 
 .username-input-wrapper:focus-within {
-  border-color: var(--color-primary);
+  border-color: var(--color-primary) !important;
   background-color: white;
-  box-shadow: 0 0 0 4px hsla(14, 100%, 70%, 0.15),
+  box-shadow: 0 0 0 4px rgba(255, 106, 136, 0.15),
     0 2px 8px 0 rgba(0, 0, 0, 0.08);
   transform: translateY(-1px);
 }
 
 body.dark-mode .username-input-wrapper:focus-within {
-  background: rgba(30, 41, 59, 0.8);
+  background: rgba(15, 23, 42, 0.8);
+  border-color: var(--color-primary) !important;
 }
 
 .username-prefix {
@@ -1982,9 +1983,11 @@ body.dark-mode .username-input-wrapper:focus-within {
   flex: 1;
   border: none !important;
   background: transparent !important;
-  padding: 0.625rem 0 !important;
+  padding: 0.875rem 0 !important;
   box-shadow: none !important;
   font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--color-text-light);
 }
 
 .username-input:focus {
