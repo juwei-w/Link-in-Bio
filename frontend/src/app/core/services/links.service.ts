@@ -12,8 +12,8 @@ export interface Link {
   clicks?: number;
   isActive?: boolean;
   createdAt?: Date;
-  scheduledStart?: string | Date;
-  scheduledEnd?: string | Date;
+  scheduledStart?: string | Date | null;
+  scheduledEnd?: string | Date | null;
   lastClickedAt?: Date | string;
 }
 

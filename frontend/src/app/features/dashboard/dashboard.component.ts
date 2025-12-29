@@ -160,10 +160,10 @@ export class DashboardComponent implements OnInit {
       ...this.formData,
       scheduledStart: this.formData.scheduledStart
         ? new Date(this.formData.scheduledStart).toISOString()
-        : undefined,
+        : null,
       scheduledEnd: this.formData.scheduledEnd
         ? new Date(this.formData.scheduledEnd).toISOString()
-        : undefined,
+        : null,
     };
 
     this.loading = true;
