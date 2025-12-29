@@ -53,16 +53,16 @@
   <div class="style-section">
     <h4>Theme Intensity</h4>
     <div class="btn-group">
-      <button [class.active]="currentTheme.vibrancy === 'subtle'" (click)="updateVibrancy('subtle')">Subtle</button>
-      <button [class.active]="currentTheme.vibrancy === 'medium'" (click)="updateVibrancy('medium')">Medium</button>
-      <button [class.active]="currentTheme.vibrancy === 'high'" (click)="updateVibrancy('high')">High</button>
+      <button [class.active]="currentTheme.vibrancy === 'subtle'" (click)="updateVibrancy('subtle')"><span>Subtle</span></button>
+      <button [class.active]="currentTheme.vibrancy === 'medium'" (click)="updateVibrancy('medium')"><span>Medium</span></button>
+      <button [class.active]="currentTheme.vibrancy === 'high'" (click)="updateVibrancy('high')"><span>High</span></button>
     </div>
 
     <h4>Link Style</h4>
     <div class="btn-group">
-      <button [class.active]="currentTheme.cardStyle === 'glass'" (click)="updateCardStyle('glass')">Glass</button>
-      <button [class.active]="currentTheme.cardStyle === 'solid'" (click)="updateCardStyle('solid')">Solid</button>
-      <button [class.active]="currentTheme.cardStyle === 'retro'" (click)="updateCardStyle('retro')">Retro</button>
+      <button [class.active]="currentTheme.cardStyle === 'glass'" (click)="updateCardStyle('glass')"><span>Glass</span></button>
+      <button [class.active]="currentTheme.cardStyle === 'solid'" (click)="updateCardStyle('solid')"><span>Solid</span></button>
+      <button [class.active]="currentTheme.cardStyle === 'retro'" (click)="updateCardStyle('retro')"><span>Retro</span></button>
     </div>
   </div>
 

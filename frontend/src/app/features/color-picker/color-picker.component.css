@@ -180,9 +180,16 @@
 
 .btn-group button.active {
   background: white;
-  color: var(--primary-color, #FF6B6B);
-  font-weight: 600;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-group button.active span {
+  background: var(--gradient-primary, linear-gradient(135deg, #ff8a5c 0%, #ff5fa8 100%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #ff6a88; /* Fallback */
+  font-weight: 700;
 }
 
 :host-context(body.dark-mode) .btn-group {
@@ -201,8 +208,16 @@
 
 :host-context(body.dark-mode) .btn-group button.active {
   background: rgba(30, 41, 59, 1);
-  color: var(--primary-color, #FF6B6B);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+:host-context(body.dark-mode) .btn-group button.active span {
+  background: var(--gradient-primary, linear-gradient(135deg, #ff8a5c 0%, #ff5fa8 100%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #ff6a88; /* Fallback */
+  font-weight: 700;
 }
 
 /* Preset Themes */
