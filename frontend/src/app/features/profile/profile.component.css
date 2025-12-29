@@ -274,63 +274,24 @@
   -webkit-backdrop-filter: blur(6px);
 }
 
-.btn-edit:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 18px 48px color-mix(in srgb, var(--primary-color) 14%, rgba(0, 0, 0, 0.18));
-}
-
-.btn-edit:active {
-  transform: translateY(0);
-}
-
-.btn-edit:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--primary-color) 28%, transparent);
-  outline-offset: 3px;
-}
-
-.btn-share {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0;
-  height: 44px;
-  /* Fixed height for consistency */
-  padding: 0 1.25rem;
-  line-height: 1;
-  background: linear-gradient(135deg,
-      color-mix(in srgb, var(--primary-color) 85%, black 15%) 0%,
-      color-mix(in srgb, var(--secondary-color) 75%, black 25%) 100%);
-  color: #fff;
-  border: 1px solid color-mix(in srgb, var(--primary-color) 18%, transparent);
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 0.95rem;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
-  cursor: pointer;
-  transition: transform 180ms ease, box-shadow 180ms ease, opacity 120ms ease;
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--primary-color) 18%, rgba(0, 0, 0, 0.12));
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-}
-
+.btn-edit:hover,
 .btn-share:hover {
   transform: translateY(-3px);
   box-shadow: 0 18px 48px color-mix(in srgb, var(--primary-color) 14%, rgba(0, 0, 0, 0.18));
 }
 
+.btn-edit:active,
 .btn-share:active {
   transform: translateY(0);
 }
 
+.btn-edit:focus-visible,
 .btn-share:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--primary-color) 28%, transparent);
   outline-offset: 3px;
 }
 
-:host-context(.dark-mode) .btn-share {
-  /* Inherit the same dark mode override logic if needed, or stick to the gradient which looks good in dark mode too */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
-}
+
 
 /* Base Layout (Mobile First) - Side by Side Buttons */
 .profile-actions {
@@ -633,7 +594,7 @@
 
 @media (max-width: 480px) {
   .share-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.8rem;
   }
 }
@@ -834,6 +795,13 @@ body.dark-mode .modal-divider::after {
   align-items: center;
 }
 
+@media (max-width: 768px) {
+  .other-options {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
 .other-option {
   display: flex;
   align-items: center;
@@ -878,13 +846,14 @@ body.dark-mode .modal-divider::after {
 
 .other-option svg {
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
+  width: 40px;
+  height: 40px;
   display: inline-block;
   border-radius: 50%;
-  padding: 8px;
+  padding: 9px;
   background: rgba(255, 255, 255, 0.03);
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  color: white;
 }
 
 /* Brand accents for the two options */
