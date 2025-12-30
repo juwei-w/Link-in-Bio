@@ -1,3 +1,12 @@
+/**
+ * Authentication Routes
+ * Handles user signup, login, password reset, and email verification.
+ * 
+ * Required Environment Variables (Production):
+ * - BREVO_API_KEY: For email delivery
+ * - FRONTEND_URL: The URL of the deployed frontend (no trailing slash)
+ * - CORS_ORIGIN: Fallback for frontend URL and CORS configuration
+ */
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
