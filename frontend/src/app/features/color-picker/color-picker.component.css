@@ -250,6 +250,19 @@
   transform: translateY(-2px);
 }
 
+.preset-btn.active {
+  background: white;
+  border-color: var(--primary-color, #FF6B6B);
+  box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.3);
+  transform: translateY(-2px);
+}
+
+:host-context(body.dark-mode) .preset-btn.active {
+  background: rgba(30, 41, 59, 1);
+  border-color: var(--primary-color, #FF6B6B);
+  box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.3);
+}
+
 .preset-preview {
   display: flex;
   gap: 6px;

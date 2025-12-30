@@ -7,17 +7,32 @@
   background: linear-gradient(135deg, hsl(14 100% 64%), hsl(330 85% 65%));
   position: relative;
   overflow: hidden;
+  z-index: 0;
 }
 
+/* Pseudo-element for Dark Mode Transition */
+.dark-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+:host-context(.dark-mode) .dark-overlay {
+  opacity: 1;
+}
+
+/* Update original decorative blobs to be behind the overlay */
 @media (max-width: 640px) {
   .auth-container {
     padding: 1.5rem;
-    /* Equal padding top/bottom/left/right */
     align-items: center;
     justify-content: center;
     min-height: 100vh;
     height: 100vh;
-    /* Use safe area insets if supported */
     padding-top: max(1.5rem, env(safe-area-inset-top));
     padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
   }
@@ -35,6 +50,8 @@
   top: -100px;
   right: -100px;
   animation: float 8s ease-in-out infinite;
+  /* Ensure blobs are behind the content but (optionally) on top of dark overlay if desired */
+  /* Since dark overlay is z-index: -1, and this is z-index: auto (0), this sits ON TOP of dark overlay. Perfect. */
 }
 
 .auth-container::after {
@@ -112,6 +129,7 @@
   border-radius: 12px;
   padding: 0.375rem;
   margin-bottom: 2rem;
+  transition: background-color 0.3s ease;
 }
 
 .toggle-option {
@@ -124,7 +142,8 @@
   font-size: 0.9375rem;
   border-radius: 10px;
   cursor: pointer;
-  transition: var(--transition);
+  /* Duration 0.3s to match background overlay transition */
+  transition: background-color 0.3s ease, color 0.3s ease;
   letter-spacing: -0.01em;
 }
 
@@ -164,7 +183,7 @@
   border-radius: 12px;
   font-size: 1rem;
   background-color: rgba(255, 255, 255, 0.95);
-  transition: var(--transition);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
   letter-spacing: 0.01em;
   box-sizing: border-box;
@@ -264,7 +283,7 @@
   height: 20px;
   display: block;
   color: rgba(15, 23, 42, 0.5);
-  transition: var(--transition);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .toggle-btn:hover {
@@ -312,7 +331,7 @@
   color: #fff;
   border: none;
   box-shadow: 0 10px 30px -10px hsl(14 100% 64% / 0.5);
-  transition: var(--transition);
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
 }
 
 .btn-full:hover {
@@ -375,7 +394,7 @@
   border: 1.5px solid rgba(226, 232, 240, 0.8);
   padding: 1rem 1.25rem;
   font-weight: 600;
-  transition: var(--transition);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
   display: flex;
   align-items: center;
@@ -421,7 +440,7 @@
   width: 0;
   height: 2px;
   background: linear-gradient(135deg, hsl(14 100% 64%), hsl(330 85% 65%));
-  transition: var(--transition);
+  transition: width 0.3s ease;
 }
 
 .auth-switch a:hover::after {
@@ -522,4 +541,90 @@
 .btn-secondary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Dark Mode Overrides */
+:host-context(.dark-mode) .auth-card {
+  background: rgba(30, 41, 59, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+:host-context(.dark-mode) .auth-card h1 {
+  color: #fff;
+}
+
+:host-context(.dark-mode) .subtitle {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+:host-context(.dark-mode) .auth-toggle {
+  background: rgba(15, 23, 42, 0.6);
+}
+
+:host-context(.dark-mode) .toggle-option {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+:host-context(.dark-mode) .toggle-option:hover:not(.active) {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+:host-context(.dark-mode) .toggle-option.active {
+  background: rgba(45, 55, 72, 0.8);
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+:host-context(.dark-mode) .form-group label {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+:host-context(.dark-mode) .form-input {
+  background-color: rgba(15, 23, 42, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+:host-context(.dark-mode) .form-input:focus {
+  background-color: rgba(15, 23, 42, 0.8);
+  border-color: hsl(14 100% 64%);
+}
+
+:host-context(.dark-mode) .toggle-btn svg {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+:host-context(.dark-mode) .toggle-btn:hover svg {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+:host-context(.dark-mode) .divider span {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+:host-context(.dark-mode) .btn-social {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+:host-context(.dark-mode) .btn-social:hover {
+  background: rgba(45, 55, 72, 0.9);
+}
+
+:host-context(.dark-mode) .auth-switch {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Autofill Overrides for Dark Mode */
+:host-context(.dark-mode) .form-input:-webkit-autofill,
+:host-context(.dark-mode) .form-input:-webkit-autofill:hover,
+:host-context(.dark-mode) .form-input:-webkit-autofill:focus,
+:host-context(.dark-mode) .form-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px rgba(15, 23, 42, 0.8) inset !important;
+  -webkit-text-fill-color: white !important;
+  caret-color: white;
+  transition: background-color 5000s ease-in-out 0s;
 }

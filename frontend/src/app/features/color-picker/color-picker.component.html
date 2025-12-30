@@ -70,7 +70,8 @@
   <div class="preset-section">
     <h4>Preset Themes</h4>
     <div class="preset-grid">
-      <button *ngFor="let preset of presets" class="preset-btn" (click)="applyPreset(preset)" [title]="preset.name">
+      <button *ngFor="let preset of presets" class="preset-btn" (click)="applyPreset(preset)" [title]="preset.name"
+        [class.active]="selectedPresetName === preset.name">
         <div class="preset-preview">
           <div class="color-box" [style.background]="preset.colors.primary"></div>
           <div class="color-box" [style.background]="preset.colors.secondary"></div>

@@ -17,7 +17,7 @@
   overflow: hidden;
 }
 
-body.dark-mode .profile-container {
+:host-context(.dark-mode) .profile-container {
   background: linear-gradient(135deg,
       var(--bg-color) 0%,
       color-mix(in srgb,
@@ -128,7 +128,7 @@ body.dark-mode .profile-container {
 
 .profile-header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
   padding: 2.5rem 2rem;
   background: transparent;
   backdrop-filter: none;
@@ -145,7 +145,7 @@ body.dark-mode .profile-container {
   display: none;
 }
 
-body.dark-mode .profile-header {
+:host-context(.dark-mode) .profile-header {
   background: transparent;
   border-color: transparent;
   box-shadow: none;
@@ -199,7 +199,7 @@ body.dark-mode .profile-header {
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
-body.dark-mode .avatar {
+:host-context(.dark-mode) .avatar {
   box-shadow: 0 0 40px hsla(14, 100%, 70%, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
@@ -231,7 +231,7 @@ body.dark-mode .avatar {
   font-weight: 500;
 }
 
-body.dark-mode .username {
+:host-context(.dark-mode) .username {
   color: rgba(255, 255, 255, 0.7);
 }
 
@@ -246,12 +246,18 @@ body.dark-mode .username {
 }
 
 /* Primary action button (Edit) */
+.btn-share,
 .btn-edit {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   margin-top: 0;
-  padding: 0.75rem 1rem;
+  height: 44px;
+  /* Fixed height for consistency */
+  padding: 0 1.25rem;
+  /* Adjust padding for fixed height centering */
+  line-height: 1;
+  /* Reset line height for flex alignment */
   background: linear-gradient(135deg,
       color-mix(in srgb, var(--primary-color) 85%, black 15%) 0%,
       color-mix(in srgb, var(--secondary-color) 75%, black 25%) 100%);
@@ -268,59 +274,44 @@ body.dark-mode .username {
   -webkit-backdrop-filter: blur(6px);
 }
 
-.btn-edit:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 18px 48px color-mix(in srgb, var(--primary-color) 14%, rgba(0, 0, 0, 0.18));
-}
-
-.btn-edit:active {
-  transform: translateY(0);
-}
-
-.btn-edit:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--primary-color) 28%, transparent);
-  outline-offset: 3px;
-}
-
-.btn-share {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  background: linear-gradient(135deg,
-      color-mix(in srgb, var(--primary-color) 85%, black 15%) 0%,
-      color-mix(in srgb, var(--secondary-color) 75%, black 25%) 100%);
-  color: #fff;
-  border: 1px solid color-mix(in srgb, var(--primary-color) 18%, transparent);
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 0.95rem;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
-  cursor: pointer;
-  transition: transform 180ms ease, box-shadow 180ms ease, opacity 120ms ease;
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--primary-color) 18%, rgba(0, 0, 0, 0.12));
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  margin-top: 0;
-}
-
+.btn-edit:hover,
 .btn-share:hover {
   transform: translateY(-3px);
   box-shadow: 0 18px 48px color-mix(in srgb, var(--primary-color) 14%, rgba(0, 0, 0, 0.18));
 }
 
+.btn-edit:active,
 .btn-share:active {
   transform: translateY(0);
 }
 
+.btn-edit:focus-visible,
 .btn-share:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--primary-color) 28%, transparent);
   outline-offset: 3px;
 }
 
-body.dark-mode .btn-share {
-  /* Inherit the same dark mode override logic if needed, or stick to the gradient which looks good in dark mode too */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+
+
+/* Base Layout (Mobile First) - Side by Side Buttons */
+.profile-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 2rem;
+  justify-content: center;
+  /* Center the buttons */
+  flex-wrap: wrap;
+  /* efficient wrapping on very small screens */
+}
+
+.profile-actions .btn-edit,
+.profile-actions .btn-share {
+  width: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  justify-content: center;
 }
 
 /* Ensure SVG icons use current text color and are sized consistently */
@@ -355,6 +346,7 @@ body.dark-mode .btn-share {
     border-radius: 9999px;
     padding-left: 1.25rem;
     padding-right: 1.25rem;
+    margin-top: 0;
   }
 }
 
@@ -438,7 +430,7 @@ body.dark-mode .btn-share {
 
   .profile-header {
     padding: 2rem 1.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     border-radius: 1.5rem;
   }
 
@@ -474,7 +466,7 @@ body.dark-mode .btn-share {
   }
 }
 
-body.dark-mode .share-modal {
+:host-context(.dark-mode) .share-modal {
   background: linear-gradient(135deg,
       color-mix(in srgb, var(--primary-color) 8%, var(--bg-color) 92%) 0%,
       color-mix(in srgb, var(--bg-color) 95%, var(--secondary-color) 5%) 100%);
@@ -483,7 +475,7 @@ body.dark-mode .share-modal {
 }
 
 /* Sync overlay with theme */
-body.dark-mode .share-modal-overlay {
+:host-context(.dark-mode) .share-modal-overlay {
   background: linear-gradient(135deg,
       color-mix(in srgb, var(--bg-color) 90%, black 10%) 0%,
       color-mix(in srgb, var(--bg-color) 86%, black 14%) 100%);
@@ -514,7 +506,7 @@ body.dark-mode .share-modal-overlay {
   -webkit-text-fill-color: transparent;
 }
 
-body.dark-mode .modal-header h3 {
+:host-context(.dark-mode) .modal-header h3 {
   color: white;
 }
 
@@ -536,7 +528,7 @@ body.dark-mode .modal-header h3 {
   transform: none;
 }
 
-body.dark-mode .close-btn:hover {
+:host-context(.dark-mode) .close-btn:hover {
   opacity: 0.9;
 }
 
@@ -602,7 +594,7 @@ body.dark-mode .close-btn:hover {
 
 @media (max-width: 480px) {
   .share-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.8rem;
   }
 }
@@ -652,7 +644,7 @@ body.dark-mode .close-btn:hover {
   }
 }
 
-body.dark-mode .share-btn-social {
+:host-context(.dark-mode) .share-btn-social {
   background: linear-gradient(135deg,
       color-mix(in srgb, var(--primary-color) 8%, var(--bg-color) 92%) 0%,
       color-mix(in srgb, var(--secondary-color) 4%, var(--bg-color) 96%) 100%);
@@ -670,7 +662,7 @@ body.dark-mode .share-btn-social {
     0 0 30px color-mix(in srgb, var(--primary-color) 12%, transparent);
 }
 
-body.dark-mode .share-btn-social:hover {
+:host-context(.dark-mode) .share-btn-social:hover {
   background: hsl(220 13% 35%);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
@@ -762,7 +754,7 @@ body.dark-mode .share-btn-social:hover {
   letter-spacing: 0.1em;
 }
 
-body.dark-mode .modal-divider {
+:host-context(.dark-mode) .modal-divider {
   color: rgba(255, 255, 255, 0.4);
 }
 
@@ -779,7 +771,7 @@ body.dark-mode .modal-divider {
   width: calc(50% - 4rem);
 }
 
-body.dark-mode .modal-divider::before,
+:host-context(.dark-mode) .modal-divider::before,
 body.dark-mode .modal-divider::after {
   background: linear-gradient(90deg,
       transparent,
@@ -801,6 +793,13 @@ body.dark-mode .modal-divider::after {
   gap: 1rem;
   width: 100%;
   align-items: center;
+}
+
+@media (max-width: 768px) {
+  .other-options {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 }
 
 .other-option {
@@ -827,7 +826,7 @@ body.dark-mode .modal-divider::after {
   min-height: 80px;
 }
 
-body.dark-mode .other-option {
+:host-context(.dark-mode) .other-option {
   background: linear-gradient(135deg,
       color-mix(in srgb, var(--primary-color) 8%, var(--bg-color) 92%),
       color-mix(in srgb, var(--secondary-color) 4%, var(--bg-color) 96%));
@@ -847,13 +846,14 @@ body.dark-mode .other-option {
 
 .other-option svg {
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
+  width: 40px;
+  height: 40px;
   display: inline-block;
   border-radius: 50%;
-  padding: 8px;
+  padding: 9px;
   background: rgba(255, 255, 255, 0.03);
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  color: white;
 }
 
 /* Brand accents for the two options */
@@ -933,7 +933,7 @@ body.dark-mode .other-option {
   margin-top: 0.25rem;
 }
 
-body.dark-mode .option-subtitle {
+:host-context(.dark-mode) .option-subtitle {
   color: hsl(220 13% 70%);
 }
 
@@ -991,7 +991,7 @@ body.dark-mode .option-subtitle {
   overflow-y: auto;
 }
 
-body.dark-mode .qr-modal {
+:host-context(.dark-mode) .qr-modal {
   background: var(--bg-color);
   box-shadow: 0 25px 50px color-mix(in srgb, var(--primary-color) 15%, rgba(0, 0, 0, 0.6));
 }
@@ -1015,7 +1015,7 @@ body.dark-mode .qr-modal {
   color: var(--text-color);
 }
 
-body.dark-mode .qr-modal h3 {
+:host-context(.dark-mode) .qr-modal h3 {
   color: var(--text-color);
 }
 
@@ -1036,7 +1036,7 @@ body.dark-mode .qr-modal h3 {
   justify-content: center;
 }
 
-body.dark-mode .qr-code-frame {
+:host-context(.dark-mode) .qr-code-frame {
   background: var(--bg-color);
   border-color: color-mix(in srgb,
       var(--primary-color) 25%,
@@ -1052,7 +1052,7 @@ body.dark-mode .qr-code-frame {
   padding: 1rem;
 }
 
-body.dark-mode .qr-code-container {
+:host-context(.dark-mode) .qr-code-container {
   background: color-mix(in srgb, var(--primary-color) 8%, var(--bg-color) 92%);
 }
 
@@ -1069,7 +1069,7 @@ body.dark-mode .qr-code-container {
   line-height: 1.5;
 }
 
-body.dark-mode .qr-help {
+:host-context(.dark-mode) .qr-help {
   color: color-mix(in srgb, var(--text-color) 75%, transparent);
 }
 
@@ -1102,7 +1102,7 @@ body.dark-mode .qr-help {
   transform: translateY(0);
 }
 
-body.dark-mode .btn-download-qr {
+:host-context(.dark-mode) .btn-download-qr {
   box-shadow: 0 4px 14px rgba(253, 89, 73, 0.5);
 }
 
@@ -1144,7 +1144,7 @@ body.dark-mode .btn-download-qr {
   border-color: color-mix(in srgb, var(--primary-color) 30%, transparent);
 }
 
-body.dark-mode .profile-link {
+:host-context(.dark-mode) .profile-link {
   /* Match Navbar dark mode color: Slate 900 */
   background: rgba(15, 23, 42, 0.8);
   border-color: rgba(51, 65, 85, 0.3);
@@ -1203,12 +1203,12 @@ body.dark-mode .profile-link {
   background: rgba(255, 140, 105, 0.06);
 }
 
-body.dark-mode .link-icon-container {
+:host-context(.dark-mode) .link-icon-container {
   background: rgba(255, 140, 105, 0.08);
   border-color: rgba(255, 140, 105, 0.15);
 }
 
-body.dark-mode .profile-link:hover .link-icon-container {
+:host-context(.dark-mode) .profile-link:hover .link-icon-container {
   background: rgba(255, 140, 105, 0.15);
   border-color: rgba(255, 140, 105, 0.3);
 }
@@ -1223,20 +1223,14 @@ body.dark-mode .profile-link:hover .link-icon-container {
   gap: 0.5rem;
 }
 
-body.dark-mode .link-title {
-  color: rgba(255, 255, 255, 0.95);
-}
+/* Dark mode overrides removed to allow theme variables to control text color */
 
 .link-url {
   font-size: 0.875rem;
-  color: var(--color-text-secondary);
+  color: color-mix(in srgb, var(--text-color) 70%, transparent);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-body.dark-mode .link-url {
-  color: rgba(255, 255, 255, 0.6);
 }
 
 .link-arrow {
@@ -1276,7 +1270,7 @@ body.dark-mode .link-url {
   gap: 1rem;
 }
 
-body.dark-mode .empty-state {
+:host-context(.dark-mode) .empty-state {
   background: linear-gradient(135deg,
       rgba(30, 41, 59, 0.9) 0%,
       color-mix(in srgb, var(--primary-color) 3%, rgba(30, 41, 59, 0.9)) 100%);
@@ -1292,7 +1286,7 @@ body.dark-mode .empty-state {
   height: 64px;
 }
 
-body.dark-mode .empty-state svg {
+:host-context(.dark-mode) .empty-state svg {
   color: var(--primary-color);
   opacity: 0.7;
 }
@@ -1327,7 +1321,7 @@ body.dark-mode .empty-state svg {
   justify-content: center;
 }
 
-body.dark-mode .profile-footer {
+:host-context(.dark-mode) .profile-footer {
   background: rgba(15, 23, 42, 0.8);
   border-color: rgba(51, 65, 85, 0.3);
   box-shadow: none;
@@ -1360,7 +1354,7 @@ body.dark-mode .profile-footer {
   gap: 1.5rem;
 }
 
-body.dark-mode .error-container {
+:host-context(.dark-mode) .error-container {
   background: rgba(30, 41, 59, 0.95);
   border-color: color-mix(in srgb, var(--primary-color) 30%, transparent);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3),
@@ -1380,7 +1374,7 @@ body.dark-mode .error-container {
   letter-spacing: -0.02em;
 }
 
-body.dark-mode .error-container h2 {
+:host-context(.dark-mode) .error-container h2 {
   color: rgba(255, 255, 255, 0.95);
 }
 

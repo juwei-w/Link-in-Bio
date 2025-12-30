@@ -312,19 +312,15 @@ export class DashboardComponent implements OnInit {
         this.profileLoading = false;
 
         // If username changed, redirect to new URL
+        // If username changed, update localStorage
         if (user.username !== this.currentUser?.username) {
-          alert(
-            "Username updated successfully! Redirecting to your new profile..."
-          );
-          // Update localStorage and redirect
           localStorage.setItem("username", user.username);
-          window.location.href = `/${user.username}`;
-        } else {
-          alert("Profile updated successfully!");
-          console.log("Profile updated:", user);
-          this.currentUser = user;
-          this.loadUserProfile();
         }
+
+        alert("Profile updated successfully!");
+        console.log("Profile updated:", user);
+        this.currentUser = user;
+        this.loadUserProfile();
       },
       error: (err) => {
         this.profileLoading = false;

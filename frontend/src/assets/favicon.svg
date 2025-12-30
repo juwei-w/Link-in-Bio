@@ -1,22 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
   <defs>
-    <linearGradient id="a" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0" stop-color="#ff9a66"/>
-      <stop offset="0.5" stop-color="#ff5c7a"/>
-      <stop offset="1" stop-color="#ff2db2"/>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff8a5c"/>
+      <stop offset="100%" stop-color="#ff5fa8"/>
     </linearGradient>
-    <linearGradient id="b" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0" stop-color="#ffd26b"/>
-      <stop offset="1" stop-color="#ff6aa3"/>
-    </linearGradient>
-    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-      <feDropShadow dx="0" dy="8" stdDeviation="18" flood-color="#000" flood-opacity="0.25"/>
-    </filter>
   </defs>
-  <rect width="100%" height="100%" rx="96" fill="url(#a)" filter="url(#shadow)"/>
-  <g transform="translate(0,0)">
-    <circle cx="256" cy="196" r="88" fill="url(#b)" opacity="0.95" />
-    <path d="M168 320c32-40 56-68 88-88 44-28 88-28 132 0 28 18 44 40 56 64-132 56-272 28-276 24z" fill="#fff" opacity="0.06"/>
-    <text x="50%" y="64%" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="180" font-weight="700" fill="white" text-anchor="middle" dominant-baseline="middle">L</text>
-  </g>
+  <circle cx="32" cy="32" r="32" fill="url(#g1)"/>
+  <svg x="16" y="16" width="32" height="32" viewBox="0 0 24 24">
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </svg>
 </svg>
