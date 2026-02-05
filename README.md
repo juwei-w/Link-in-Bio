@@ -1,11 +1,11 @@
-# 🔗 Link-Sharing Profile Platform
+# 🔗 Link-in-Bio
 
-A modern, customizable link-in-bio platform similar to Linktree. Share all your important links in one beautiful page.
+A premium, customizable Link-in-Bio platform designed to centralize your digital presence. Distinguishing itself from standard link aggregators, this solution offers a seamless, high-performance user experience powered by a robust Node/Express backend and a responsive Angular 17 frontend. Featuring integrated analytics, secure authentication, and dynamic media management, it empowers users with complete control over their personal brand through a sophisticated, enterprise-grade architecture.
 
 ## ✨ Features
 
 - 🔐 **Authentication**: Email/password + OAuth (Google)
-- 👤 **Custom Profiles**: Unique username URLs (`yourdomain.com/username`)
+- 👤 **Custom Profiles**: Unique username URLs
 - 🖼️ **Avatar Upload**: Cloudinary-powered image management
 - 🔗 **Link Management**: Create, edit, delete, and reorder links (drag & drop)
 - 📊 **Analytics**: Click tracking and trends visualization
@@ -17,7 +17,6 @@ A modern, customizable link-in-bio platform similar to Linktree. Share all your 
 ### 🌐 Live Application
 
 - **Frontend**: https://link-in-bio-platform.web.app/
-- **Backend API**: https://link-in-bio-platform.onrender.com/
 
 **Auto-Deploy:** Every push to `main` automatically deploys both frontend and backend.
 
@@ -92,28 +91,22 @@ Link-Sharing-Profile-Platform/
 - RxJS
 - TypeScript
 
-## 📊 Current Status
+## � Task Distribution
 
-**MVP Complete** ✅
-- [x] Authentication (email + OAuth)
-- [x] Profile management
-- [x] Links CRUD
-- [x] Click tracking
-- [x] Analytics dashboard
-- [x] Avatar upload
-- [x] Deployment ready
+- **Ju Wei**:
+  1. **Backend Architecture**: Engineered the robust Node.js/Express REST API and MongoDB schema.
+  2. **Authentication**: Implemented secure JWT/Session auth and Firebase Google OAuth integration.
+  3. **DevOps**: Configured automated CI/CD pipelines for seamless deployment (Render/Firebase).
+  4. **Cloud Integrations**: Integrated Cloudinary for optimized image storage and transformation.
+  5. **Core Frontend**: Built the core Angular structure, authentication guards, and http services.
+  6. **Interactive Features**: Developed the drag-and-drop link reordering and theme customization (Color Picker).
 
-**In Progress** 🚧
-- [ ] QR code generation
-- [ ] Custom domains
-- [ ] Advanced analytics (geo, referrers)
-
-See [docs/dev/TODO.md](docs/dev/TODO.md) for full task list.
-
-## 👥 Team
-
-- **Juwei**: Backend, analytics, deployment
-- **Chengyung**: Frontend, UI/UX, QR codes
+- **Cheng Yung**:
+  1. **UI/UX Design**: Designed the modern, glassmorphic user interface and responsive layouts.
+  2. **Analytics Dashboard**: Implemented interactive data visualization using Chart.js.
+  3. **Public Profile**: Developed the public-facing profile page with dynamic link rendering, QR code generation, and social sharing capabilities.
+  4. **Documentation**: Authored comprehensive PRD, API documentation, and setup guides.
+  5. **Quality Assurance**: Conducted comprehensive software testing and bug tracking.
 
 ## 📄 License
 
