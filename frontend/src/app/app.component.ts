@@ -21,7 +21,7 @@ import { filter } from 'rxjs/operators';
   `]
 })
 export class AppComponent implements OnInit {
-  title = 'Link Sharing Platform';
+  title = 'Link-in-Bio';
   shouldShowNavbar = false;
 
   constructor(private router: Router) {}
